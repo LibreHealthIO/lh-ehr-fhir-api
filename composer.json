@@ -16,9 +16,16 @@
             "role": "Developer"
         }
     ],
+    "repositories": [
+      {
+        "type": "vcs",
+        "url": "https://github.com/LibreEHR/core.git"
+      }
+    ],
     "require": {
         "illuminate/support": "~5.1",
-        "php" : "~5.5|~7.0"
+        "php" : "~5.5|~7.0",
+        "libre-ehr/core": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit" : "4.*",
@@ -38,9 +45,6 @@
     "scripts": {
         "test": "phpunit"
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0-dev"
-        }
-    }
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
