@@ -1,0 +1,53 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction-response",
+  "entry": [
+    {
+      "resource": {
+        "id": 47,
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "use": "usual",
+            "value": 47
+          }
+        ],
+        "name": [
+          {
+            "use": "usual",
+            "family": ["Everywoman3"],
+            "given": ["Judy Simple"]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "555-555-2003",
+            "use": "primary"
+          },
+          {
+            "system": "email",
+            "value": "",
+            "use": "primary"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1955-01-06"
+      },
+      "response": {
+        "status": "201 Created",
+        "location": "Patient\/47"
+      }
+    },
+    {
+      "resource": {
+        "id": 6,
+        "resourceType": "AuditEvent"
+      },
+      "response": {
+        "status": "201 Created",
+        "location": "AuditEvent\/6"
+      }
+    }
+  ]
+}

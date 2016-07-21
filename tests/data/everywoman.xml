@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patient xmlns="http://hl7.org/fhir">
+    <id value="1"/>
+    <meta>
+        <versionId value="11"/>
+        <lastUpdated value="2016-02-10T05:03:01Z"/>
+    </meta>
+    <text>
+        <status value="generated"/>
+        <div xmlns="http://www.w3.org/1999/xhtml">
+            <h1>Eve Everywoman</h1> </div>
+    </text>
+    <extension url="http://fhir.hl7.org.nz/latlong">
+        <extension url="#lat">
+            <valueDecimal value="-36.8898819"/>
+        </extension>
+        <extension url="#long">
+            <valueDecimal value="174.7420085"/>
+        </extension>
+    </extension>
+    <active value="false"/>
+    <name>
+        <text value="Eve Everywoman"/>
+        <family value="Everywoman2"/>
+        <given value="Eve A"/>
+    </name>
+    <telecom>
+        <system value="phone"/>
+        <value value="555-555-2003"/>
+        <use value="work"/>
+    </telecom>
+    <telecom>
+        <system value="phone"/>
+        <value value="555-555-1234"/>
+    </telecom>
+    <gender value="female"/>
+    <birthDate value="1955-01-06"/>
+    <address>
+        <use value="home"/>
+        <line value="45 pine st"/>
+        <line value="Mt eden"/>
+        <city value="Auckland"/>
+    </address>
+</Patient>

@@ -1,0 +1,174 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-quickSignup",
+  "meta": {
+    "fhir_comments": [
+      "   this example bundle is a submit from quickSignup    "
+    ]
+  },
+  "type": "transaction",
+  "entry": [
+    {
+      "fhir_comments": [
+        "   now, each entry is a resource to store in the database   "
+      ],
+      "fullUrl": "urn:uuid:61ebe359-bfdc-4613-8bf2-c5e300945f0a",
+      "resource": {
+        "resourceType": "Patient",
+        "name": [
+          {
+            "text": "Judy Everywoman3",
+            "family": [
+              "Everywoman3"
+            ],
+            "given": [
+              "Judy Simple"
+            ]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1955-01-06",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "555-555-2003",
+            "use": "primary"
+          },
+          {
+            "system": "email",
+            "value": "ken@mi-squared.com",
+            "use": "primary"
+          }
+        ],
+        "photo": [
+          {
+            "contentType": "image/jpeg",
+            "data": "R0lGODlhEwARAPcAAAAAAAAA/+9aAO+1AP/WAP/eAP/eCP/eEP/eGP/nAP/nCP/nEP/nIf/nKf/nUv/nWv/vAP/vCP/vEP/vGP/vIf/vKf/vMf/vOf/vWv/vY//va//vjP/3c//3lP/3nP//tf//vf///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAATABEAAAi+AAMIDDCgYMGBCBMSvMCQ4QCFCQcwDBGCA4cLDyEGECDxAoAQHjxwyKhQAMeGIUOSJJjRpIAGDS5wCDly4AALFlYOgHlBwwOSNydM0AmzwYGjBi8IHWoTgQYORg8QIGDAwAKhESI8HIDgwQaRDI1WXXAhK9MBBzZ8/XDxQoUFZC9IiCBh6wEHGz6IbNuwQoSpWxEgyLCXL8O/gAnylNlW6AUEBRIL7Og3KwQIiCXb9HsZQoIEUzUjNEiaNMKAAAA7"
+          }
+        ],
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "#terms-of-service",
+                "valueBoolean": 1
+              },
+              {
+                "url": "#allow-sms",
+                "valueBoolean": 1
+              }
+            ],
+            "url": "https://fhirdev.ttdnow.com/extension/contracts"
+          }
+        ],
+        "request": {
+          "fhir_comments": [
+            "   now, details about the action to take with the Patient   "
+          ],
+          "method": "POST",
+          "_method": {
+            "fhir_comments": [
+              "   POST to [base]/Patient - that's a create   "
+            ]
+          },
+          "url": "Patient",
+          "_url": {
+            "fhir_comments": [
+              "   actually, in a transaction, you don't specify the [base], \n         so [base]/Patient becomes just 'Patient':   "
+            ]
+          }
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:88f151c0-a954-468a-88bd-5ae15c08e059",
+      "resource": {
+        "resourceType": "AuditEvent",
+        "text": {
+          "fhir_comments": [
+            "   here is where we will log the system and user identification informatino   ",
+            "   and no metadata on this resource, though it would be valid   "
+          ],
+          "status": "generated",
+          "div": "<div>Some narrative, if you want to describe the event you are logging</div>"
+        },
+        "event": {
+          "type": {
+            "system": "http://nema.org/dicom/dicm",
+            "code": "regProfile",
+            "display": "User Quick Signup"
+          },
+          "subtype": [
+            {
+              "system": "http://nema.org/dicom/dicm",
+              "code": "110122",
+              "display": "Login"
+            }
+          ],
+          "action": "E",
+          "dateTime": "2015-05-05T23:41:23Z",
+          "outcome": "0"
+        },
+        "participant": [
+          {
+            "userId": {
+              "value": "95"
+            },
+            "altId": "601847123",
+            "name": "Ken Chapple",
+            "requestor": true,
+            "network": {
+              "address": "123.55.55.1",
+              "type": "2"
+            }
+          }
+        ],
+        "source": {
+          "site": "iPhone",
+          "identifier": {
+            "value": "hl7connect.healthintersections.com.au"
+          },
+          "type": [
+            {
+              "system": "http://hl7.org/fhir/security-source-type",
+              "code": "1",
+              "display": "User Device"
+            }
+          ],
+          "extension": [
+            {
+              "extension": [
+                {
+                  "url": "#lat",
+                  "valueDecimal": -36.8898819
+                },
+                {
+                  "url": "#long",
+                  "valueDecimal": 174.7420085
+                }
+              ],
+              "url": "https://fhirdev.ttdnow.com/extension/latlong"
+            }
+          ]
+        }
+      },
+      "request": {
+        "fhir_comments": [
+          "   now, details about the action to take with the AuditEvent   "
+        ],
+        "method": "POST",
+        "_method": {
+          "fhir_comments": [
+            "   POST to [base]/AuditEvent - that's a create   "
+          ]
+        },
+        "url": "AuditEvent",
+        "_url": {
+          "fhir_comments": [
+            "   actually, in a transaction, you don't specify the [base], \n         so [base]/AuditEvent becomes just 'AuditEvent':   "
+          ]
+        }
+      }
+    }
+  ]
+}
