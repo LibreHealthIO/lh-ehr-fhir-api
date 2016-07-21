@@ -1,0 +1,435 @@
+<Conformance xmlns="http://hl7.org/fhir">
+    <id value="base2"/>
+    <text>
+        <status value="generated"/>
+        <div xmlns="http://www.w3.org/1999/xhtml">
+            <h2>Base FHIR Conformance Statement (Empty)</h2>
+            <p>This is the base conformance statement for FHIR. It represents a server that provides
+                the none of the functionality defined by FHIR. It is provided to use as a template for
+                system designers to build their own conformance statements from. A conformance profile
+                has to contain something, so this contains a read of a Conformance Statement</p>
+            <table>
+                <tr>
+                    <td>Mode</td>
+                    <td>SERVER</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>An empty conformance statement</td>
+                </tr>
+                <tr>
+                    <td>Transaction</td>
+                    <td/>
+                </tr>
+                <tr>
+                    <td>System History</td>
+                    <td/>
+                </tr>
+                <tr>
+                    <td>System Search</td>
+                    <td/>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <th>
+                        <b>Resource Type</b>
+                    </th>
+                    <th>
+                        <b>Profile</b>
+                    </th>
+                    <th>
+                        <b>Read</b>
+                    </th>
+                    <th>
+                        <b>V-Read</b>
+                    </th>
+                    <th>
+                        <b>Search</b>
+                    </th>
+                    <th>
+                        <b>Update</b>
+                    </th>
+                    <th>
+                        <b>Updates</b>
+                    </th>
+                    <th>
+                        <b>Create</b>
+                    </th>
+                    <th>
+                        <b>Delete</b>
+                    </th>
+                    <th>
+                        <b>History</b>
+                    </th>
+                </tr>
+                <tr>
+                    <td>Conformance</td>
+                    <td>y</td>
+                    <td/>
+                    <td/>
+                    <td/>
+                    <td/>
+                    <td/>
+                    <td/>
+                    <td/>
+                </tr>
+            </table>
+        </div>
+    </text>
+    <url value="http://hl7.org/fhir/Conformance/base2"/>
+    <version value="1.0.2-7202"/>
+    <name value="Base FHIR Conformance Statement (Empty)"/>
+    <status value="draft"/>
+    <experimental value="true"/>
+    <publisher value="FHIR Project Team"/>
+    <contact>
+        <telecom>
+            <system value="other"/>
+            <value value="http://hl7.org/fhir"/>
+        </telecom>
+    </contact>
+    <date value="2015-10-24T07:41:03+11:00"/>
+    <description value="This is the base conformance statement for FHIR. It represents a server that provides
+   the none of the functionality defined by FHIR. It is provided to use as a template for
+   system designers to build their own conformance statements from. A conformance profile
+   has to contain something, so this contains a read of a Conformance Statement"/>
+    <kind value="capability"/>
+    <software>
+        <name value="Insert your softwware name here..."/>
+    </software>
+    <fhirVersion value="1.0.2"/>
+    <acceptUnknown value="no"/>
+    <format value="xml"/>
+    <format value="json"/>
+    <rest>
+        <mode value="server"/>
+        <documentation value="An empty conformance statement"/>
+        <security>
+            <cors value="true"/>
+            <description value="no security"/>
+        </security>
+        <resource>
+            <type value="Conformance"/>
+            <interaction>
+                <code value="read"/>
+                <documentation value="Read Conformance Resource"/>
+            </interaction>
+        </resource>
+        <resource>
+            <type value="Patient"/>
+            <profile>
+                <reference value="http://hl7.org/fhir/StructureDefinition/Patient"/>
+            </profile>
+            <interaction>
+                <code value="read"/>
+                <documentation value="Implemented per the specification (or Insert other doco here)"/>
+            </interaction>
+            <interaction>
+                <code value="vread"/>
+                <documentation value="Implemented per the specification (or Insert other doco here)"/>
+            </interaction>
+            <interaction>
+                <code value="update"/>
+                <documentation value="Implemented per the specification (or Insert other doco here)"/>
+            </interaction>
+            <interaction>
+                <code value="delete"/>
+                <documentation value="Implemented per the specification (or Insert other doco here)"/>
+            </interaction>
+            <interaction>
+                <code value="history-instance"/>
+                <documentation value="Implemented per the specification (or Insert other doco here)"/>
+            </interaction>
+            <interaction>
+                <code value="validate"/>
+                <documentation value="Implemented per the specification (or Insert other doco here)"/>
+            </interaction>
+            <interaction>
+                <code value="history-type"/>
+                <documentation value="Implemented per the specification (or Insert other doco here)"/>
+            </interaction>
+            <interaction>
+                <code value="create"/>
+                <documentation value="Implemented per the specification (or Insert other doco here)"/>
+            </interaction>
+            <interaction>
+                <code value="search-type"/>
+                <documentation value="Implemented per the specification (or Insert other doco here)"/>
+            </interaction>
+            <conditionalCreate value="true"/>
+            <conditionalUpdate value="true"/>
+            <conditionalDelete value="multiple"/>
+            <searchInclude value="Patient.link"/>
+            <searchInclude value="Patient.organization"/>
+            <searchInclude value="Patient.careprovider"/>
+            <searchRevInclude value="Account.patient"/>
+            <searchRevInclude value="Account.subject"/>
+            <searchRevInclude value="AllergyIntolerance.reporter"/>
+            <searchRevInclude value="AllergyIntolerance.patient"/>
+            <searchRevInclude value="AllergyIntolerance.recorder"/>
+            <searchRevInclude value="Appointment.patient"/>
+            <searchRevInclude value="Appointment.practitioner"/>
+            <searchRevInclude value="Appointment.location"/>
+            <searchRevInclude value="Appointment.actor"/>
+            <searchRevInclude value="AppointmentResponse.patient"/>
+            <searchRevInclude value="AppointmentResponse.practitioner"/>
+            <searchRevInclude value="AppointmentResponse.location"/>
+            <searchRevInclude value="AppointmentResponse.actor"/>
+            <searchRevInclude value="AuditEvent.patient"/>
+            <searchRevInclude value="AuditEvent.participant"/>
+            <searchRevInclude value="Basic.author"/>
+            <searchRevInclude value="BodySite.patient"/>
+            <searchRevInclude value="CarePlan.subject"/>
+            <searchRevInclude value="CarePlan.patient"/>
+            <searchRevInclude value="CarePlan.participant"/>
+            <searchRevInclude value="CarePlan.performer"/>
+            <searchRevInclude value="Claim.patient"/>
+            <searchRevInclude value="ClinicalImpression.patient"/>
+            <searchRevInclude value="Communication.sender"/>
+            <searchRevInclude value="Communication.patient"/>
+            <searchRevInclude value="Communication.subject"/>
+            <searchRevInclude value="Communication.recipient"/>
+            <searchRevInclude value="CommunicationRequest.sender"/>
+            <searchRevInclude value="CommunicationRequest.requester"/>
+            <searchRevInclude value="CommunicationRequest.patient"/>
+            <searchRevInclude value="CommunicationRequest.subject"/>
+            <searchRevInclude value="CommunicationRequest.recipient"/>
+            <searchRevInclude value="Composition.author"/>
+            <searchRevInclude value="Composition.attester"/>
+            <searchRevInclude value="Condition.asserter"/>
+            <searchRevInclude value="Condition.patient"/>
+            <searchRevInclude value="Contract.signer"/>
+            <searchRevInclude value="Contract.actor"/>
+            <searchRevInclude value="DetectedIssue.patient"/>
+            <searchRevInclude value="Device.patient"/>
+            <searchRevInclude value="DeviceUseRequest.patient"/>
+            <searchRevInclude value="DeviceUseRequest.subject"/>
+            <searchRevInclude value="DeviceUseStatement.patient"/>
+            <searchRevInclude value="DeviceUseStatement.subject"/>
+            <searchRevInclude value="DiagnosticOrder.subject"/>
+            <searchRevInclude value="DiagnosticOrder.patient"/>
+            <searchRevInclude value="DiagnosticReport.subject"/>
+            <searchRevInclude value="DiagnosticReport.patient"/>
+            <searchRevInclude value="DocumentManifest.subject"/>
+            <searchRevInclude value="DocumentManifest.recipient"/>
+            <searchRevInclude value="DocumentManifest.author"/>
+            <searchRevInclude value="DocumentManifest.patient"/>
+            <searchRevInclude value="DocumentReference.subject"/>
+            <searchRevInclude value="DocumentReference.author"/>
+            <searchRevInclude value="DocumentReference.patient"/>
+            <searchRevInclude value="Encounter.patient"/>
+            <searchRevInclude value="EnrollmentRequest.patient"/>
+            <searchRevInclude value="EnrollmentRequest.subject"/>
+            <searchRevInclude value="EpisodeOfCare.patient"/>
+            <searchRevInclude value="FamilyMemberHistory.patient"/>
+            <searchRevInclude value="Flag.author"/>
+            <searchRevInclude value="Flag.patient"/>
+            <searchRevInclude value="Flag.subject"/>
+            <searchRevInclude value="Goal.patient"/>
+            <searchRevInclude value="Goal.subject"/>
+            <searchRevInclude value="Group.member"/>
+            <searchRevInclude value="ImagingObjectSelection.author"/>
+            <searchRevInclude value="ImagingObjectSelection.patient"/>
+            <searchRevInclude value="ImagingStudy.patient"/>
+            <searchRevInclude value="Immunization.patient"/>
+            <searchRevInclude value="ImmunizationRecommendation.patient"/>
+            <searchRevInclude value="List.patient"/>
+            <searchRevInclude value="List.source"/>
+            <searchRevInclude value="List.subject"/>
+            <searchRevInclude value="Media.patient"/>
+            <searchRevInclude value="Media.subject"/>
+            <searchRevInclude value="MedicationAdministration.patient"/>
+            <searchRevInclude value="MedicationAdministration.practitioner"/>
+            <searchRevInclude value="MedicationDispense.patient"/>
+            <searchRevInclude value="MedicationDispense.receiver"/>
+            <searchRevInclude value="MedicationOrder.patient"/>
+            <searchRevInclude value="MedicationStatement.patient"/>
+            <searchRevInclude value="MedicationStatement.source"/>
+            <searchRevInclude value="NutritionOrder.patient"/>
+            <searchRevInclude value="Observation.subject"/>
+            <searchRevInclude value="Observation.patient"/>
+            <searchRevInclude value="Observation.performer"/>
+            <searchRevInclude value="Order.patient"/>
+            <searchRevInclude value="Order.subject"/>
+            <searchRevInclude value="Patient.link"/>
+            <searchRevInclude value="Person.link"/>
+            <searchRevInclude value="Person.relatedperson"/>
+            <searchRevInclude value="Person.patient"/>
+            <searchRevInclude value="Person.practitioner"/>
+            <searchRevInclude value="Procedure.patient"/>
+            <searchRevInclude value="Procedure.subject"/>
+            <searchRevInclude value="Procedure.performer"/>
+            <searchRevInclude value="ProcedureRequest.orderer"/>
+            <searchRevInclude value="ProcedureRequest.patient"/>
+            <searchRevInclude value="ProcedureRequest.subject"/>
+            <searchRevInclude value="ProcedureRequest.performer"/>
+            <searchRevInclude value="Provenance.agent"/>
+            <searchRevInclude value="QuestionnaireResponse.author"/>
+            <searchRevInclude value="QuestionnaireResponse.source"/>
+            <searchRevInclude value="ReferralRequest.requester"/>
+            <searchRevInclude value="ReferralRequest.patient"/>
+            <searchRevInclude value="RelatedPerson.patient"/>
+            <searchRevInclude value="RiskAssessment.patient"/>
+            <searchRevInclude value="RiskAssessment.subject"/>
+            <searchRevInclude value="Schedule.actor"/>
+            <searchRevInclude value="Specimen.patient"/>
+            <searchRevInclude value="Specimen.subject"/>
+            <searchRevInclude value="SupplyDelivery.patient"/>
+            <searchRevInclude value="SupplyRequest.patient"/>
+            <searchRevInclude value="SupplyRequest.source"/>
+            <searchRevInclude value="VisionPrescription.patient"/>
+            <searchParam>
+                <name value="animal-breed"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-animal-breed"/>
+                <type value="token"/>
+                <documentation value="The breed for animal patients"/>
+            </searchParam>
+            <searchParam>
+                <name value="phone"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-phone"/>
+                <type value="token"/>
+                <documentation value="A value in a phone contact"/>
+            </searchParam>
+            <searchParam>
+                <name value="phonetic"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-phonetic"/>
+                <type value="string"/>
+                <documentation value="A portion of either family or given name using some kind of phonetic matching algorithm"/>
+            </searchParam>
+            <searchParam>
+                <name value="link"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-link"/>
+                <type value="reference"/>
+                <documentation value="All patients linked to the given patient"/>
+            </searchParam>
+            <searchParam>
+                <name value="address-country"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-address-country"/>
+                <type value="string"/>
+                <documentation value="A country specified in an address"/>
+            </searchParam>
+            <searchParam>
+                <name value="animal-species"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-animal-species"/>
+                <type value="token"/>
+                <documentation value="The species for animal patients"/>
+            </searchParam>
+            <searchParam>
+                <name value="deathdate"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-deathdate"/>
+                <type value="date"/>
+                <documentation value="The date of death has been provided and satisfies this search value"/>
+            </searchParam>
+            <searchParam>
+                <name value="organization"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-organization"/>
+                <type value="reference"/>
+                <documentation value="The organization at which this person is a patient"/>
+            </searchParam>
+            <searchParam>
+                <name value="address-city"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-address-city"/>
+                <type value="string"/>
+                <documentation value="A city specified in an address"/>
+            </searchParam>
+            <searchParam>
+                <name value="address-state"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-address-state"/>
+                <type value="string"/>
+                <documentation value="A state specified in an address"/>
+            </searchParam>
+            <searchParam>
+                <name value="careprovider"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-careprovider"/>
+                <type value="reference"/>
+                <documentation value="Patient's nominated care provider, could be a care manager, not the organization that
+         manages the record"/>
+            </searchParam>
+            <searchParam>
+                <name value="given"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-given"/>
+                <type value="string"/>
+                <documentation value="A portion of the given name of the patient"/>
+            </searchParam>
+            <searchParam>
+                <name value="email"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-email"/>
+                <type value="token"/>
+                <documentation value="A value in an email contact"/>
+            </searchParam>
+            <searchParam>
+                <name value="address"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-address"/>
+                <type value="string"/>
+                <documentation value="An address in any kind of address/part of the patient"/>
+            </searchParam>
+            <searchParam>
+                <name value="address-use"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-address-use"/>
+                <type value="token"/>
+                <documentation value="A use code specified in an address"/>
+            </searchParam>
+            <searchParam>
+                <name value="family"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-family"/>
+                <type value="string"/>
+                <documentation value="A portion of the family name of the patient"/>
+            </searchParam>
+            <searchParam>
+                <name value="name"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-name"/>
+                <type value="string"/>
+                <documentation value="A portion of either family or given name of the patient"/>
+            </searchParam>
+            <searchParam>
+                <name value="birthdate"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-birthdate"/>
+                <type value="date"/>
+                <documentation value="The patient's date of birth"/>
+            </searchParam>
+            <searchParam>
+                <name value="telecom"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-telecom"/>
+                <type value="token"/>
+                <documentation value="The value in any kind of telecom details of the patient"/>
+            </searchParam>
+            <searchParam>
+                <name value="active"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-active"/>
+                <type value="token"/>
+                <documentation value="Whether the patient record is active"/>
+            </searchParam>
+            <searchParam>
+                <name value="gender"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-gender"/>
+                <type value="token"/>
+                <documentation value="Gender of the patient"/>
+            </searchParam>
+            <searchParam>
+                <name value="deceased"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-deceased"/>
+                <type value="token"/>
+                <documentation value="This patient has been marked as deceased, or as a death date entered"/>
+            </searchParam>
+            <searchParam>
+                <name value="language"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-language"/>
+                <type value="token"/>
+                <documentation value="Language code (irrespective of use value)"/>
+            </searchParam>
+            <searchParam>
+                <name value="identifier"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-identifier"/>
+                <type value="token"/>
+                <documentation value="A patient identifier"/>
+            </searchParam>
+            <searchParam>
+                <name value="address-postalcode"/>
+                <definition value="http://hl7.org/fhir/SearchParameter/patient-address-postalcode"/>
+                <type value="string"/>
+                <documentation value="A postalCode specified in an address"/>
+            </searchParam>
+        </resource>
+    </rest>
+</Conformance>

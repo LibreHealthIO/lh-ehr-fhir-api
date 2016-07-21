@@ -1,0 +1,135 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-quickSignup",
+  "meta": {
+
+  },
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "https://fhirdev.ttdnow.com/fhir/Patient/1",
+      "resource": {
+        "resourceType": "Patient",
+        "name": [
+          {
+            "text": "Judy Everywoman3",
+            "family": [
+              "Everywoman3"
+            ],
+            "given": [
+              "Judy Simple"
+            ]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1955-01-06",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "555-555-2003",
+            "use": "primary"
+          },
+          {
+            "system": "email",
+            "value": "ken@mi-squared.com",
+            "use": "primary"
+          }
+        ],
+        "photo": [
+          {
+            "contentType": "image/jpeg",
+            "data": "R0lGODlhEwARAPcAAAAAAAAA/+9aAO+1AP/WAP/eAP/eCP/eEP/eGP/nAP/nCP/nEP/nIf/nKf/nUv/nWv/vAP/vCP/vEP/vGP/vIf/vKf/vMf/vOf/vWv/vY//va//vjP/3c//3lP/3nP//tf//vf///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAATABEAAAi+AAMIDDCgYMGBCBMSvMCQ4QCFCQcwDBGCA4cLDyEGECDxAoAQHjxwyKhQAMeGIUOSJJjRpIAGDS5wCDly4AALFlYOgHlBwwOSNydM0AmzwYGjBi8IHWoTgQYORg8QIGDAwAKhESI8HIDgwQaRDI1WXXAhK9MBBzZ8/XDxQoUFZC9IiCBh6wEHGz6IbNuwQoSpWxEgyLCXL8O/gAnylNlW6AUEBRIL7Og3KwQIiCXb9HsZQoIEUzUjNEiaNMKAAAA7"
+          }
+        ],
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "#terms-of-service",
+                "valueBoolean": 1
+              },
+              {
+                "url": "#allow-sms",
+                "valueBoolean": 1
+              }
+            ],
+            "url": "https://fhirdev.ttdnow.com/extension/contracts"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:88f151c0-a954-468a-88bd-5ae15c08e059",
+      "resource": {
+        "resourceType": "AuditEvent",
+        "text": {
+          "status": "generated",
+          "div": "<div>Some narrative, if you want to describe the event you are logging</div>"
+        },
+        "event": {
+          "type": {
+            "code": "regProfile"
+          },
+          "subtype": [
+            {
+              "code": "quickSignup"
+            }
+          ],
+          "action": "E",
+          "dateTime": "2015-05-05T23:41:23Z"
+        },
+        "participant": [
+          {
+            "userId": {
+              "value": "95"
+            },
+            "altId": "601847123",
+            "name": "Ken Chapple",
+            "requestor": true,
+            "network": {
+              "address": "123.55.55.1",
+              "type": "2"
+
+            }
+          }
+        ],
+        "source": {
+          "site": "iPhone",
+          "identifier": {
+            "value": "hl7connect.healthintersections.com.au"
+          },
+          "type": [
+            {
+              "system": "http://hl7.org/fhir/security-source-type",
+              "code": "1",
+              "display": "User Device"
+            }
+          ],
+          "extension": [
+            {
+              "extension": [
+                {
+                  "url": "#lat",
+                  "valueDecimal": -36.8898819
+                },
+                {
+                  "url": "#long",
+                  "valueDecimal": 174.7420085
+                }
+              ],
+              "url": "https://fhirdev.ttdnow.com/extension/latlong"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "AuditEvent"
+      }
+    }
+  ]
+}
