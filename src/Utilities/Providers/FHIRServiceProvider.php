@@ -17,7 +17,7 @@ class FHIRServiceProvider extends ServiceProvider
         $this->app->bind('LibreEHR\Core\Contracts\AuditEventAdapterInterface', 'LibreEHR\FHIR\Adapters\FHIRAuditEventAdapter');
         $this->app->bind('LibreEHR\Core\Contracts\PatientAdapterInterface', 'LibreEHR\FHIR\Adapters\FHIRPatientAdapter');
         $this->app->bind('LibreEHR\Core\Contracts\BundleAdapterInterface', 'LibreEHR\FHIR\Adapters\FHIRBundleAdapter');
-        $this->app->bind('LibreEHR\Core\Contracts\PatientRepositoryInterface', 'LibreEHR\Emr\Repositories\PatientRepository');
+        $this->app->bind('LibreEHR\Core\Contracts\PatientRepositoryInterface', 'LibreEHR\Core\Emr\Repositories\PatientRepository');
 
         // This will load routes file at vendor/[vendor]/[package]/src/Http/routes.php
         // and prepend it with Foo\Http\Controllers namespace

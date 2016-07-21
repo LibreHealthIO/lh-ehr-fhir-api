@@ -9,7 +9,7 @@ use LibreEHR\Core\Contracts\PatientInterface;
 use LibreEHR\Core\Contracts\DocumentInterface;
 
 use LibreEHR\Core\Contracts\PatientRepositoryInterface;
-use LibreEHR\Emr\Criteria\PatientByPid;
+use LibreEHR\Core\Emr\Criteria\PatientByPid;
 use PHPFHIRGenerated\FHIRDomainResource\FHIRPatient;
 use PHPFHIRGenerated\FHIRElement\FHIRCode;
 use \PHPFHIRGenerated\FHIRElement\FHIRAttachment;
