@@ -16,12 +16,6 @@
             "role": "Developer"
         }
     ],
-    "repositories": [
-      {
-        "type": "vcs",
-        "url": "https://github.com/LibreEHR/core.git"
-      }
-    ],
     "require": {
         "illuminate/support": "~5.1",
         "php" : "~5.5|~7.0",
