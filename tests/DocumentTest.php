@@ -1,6 +1,6 @@
 <?php
 
-use LibreEHR\Emr\Repositories\DocumentRepository;
+use LibreEHR\Core\Emr\Repositories\DocumentRepository;
 
 class PatientTest extends TestCase
 {

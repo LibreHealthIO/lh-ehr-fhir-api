@@ -28,7 +28,8 @@
     },
     "autoload": {
         "psr-4": {
-            "LibreEHR\\FHIR\\": "src"
+            "LibreEHR\\FHIR\\": "src",
+            "PHPFHIRGenerated\\": "src/PHPFHIRGenerated"
         }
     },
     "autoload-dev": {
