@@ -28,7 +28,6 @@ Add the following to the root libre-ehr-laravel/composer.json after the "type"
 ``` json
 ...
 
-"type": "project",
 "repositories": [
       {
         "type": "vcs",
@@ -42,6 +41,25 @@ Add the following to the root libre-ehr-laravel/composer.json after the "type"
     
 ...
 ```
+
+Then add the following to the "require" section
+``` json
+...
+
+"libre-ehr/fhir": "dev-master"
+
+...
+```
+
+Then from the root of libre-ehr-laravel, run the following to pull in the LibreEHR packages
+
+``` bash
+$ composer update
+```
+
+Point a vhost to libre-ehr-laravel/public. 
+
+Make sure to enable mod_rewrite on Apache.
 
 ## Usage
 
@@ -58,6 +76,12 @@ Add the following to the end of the "providers" array in libre-ehr-laravel/confi
     LibreEHR\FHIR\Utilities\Providers\FHIRServiceProvider::class
 ];
 ```
+
+You will then be able to browse to the FHIR endpoint like so:
+
+```pre
+http://[my vhost]/fhir/Patients
+````
 
 ## Change log
 
