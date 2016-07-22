@@ -10,9 +10,9 @@
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": ":author_email",
-            "homepage": ":author_website",
+            "name": "Ken Chapple",
+            "email": "ken@mi-squared.com",
+            "homepage": "http://mi-squared.com",
             "role": "Developer"
         }
     ],
