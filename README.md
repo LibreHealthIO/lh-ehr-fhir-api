@@ -42,12 +42,20 @@ Add the following to the root libre-ehr-laravel/composer.json after the "type"
 ...
 ```
 
-Then add the following to the "require" section
+Then add the following to the "require" section of the libre-ehr-laravel/composer.json file which will specify the requirement of the development version of libre-ehr/fhir.
 ``` json
 ...
 
 "libre-ehr/fhir": "dev-master"
 
+...
+```
+
+Then add the following to the bottom of the libre-ehr-laravel/composer.json file, which will allow you to pull the development version.
+``` json
+    ...,
+    "minimum-stability": "dev",
+    "prefer-stable": true
 ...
 ```
 
@@ -57,6 +65,8 @@ Then from the root of libre-ehr-laravel, run the following to pull in the LibreE
 $ composer update
 ```
 
+Place your database credentials in the file libre-ehr-laravel/config/database.php in the mysql section
+
 Point a vhost to libre-ehr-laravel/public. 
 
 Make sure to enable mod_rewrite on Apache.
@@ -65,7 +75,7 @@ Make sure to enable mod_rewrite on Apache.
 
 To integrate with Laravel, there is a service provider you can make use of to automatically prepare the bindings and such.
 
-Add the following to the end of the "providers" array in libre-ehr-laravel/config.app
+Add the following to the end of the "providers" array in libre-ehr-laravel/config/app.php
 
 ```php
 
