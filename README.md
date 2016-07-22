@@ -22,14 +22,32 @@ Create a Laravel project
 $ composer create-project laravel/laravel libre-ehr-laravel --prefer-dist
 ```
 
-Require the fhir package which includes LibreEHR/core for as an interface to the LibreEHR database
-``` bash
-$ composer require LibreEHR/fhir
+Require the fhir package which includes LibreEHR/core for as an interface to the LibreEHR database, for now it is in development and should be grabbed by developers via github.
+
+Add the following to the root libre-ehr-laravel/composer.json after the "type"
+``` json
+...
+
+"type": "project",
+"repositories": [
+      {
+        "type": "vcs",
+        "url": "https://github.com/LibreEHR/fhir.git"
+      },
+      {
+        "type": "vcs",
+        "url": "https://github.com/LibreEHR/core.git"
+      }
+    ],
+    
+...
 ```
 
 ## Usage
 
-If you are a Laravel user, there is a service provider you can make use of to automatically prepare the bindings and such.
+To integrate with Laravel, there is a service provider you can make use of to automatically prepare the bindings and such.
+
+Add the following to the end of the "providers" array in libre-ehr-laravel/config.app
 
 ```php
 
