@@ -13,3 +13,6 @@ Route::group(['prefix' => 'fhir'], function () {
     Route::post('/', '\LibreEHR\FHIR\Http\Controllers\BundleController@store' );
 });
 
+Route::resource('document', '\LibreEHR\FHIR\Http\Controllers\DocumentController');
+
+
