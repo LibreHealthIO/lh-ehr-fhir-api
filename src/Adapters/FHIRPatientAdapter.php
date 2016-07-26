@@ -44,7 +44,8 @@ class FHIRPatientAdapter implements PatientAdapterInterface
      */
     public function retrieve( $id )
     {
-        $patientInterface = $this->repository->find( new PatientByPid( array( 'pid' => $id) ) );
+        $this->repository->finder()->pushCriteria( new ByPid( array( 'pid' => $id ) ) );
+        $patientInterface = $this->repository->find();
         return $this->interfaceToModel( $patientInterface );
     }
 
