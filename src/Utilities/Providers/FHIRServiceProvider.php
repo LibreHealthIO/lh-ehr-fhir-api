@@ -15,8 +15,10 @@ class FHIRServiceProvider extends ServiceProvider
     public function register()
     {
         // Bind the OpenEMR implementations to the interface
+
+        $this->app->bind('LibreEHR\Core\Contracts\FinderInterface', 'LibreEHR\Core\Emr\Finders\Finder');
+
         $this->app->bind('LibreEHR\Core\Contracts\PatientRepositoryInterface', 'LibreEHR\Core\Emr\Repositories\PatientRepository');
-        $this->app->bind('LibreEHR\Core\Contracts\PatientFinderInterface', 'LibreEHR\Core\Emr\Finders\PatientFinder');
         $this->app->bind('LibreEHR\Core\Contracts\PatientInterface', 'LibreEHR\Core\Emr\Eloquent\PatientData', function( $app ) {
             return new \LibreEHR\Core\Emr\Eloquent\PatientData();
         });
