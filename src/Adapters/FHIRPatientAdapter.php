@@ -9,6 +9,7 @@ use LibreEHR\Core\Contracts\PatientInterface;
 use LibreEHR\Core\Contracts\DocumentInterface;
 
 use LibreEHR\Core\Contracts\PatientRepositoryInterface;
+use LibreEHR\Core\Emr\Criteria\ByPid;
 use LibreEHR\Core\Emr\Criteria\PatientByPid;
 use PHPFHIRGenerated\FHIRDomainResource\FHIRPatient;
 use PHPFHIRGenerated\FHIRElement\FHIRCode;
@@ -44,7 +45,7 @@ class FHIRPatientAdapter implements PatientAdapterInterface
      */
     public function retrieve( $id )
     {
-        $this->repository->finder()->pushCriteria( new ByPid( array( 'pid' => $id ) ) );
+        $this->repository->finder()->pushCriteria( new ByPid( $id ) );
         $patientInterface = $this->repository->find();
         return $this->interfaceToModel( $patientInterface );
     }
@@ -82,7 +83,7 @@ class FHIRPatientAdapter implements PatientAdapterInterface
         $output = array();
         foreach ( $collection as $patient ) {
             if ( $patient instanceof PatientInterface ) {
-                $fhirPatient = $this->interfaceToOutput( $patient );
+                $fhirPatient = $this->interfaceToModel( $patient );
                 $output[]= $fhirPatient;
             }
         }
