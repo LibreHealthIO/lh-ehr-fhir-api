@@ -8,7 +8,7 @@ class BundleTest extends TestCase
     // // method (and on fresh instances) of the test case class.
     public function setUp()
     {
-
+        parent::setUp();
     }
 
     public function tearDown()

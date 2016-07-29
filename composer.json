@@ -29,6 +29,7 @@
     "autoload": {
         "psr-4": {
             "LibreEHR\\FHIR\\": "src",
+            "LibreEHR\\Core\\": "vendor/libre-ehr/core/src",
             "PHPFHIRGenerated\\": "src/PHPFHIRGenerated"
         }
     },
