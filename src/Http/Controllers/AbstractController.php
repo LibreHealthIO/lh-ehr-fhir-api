@@ -5,10 +5,16 @@ namespace LibreEHR\FHIR\Http\Controllers;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use LibreEHR\Core\Contracts\BaseAdapterInterface;
 
 class AbstractController extends Controller
 {
     protected $adapter = null;
+
+    public function __construct( BaseAdapterInterface $patientAdapter )
+    {
+        $this->adapter = $patientAdapter;
+    }
 
     /**
      * Display a listing of the resource.
