@@ -27,15 +27,8 @@ use PHPFHIRGenerated\FHIRElement\FHIRUri;
 use PHPFHIRGenerated\PHPFHIRResponseParser;
 use ArrayAccess;
 
-class FHIRPatientAdapter implements PatientAdapterInterface
+class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface, PatientAdapterInterface
 {
-    protected $repository = null;
-
-    public function __construct( PatientRepositoryInterface $repositoryInterface )
-    {
-        $this->repository = $repositoryInterface;
-    }
-
     /**
      * @param $id ID identifying resource
      * @return string
