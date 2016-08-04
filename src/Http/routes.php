@@ -6,6 +6,10 @@ Route::group(['prefix' => 'fhir'], function () {
     Route::resource('Patient', '\LibreEHR\FHIR\Http\Controllers\PatientController');
     Route::resource('Patients', '\LibreEHR\FHIR\Http\Controllers\PatientController');
 
+    Route::resource('get_schedule', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@getSchedule');
+    Route::resource('add_slot', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@addSlot');
+    Route::resource('check_status', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@checkStatus');
+
     Route::resource('conformance', '\LibreEHR\FHIR\Http\Controllers\ConformanceController');
     Route::resource('metadata', '\LibreEHR\FHIR\Http\Controllers\ConformanceController');
 
