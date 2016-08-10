@@ -24,6 +24,10 @@ class FHIRServiceProvider extends ServiceProvider
             return new \LibreEHR\Core\Emr\Eloquent\PatientData();
         });
 
+        // Set up Appointment binding
+        $this->app->bind('LibreEHR\Core\Contracts\AppointmentInterface', 'LibreEHR\Core\Emr\Eloquent\AppointmentData', function( $app ) {
+            return new \LibreEHR\Core\Emr\Eloquent\AppointmentData();
+        });
 
         // When AppointmentController needs Adapter Logic point IoC to give the FHIRAppointmentAdapter
         $this->app->when( 'LibreEHR\FHIR\Http\Controllers\AppointmentController' )

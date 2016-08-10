@@ -33,7 +33,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
 
     /**
      * @param Request $request
-     * @return FHIRPatient
+     * @return FHIRAppointment
      */
     public function store( Request $request )
     {
@@ -45,13 +45,13 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     }
 
     /**
-     * @param PatientInterface $patientInterface
-     * @return PatientInterface
+     * @param AppointmentInterface $appointmentInterface
+     * @return AppointmentInterface
      */
-    public function storeInterface( PatientInterface $patientInterface )
+    public function storeInterface( AppointmentInterface $appointmentInterface )
     {
-        $patientInterface = $this->repository->create( $patientInterface );
-        return $patientInterface;
+        $appointmentInterface = $this->repository->create( $appointmentInterface );
+        return $appointmentInterface;
     }
 
     /**
@@ -75,19 +75,22 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
 
     /**
      * @param string $data
-     * @return PatientInterface
+     * @return AppointmentInterface
      *
-     * Takes a FHIR post string and returns a PatientInterface
+     * Takes a FHIR post string and returns a AppointmentInterface
      */
     public function jsonToInterface( $data )
     {
-        $parser = new \PHPFHIRGenerated\PHPFHIRResponseParser();
-        $fhirPatient = $parser->parse( $data );
-        if ( is_a( $fhirPatient, 'FHIRPatient' ) ) {
-            return $this->modelToInterface( $fhirPatient );
+        $data_test = '{"resourceType":"Appointment","identifier":[{"use":"usual","value":1}],"start":"10:00:00","end":"10:15:00"}';
+
+        $parser = new PHPFHIRResponseParser();
+        $fhirAppointment = $parser->parse( $data_test );
+        if ( $fhirAppointment instanceof FHIRAppointment ) {
+            return $this->modelToInterface( $fhirAppointment );
         } else {
-            // Error, the Resource does not match, expecting a Patient,
+            // Error, the Resource does not match, expecting a Appointment,
             // // but got something else.
+            echo 'Error, the Resource does not match, expecting a Appointment';
         }
 
 
@@ -95,12 +98,18 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
 
     public function modelToInterface( FHIRAppointment $fhirAppointment )
     {
-        $data_zzz = '{"resourceType":"Appointment","identifier":[{"use":"usual","value":1}],"start":"10:00:00","end":"10:15:00"}';
-        $parser = new PHPFHIRResponseParser();
-        $appointment = $parser->parse($data_zzz);
-        $start = $appointment->getStart()->getValue();
+        $appointmentInterface = App::make('LibreEHR\Core\Contracts\AppointmentInterface');
+        if ($appointmentInterface instanceof AppointmentInterface) {
 
-        return $start;
+            $start = $fhirAppointment->getStart()->getValue();
+            $appointmentInterface->setStartTime( $start );
+
+            $end = $fhirAppointment->getEnd()->getValue();
+            $appointmentInterface->setEndTime( $end );
+
+        }
+
+        return $appointmentInterface;
     }
 
     /**
