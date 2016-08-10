@@ -6,6 +6,8 @@ Route::group(['prefix' => 'fhir'], function () {
     Route::resource('Patient', '\LibreEHR\FHIR\Http\Controllers\PatientController');
     Route::resource('Patients', '\LibreEHR\FHIR\Http\Controllers\PatientController');
 
+    Route::resource('Appointment', '\LibreEHR\FHIR\Http\Controllers\AppointmentController');
+
     Route::resource('conformance', '\LibreEHR\FHIR\Http\Controllers\ConformanceController');
     Route::resource('metadata', '\LibreEHR\FHIR\Http\Controllers\ConformanceController');
 
