@@ -6,7 +6,16 @@ use Illuminate\Http\Request;
 use LibreEHR\Core\Contracts\BaseAdapterInterface;
 use LibreEHR\Core\Contracts\AppointmentInterface;
 
-use PHPFHIRGenerated\FHIRDomainResource\FHIRAppointment;
+use PHPFHIRGenerated\FHIRDomainResource\FHIRSlot;
+use PHPFHIRGenerated\FHIRElement\FHIRIdentifier;
+use PHPFHIRGenerated\FHIRElement\FHIRIdentifierUse;
+use PHPFHIRGenerated\FHIRElement\FHIRString;
+use PHPFHIRGenerated\FHIRElement\FHIRInstant;
+use PHPFHIRGenerated\FHIRElement\FHIRCode;
+use PHPFHIRGenerated\FHIRElement\FHIRReference;
+//	Reference
+use PHPFHIRGenerated\PHPFHIRResponseParser;
+use Illuminate\Support\Facades\App;
 
 
 class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface
@@ -48,7 +57,16 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
      */
     public function collectionToOutput()
     {
+        $collection = $this->repository->getSlots();
+        $output = array();
+        foreach ( $collection as $slot ) {
+            if ( $slot instanceof AppointmentInterface ) {
+                $fhirSlot = $this->interfaceToModel( $slot );
+                $output[]= $fhirSlot;
+            }
+        }
 
+        return $output;
     }
 
     /**
@@ -63,8 +81,9 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
 
     }
 
-    public function modelToInterface( FHIRAppointment $fhirAppointment )
+    public function modelToInterface( AppointmentInterface $appointment  )
     {
+
 
     }
 
@@ -74,6 +93,45 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
      */
     public function interfaceToModel( AppointmentInterface $appointment )
     {
+        $fhirSlot = new FHIRSlot();
+
+        $identifier = new FHIRIdentifier();
+        $use = new FHIRIdentifierUse();
+        $use->setValue( "usual" );
+        $identifier->setUse( $use );
+        $value = new FHIRString();
+        $value->setValue( $appointment->getId() );
+        $identifier->setValue( $value );
+        $fhirSlot->addIdentifier( $identifier );
+
+        $start = new FHIRInstant();
+        $value = new FHIRString();
+        $value->setValue( $appointment->getStartTime() );
+        $start->setValue( $value );
+        $fhirSlot->setStart($start);
+
+        $end = new FHIRInstant();
+        $value = new FHIRString();
+        $value->setValue( $appointment->getEndTime() );
+        $end->setValue( $value );
+        $fhirSlot->setEnd($end);
+
+        $status = new FHIRCode();
+        $value = new FHIRString();
+        $value->setValue( 'free' );
+        $status->setValue( $value );
+        $fhirSlot->setFreeBusyType($status);
+
+        $schedule = new FHIRReference();
+        $reference 	 = new FHIRString();
+        $reference->setValue( '/fhir/Schedule' );
+        $display 	 = new FHIRString();
+        $display->setValue( 'Schedule' );
+        $schedule->setReference( $reference );
+        $schedule->setDisplay( $display );
+        $fhirSlot->setSchedule($schedule);
+
+        return $fhirSlot;
 
     }
 }

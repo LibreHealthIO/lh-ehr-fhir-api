@@ -48,7 +48,7 @@ class FHIRScheduleAdapter extends AbstractFHIRAdapter implements BaseAdapterInte
      */
     public function collectionToOutput()
     {
-
+        echo "Schedule";
     }
 
     /**

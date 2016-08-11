@@ -15,8 +15,7 @@ class AppointmentController extends AbstractController
 
     public function index()
     {
-        //return $this->appointmentAdapter->collectionToOutput();
-        $this->appointmentAdapter->jsonToInterface(1);
+        return $this->appointmentAdapter->collectionToOutput();
     }
 
 }

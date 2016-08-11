@@ -29,6 +29,26 @@ class FHIRServiceProvider extends ServiceProvider
             return new \LibreEHR\Core\Emr\Eloquent\AppointmentData();
         });
 
+        // When AppointmentController needs Adapter Logic point IoC to give the FHIRScheduleAdapter
+        $this->app->when( 'LibreEHR\FHIR\Http\Controllers\ScheduleController' )
+            ->needs( 'LibreEHR\Core\Contracts\BaseAdapterInterface' )
+            ->give( 'LibreEHR\FHIR\Adapters\FHIRScheduleAdapter' );
+
+        // When Adapter needs Repository Logic point IoC to give the AppointmentRepository
+        $this->app->when( 'LibreEHR\FHIR\Adapters\FHIRScheduleAdapter' )
+            ->needs( 'LibreEHR\Core\Contracts\RepositoryInterface' )
+            ->give( 'LibreEHR\Core\Emr\Repositories\AppointmentRepository' );
+
+        // When AppointmentController needs Adapter Logic point IoC to give the FHIRSlotAdapter
+        $this->app->when( 'LibreEHR\FHIR\Http\Controllers\SlotController' )
+            ->needs( 'LibreEHR\Core\Contracts\BaseAdapterInterface' )
+            ->give( 'LibreEHR\FHIR\Adapters\FHIRSlotAdapter' );
+
+        // When Adapter needs Repository Logic point IoC to give the AppointmentRepository
+        $this->app->when( 'LibreEHR\FHIR\Adapters\FHIRSlotAdapter' )
+            ->needs( 'LibreEHR\Core\Contracts\RepositoryInterface' )
+            ->give( 'LibreEHR\Core\Emr\Repositories\AppointmentRepository' );
+
         // When AppointmentController needs Adapter Logic point IoC to give the FHIRAppointmentAdapter
         $this->app->when( 'LibreEHR\FHIR\Http\Controllers\AppointmentController' )
             ->needs( 'LibreEHR\Core\Contracts\BaseAdapterInterface' )
