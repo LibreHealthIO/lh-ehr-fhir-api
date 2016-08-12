@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use LibreEHR\Core\Contracts\BaseAdapterInterface;
 use LibreEHR\Core\Contracts\AppointmentInterface;
 
-use PHPFHIRGenerated\FHIRDomainResource\FHIRAppointment;
+use PHPFHIRGenerated\FHIRDomainResource\FHIRSchedule;
+use PHPFHIRGenerated\FHIRElement\FHIRPeriod;
+use PHPFHIRGenerated\FHIRElement\FHIRDateTime;
 
 
 class FHIRScheduleAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface
@@ -22,6 +24,43 @@ class FHIRScheduleAdapter extends AbstractFHIRAdapter implements BaseAdapterInte
     public function retrieve( $id )
     {
 
+    }
+
+    /**
+     * @param $id ID identifying resource
+     * @return string
+     *
+     * Returns a FHIR JSON or XML string
+     * in response
+     */
+    public function getSchedule($date)
+    {
+        $weekend = array('Sat', 'Sun');
+        $schedule_start = '08';
+        $schedule_end = '17';
+
+        if(!$date) {
+            $date = date('Y-m-d');
+        }
+        $start_str = $date . ' ' . $schedule_start. ':00:00';
+        $end_str = $date . ' ' . $schedule_end. ':00:00';
+        $date_arr = explode('-', $date);
+        $mk_time = mktime(0, 0, 0, $date_arr[1], $date_arr[2], $date_arr[0]);
+        $day = date('D', $mk_time);
+
+        $fhirSchedule = new FHIRSchedule();
+        if(!in_array($day, $weekend)) {
+
+            $planningHorizon =	new FHIRPeriod();
+            $dateTimeStart = new FHIRDateTime();
+            $dateTimeStart->setValue($start_str);
+            $planningHorizon->setStart($dateTimeStart);
+            $dateTimeEnd = new FHIRDateTime();
+            $dateTimeEnd->setValue($end_str);
+            $planningHorizon->setEnd($dateTimeEnd);
+            $fhirSchedule->setPlanningHorizon($planningHorizon);
+        }
+        return $fhirSchedule;
     }
 
     /**
@@ -48,7 +87,7 @@ class FHIRScheduleAdapter extends AbstractFHIRAdapter implements BaseAdapterInte
      */
     public function collectionToOutput()
     {
-        echo "Schedule";
+
     }
 
     /**
