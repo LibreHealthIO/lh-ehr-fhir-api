@@ -12,8 +12,8 @@ class SlotController extends AbstractController
         $this->slotAdapter = $slotAdapter;
     }
 
-    public function index()
+    public function index($slotDate = null)
     {
-        return $this->slotAdapter->collectionToOutput();
+        return $this->slotAdapter->getSlots($slotDate);
     }
 }
