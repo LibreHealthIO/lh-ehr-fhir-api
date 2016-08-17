@@ -12,10 +12,38 @@ use PHPFHIRGenerated\FHIRElement\FHIRIdentifierUse;
 use PHPFHIRGenerated\FHIRElement\FHIRString;
 use PHPFHIRGenerated\FHIRElement\FHIRInstant;
 use PHPFHIRGenerated\PHPFHIRResponseParser;
+use PHPFHIRGenerated\FHIRElement\FHIRCode;
+use PHPFHIRGenerated\FHIRElement\FHIRDateTime;
+use PHPFHIRGenerated\FHIRElement\FHIRPositiveInt;
+use PHPFHIRGenerated\FHIRElement\FHIRBundleType;
 use Illuminate\Support\Facades\App;
-
 class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface
 {
+
+    /**
+     * @param string $patientID
+     * @param Request $request
+     * @return array
+     */
+    public function collectionAppointments($patientID, Request $request)
+    {
+        $data = $request->all();
+        $collection = $this->repository->getAppointmentsByParam($patientID, $data);
+
+        $output = array();
+        foreach ( $collection as $appointment ) {
+            if ( $appointment instanceof AppointmentInterface ) {
+                $fhirAppointment = $this->interfaceToModel( $appointment );
+
+
+                $output[]= $fhirAppointment;
+            }
+        }
+        $bundle = new FHIRBundleType;
+        $bundle->setValue($output);
+        //return $output;
+        return $bundle;
+    }
 
     /**
      * @param $id ID identifying resource
@@ -60,7 +88,8 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      */
     public function collectionToOutput()
     {
-        $collection = $this->repository->fetchAll();
+
+        $collection = $this->repository->getAppointmentsByParam();
         $output = array();
         foreach ( $collection as $appointment ) {
 
@@ -140,6 +169,21 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $value->setValue( $appointment->getEndTime() );
         $end->setValue( $value );
         $fhirAppointment->setEnd($end);
+
+        $status = new FHIRCode();
+        $value = new FHIRString();
+        $value->setValue( $appointment->getPcApptStatus() );
+        $status->setValue( $value );
+        $fhirAppointment->setStatus($status);
+
+        $minutesDuration = new FHIRPositiveInt();
+        $minutesDuration->setValue( $appointment->getPcDuration() );
+        $fhirAppointment->setMinutesDuration($minutesDuration);
+
+        //created
+        /*$created = new FHIRDateTime();
+        $created->setValue( $appointment->getPcTime() );
+        $fhirAppointment->set($status);*/
 
         return $fhirAppointment;
     }

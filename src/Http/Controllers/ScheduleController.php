@@ -12,9 +12,9 @@ class ScheduleController extends AbstractController
         $this->scheduleAdapter = $scheduleAdapter;
     }
 
-    public function index($date = null)
+    public function index($scheduleDate = null)
     {
-        return $this->scheduleAdapter->getSchedule($date);
+        return $this->scheduleAdapter->getSchedule($scheduleDate);
     }
 
 }
