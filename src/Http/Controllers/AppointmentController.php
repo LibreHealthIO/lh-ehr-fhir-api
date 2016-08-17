@@ -3,6 +3,7 @@
 namespace LibreEHR\FHIR\Http\Controllers;
 
 use LibreEHR\Core\Contracts\BaseAdapterInterface;
+use Illuminate\Http\Request;
 
 class AppointmentController extends AbstractController
 {
@@ -13,9 +14,9 @@ class AppointmentController extends AbstractController
         $this->appointmentAdapter = $appointmentAdapter;
     }
 
-    public function index()
+    public function index($patientID = null, Request $request = null)
     {
-        return $this->appointmentAdapter->collectionToOutput();
+        return $this->appointmentAdapter->collectionAppointments($patientID, $request);
     }
 
 }
