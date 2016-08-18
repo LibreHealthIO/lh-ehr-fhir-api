@@ -7,8 +7,8 @@ Route::group(['prefix' => 'fhir'], function () {
     Route::resource('Patients', '\LibreEHR\FHIR\Http\Controllers\PatientController');
 
     //Route::resource('Appointment', '\LibreEHR\FHIR\Http\Controllers\AppointmentController');
-    //Patient/23/Appointment?date=ge2015-01-01&date=le2016-12-31
-    Route::get('Patient/{patientID}/Appointment', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@index');
+    //Appointment?patient=1&date=ge2015-01-01&date=le2016-12-31
+    Route::get('Appointment', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@index');
 
     Route::get('Slot/{slotDate?}', '\LibreEHR\FHIR\Http\Controllers\SlotController@index');
     Route::get('Schedule/{scheduleDate?}', '\LibreEHR\FHIR\Http\Controllers\ScheduleController@index');
