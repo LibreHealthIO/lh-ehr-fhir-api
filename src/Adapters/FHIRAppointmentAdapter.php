@@ -23,35 +23,6 @@ use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleEntry;
 use Illuminate\Support\Facades\App;
 class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface
 {
-
-    /**
-     * @param string $patientID
-     * @param Request $request
-     * @return array
-     */
-    public function collectionAppointments($patientID, Request $request)
-    {
-        $data = $request->all();
-        $collection = $this->repository->getAppointmentsByParam($patientID, $data);
-
-        $output = array();
-        $bundle = new FHIRBundle;
-        foreach ( $collection as $appointment ) {
-            if ( $appointment instanceof AppointmentInterface ) {
-                $fhirAppointment = $this->interfaceToModel( $appointment );
-                $resourceContainer = new FHIRResourceContainer;
-                $resourceContainer->setAppointment($fhirAppointment);
-                $bundleEntry = new FHIRBundleEntry();
-                $bundleEntry->setResource($resourceContainer);
-                $bundle->addEntry($bundleEntry);
-
-                $output[]= $resourceContainer;
-            }
-        }
-
-        return $bundle;
-    }
-
     /**
      * @param $id ID identifying resource
      * @return string
@@ -90,23 +61,38 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     }
 
     /**
-     * @param ArrayAccess $collection
-     * @return array
+     * @param Request $request
+     * @return FHIRBundle $bundle
      */
-    public function collectionToOutput()
+    public function collectionToOutput(Request $request = null)
     {
+        $data = $request->all();
+        $collection = $this->repository->getAppointmentsByParam($data);
 
-        $collection = $this->repository->getAppointmentsByParam();
-        $output = array();
+        $bundle = new FHIRBundle;
+        $count = 0;
         foreach ( $collection as $appointment ) {
 
             if ( $appointment instanceof AppointmentInterface ) {
                 $fhirAppointment = $this->interfaceToModel( $appointment );
-                $output[]= $fhirAppointment;
+                $resourceContainer = new FHIRResourceContainer;
+                $resourceContainer->setAppointment($fhirAppointment);
+                $bundleEntry = new FHIRBundleEntry();
+                $bundleEntry->setResource($resourceContainer);
+                $bundle->addEntry($bundleEntry);
+
+                $count++;
             }
         }
+        if(empty($count)) {
+            return json_encode(
+                array(
+                    'message' => 'No appointments found for patient with id ' . $data['patient'],
+                    'status_code' => '404'
+                ));
+        }
 
-        return $output;
+        return $bundle;
     }
 
     /**
