@@ -11,11 +11,15 @@ use PHPFHIRGenerated\FHIRElement\FHIRIdentifier;
 use PHPFHIRGenerated\FHIRElement\FHIRIdentifierUse;
 use PHPFHIRGenerated\FHIRElement\FHIRString;
 use PHPFHIRGenerated\FHIRElement\FHIRInstant;
+use PHPFHIRGenerated\FHIRElement\FHIRCodeableConcept;
+
 use PHPFHIRGenerated\PHPFHIRResponseParser;
 use PHPFHIRGenerated\FHIRElement\FHIRCode;
 use PHPFHIRGenerated\FHIRElement\FHIRDateTime;
 use PHPFHIRGenerated\FHIRElement\FHIRPositiveInt;
-use PHPFHIRGenerated\FHIRElement\FHIRBundleType;
+use PHPFHIRGenerated\FHIRResource\FHIRBundle;
+use PHPFHIRGenerated\FHIRResourceContainer;
+use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleEntry;
 use Illuminate\Support\Facades\App;
 class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface
 {
@@ -31,17 +35,20 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $collection = $this->repository->getAppointmentsByParam($patientID, $data);
 
         $output = array();
+        $bundle = new FHIRBundle;
         foreach ( $collection as $appointment ) {
             if ( $appointment instanceof AppointmentInterface ) {
                 $fhirAppointment = $this->interfaceToModel( $appointment );
+                $resourceContainer = new FHIRResourceContainer;
+                $resourceContainer->setAppointment($fhirAppointment);
+                $bundleEntry = new FHIRBundleEntry();
+                $bundleEntry->setResource($resourceContainer);
+                $bundle->addEntry($bundleEntry);
 
-
-                $output[]= $fhirAppointment;
+                $output[]= $resourceContainer;
             }
         }
-        $bundle = new FHIRBundleType;
-        $bundle->setValue($output);
-        //return $output;
+
         return $bundle;
     }
 
@@ -180,10 +187,11 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $minutesDuration->setValue( $appointment->getPcDuration() );
         $fhirAppointment->setMinutesDuration($minutesDuration);
 
-        //created
-        /*$created = new FHIRDateTime();
-        $created->setValue( $appointment->getPcTime() );
-        $fhirAppointment->set($status);*/
+        $serviceCategory = new FHIRCodeableConcept;
+        $value = new FHIRString();
+        $value->setValue( $appointment->getServiceType()  );
+        $serviceCategory->setText($value);
+        $fhirAppointment->setType($serviceCategory);
 
         return $fhirAppointment;
     }
