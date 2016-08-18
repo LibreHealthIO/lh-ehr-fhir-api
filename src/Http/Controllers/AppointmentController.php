@@ -14,9 +14,9 @@ class AppointmentController extends AbstractController
         $this->appointmentAdapter = $appointmentAdapter;
     }
 
-    public function index($patientID = null, Request $request = null)
+    public function index(Request $request = null)
     {
-        return $this->appointmentAdapter->collectionAppointments($patientID, $request);
+        return $this->appointmentAdapter->collectionToOutput($request);
     }
 
 }
