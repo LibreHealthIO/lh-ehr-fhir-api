@@ -41,8 +41,40 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      * @param Request $request
      * @return FHIRAppointment
      */
+    public function updateStatus( Request $request )
+    {
+
+        $data = $request->all();
+        if(!isset($data['status']) || !isset($data['id'])) {
+            return json_encode(array('error' => 'no arguments'));
+        }
+        // TODO add validation
+        $storedInterface = $this->requestToInterface( $data );
+
+        return $this->interfaceToModel( $storedInterface );
+    }
+
+    /**
+     * @param string $data
+     * @return AppointmentInterface
+     *
+     * Takes a FHIR post string and returns a AppointmentInterface
+     */
+    public function requestToInterface( $data )
+    {
+
+        $appointmentInterface = $this->repository->update($data['id'], $data['status']);
+
+        return $appointmentInterface;
+    }
+
+    /**
+     * @param Request $request
+     * @return FHIRAppointment
+     */
     public function store( Request $request )
     {
+
         // TODO add validation
         $data = $request->getContent();
         $interface = $this->jsonToInterface( $data );
@@ -114,8 +146,6 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
             // // but got something else.
             echo 'Error, the Resource does not match, expecting a Appointment';
         }
-
-
     }
 
     public function modelToInterface( FHIRAppointment $fhirAppointment )
