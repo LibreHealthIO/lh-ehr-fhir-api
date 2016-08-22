@@ -248,11 +248,11 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $extension->setUrl('[base]/extension/vidyo-portal-data');
         $extension1->setUrl('#portal-uri');
         $value = new FHIRString();
-        $value->setValue('[portal-uri]');
+        $value->setValue('https://vircon.vu2vu.com');
         $extension1->setValueString($value);
         $extension2->setUrl('#room-key');
         $value = new FHIRString();
-        $value->setValue('[room-key]');
+        $value->setValue('83mncNGYckBSS612N28eYsNfdQ');
         $extension2->setValueString($value);
         $extension3->setUrl('#pin');
         $value = new FHIRString();
@@ -266,7 +266,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $value = new FHIRString();
         $value->setValue('Discussion on the results of your recent MRI');
         $fhirAppointment->setDescription($value);
-        
+
         return $fhirAppointment;
     }
 }
