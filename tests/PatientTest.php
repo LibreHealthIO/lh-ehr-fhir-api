@@ -30,11 +30,27 @@ class PatientTest extends TestCase
         echo $response;
     }
 
-    public function testBasicExample()
+    public function testCreatePatient()
     {
-        $this->post('/fhir/patient', ['dateOfBirth' => '1980-10-10'] )
-            ->seeJson([
-                'created' => true,
-            ]);
+        $faker = new Faker\Generator();
+        $this->post('/fhir/patient', [
+
+                'first_name'  => $faker->name,
+                'last_name'   => $faker->lastName,
+                'email'       => $faker->email,
+                'dateOfBirth' => $faker->unique()->dateTimeBetween($startDate = "-20 years", $endDate = "10 years")->format('Y-m-d'),
+                'gender'      => 'Male',
+                'phone'       => $faker->phoneNumber,
+            ]
+        )
+            ->seeJsonStructure([
+                    "resourceType",
+                    "identifier",
+                    "name",
+                    "telecom",
+                    "gender",
+                    "birthDate",
+                ]
+            );
     }
 }
