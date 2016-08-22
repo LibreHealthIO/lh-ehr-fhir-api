@@ -3,6 +3,7 @@
 namespace LibreEHR\FHIR\Adapters;
 
 use Illuminate\Http\Request;
+
 use LibreEHR\Core\Contracts\BaseAdapterInterface;
 use LibreEHR\Core\Contracts\AppointmentInterface;
 use LibreEHR\Core\Emr\Criteria\ByPid;
@@ -12,14 +13,19 @@ use PHPFHIRGenerated\FHIRElement\FHIRIdentifierUse;
 use PHPFHIRGenerated\FHIRElement\FHIRString;
 use PHPFHIRGenerated\FHIRElement\FHIRInstant;
 use PHPFHIRGenerated\FHIRElement\FHIRCodeableConcept;
-
+use PHPFHIRGenerated\FHIRElement\FHIRMeta;
 use PHPFHIRGenerated\PHPFHIRResponseParser;
 use PHPFHIRGenerated\FHIRElement\FHIRCode;
-use PHPFHIRGenerated\FHIRElement\FHIRDateTime;
+use PHPFHIRGenerated\FHIRElement\FHIRExtension;
+use PHPFHIRGenerated\FHIRElement\FHIRUnsignedInt;
 use PHPFHIRGenerated\FHIRElement\FHIRPositiveInt;
+use PHPFHIRGenerated\FHIRElement\FHIRUri;
+use PHPFHIRGenerated\FHIRElement\FHIRId;
 use PHPFHIRGenerated\FHIRResource\FHIRBundle;
 use PHPFHIRGenerated\FHIRResourceContainer;
 use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleEntry;
+use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleLink;
+use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleResponse;
 use Illuminate\Support\Facades\App;
 class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface
 {
@@ -110,7 +116,18 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                 $resourceContainer = new FHIRResourceContainer;
                 $resourceContainer->setAppointment($fhirAppointment);
                 $bundleEntry = new FHIRBundleEntry();
+                $fullUrl = new FHIRUri();
+                $fullUrl->setValue('[base]/Appointment/1');
+                $bundleEntry->setFullUrl($fullUrl);
                 $bundleEntry->setResource($resourceContainer);
+                $response = new FHIRBundleResponse;
+                $location = new FHIRUri;
+                $location->setValue('Appointment/15/_history/1');
+                $response->setLocation($location);
+                $lastModified = new FHIRInstant();
+                $lastModified->setValue('2013-12-10T09:00:00Z');
+                $response->setLastModified($lastModified);
+                $bundleEntry->setResponse($response);
                 $bundle->addEntry($bundleEntry);
 
                 $count++;
@@ -124,8 +141,38 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                 ));
         }
 
+        $meta = new FHIRMeta;
+        $lastUpdated = new FHIRInstant();
+        $lastUpdated->setValue('2016-08-17T19:08:01.483-04:00');
+        $meta->setLastUpdated($lastUpdated);
+        $bundle->setMeta($meta);
+
+        $id = new FHIRId;
+        $id->setValue('e7bfd2eb-8cca-49fd-965b-c48bce1f1894');
+        $bundle->setId($id);
+
+        $link = new FHIRBundleLink;
+        $relation = new FHIRString;
+        $relation->setValue('self');
+        $link->relation = $relation;
+        $fullUrl = $request->fullUrl();
+        $url = new FHIRUri;
+        $url->setValue($fullUrl);
+        $link->url = $url;
+        $bundle->addLink($link);
+
+        $total = new FHIRUnsignedInt;
+        $total->setValue($count);
+        $bundle->total = $total;
+
+        $type = new FHIRCode;
+        $type->setValue('searchset');
+        $bundle->type = $type;
+
+
         return $bundle;
     }
+
 
     /**
      * @param string $data
@@ -172,14 +219,9 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     {
         $fhirAppointment = new FHIRAppointment();
 
-        $identifier = new FHIRIdentifier();
-        $use = new FHIRIdentifierUse();
-        $use->setValue( "usual" );
-        $identifier->setUse( $use );
-        $value = new FHIRString();
-        $value->setValue( $appointment->getId() );
-        $identifier->setValue( $value );
-        $fhirAppointment->addIdentifier( $identifier );
+        $id = new FHIRId;
+        $id->setValue($appointment->getId());
+        $fhirAppointment->setId($id);
 
         $start = new FHIRInstant();
         $value = new FHIRString();
@@ -195,20 +237,36 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
 
         $status = new FHIRCode();
         $value = new FHIRString();
-        $value->setValue( $appointment->getPcApptStatus() );
+        $value->setValue( 'booked' );
         $status->setValue( $value );
         $fhirAppointment->setStatus($status);
 
-        $minutesDuration = new FHIRPositiveInt();
-        $minutesDuration->setValue( $appointment->getPcDuration() );
-        $fhirAppointment->setMinutesDuration($minutesDuration);
-
-        $serviceCategory = new FHIRCodeableConcept;
+        $extension = new FHIRExtension;
+        $extension1 = new FHIRExtension;
+        $extension2 = new FHIRExtension;
+        $extension3 = new FHIRExtension;
+        $extension->setUrl('[base]/extension/vidyo-portal-data');
+        $extension1->setUrl('#portal-uri');
         $value = new FHIRString();
-        $value->setValue( $appointment->getServiceType()  );
-        $serviceCategory->setText($value);
-        $fhirAppointment->setType($serviceCategory);
+        $value->setValue('[portal-uri]');
+        $extension1->setValueString($value);
+        $extension2->setUrl('#room-key');
+        $value = new FHIRString();
+        $value->setValue('[room-key]');
+        $extension2->setValueString($value);
+        $extension3->setUrl('#pin');
+        $value = new FHIRString();
+        $value->setValue('1234');
+        $extension3->setValueString($value);
+        $extension->addExtension($extension1);
+        $extension->addExtension($extension2);
+        $extension->addExtension($extension3);
+        $fhirAppointment->addExtension($extension);
 
+        $value = new FHIRString();
+        $value->setValue('Discussion on the results of your recent MRI');
+        $fhirAppointment->setDescription($value);
+        
         return $fhirAppointment;
     }
 }
