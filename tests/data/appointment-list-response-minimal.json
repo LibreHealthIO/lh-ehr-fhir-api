@@ -42,7 +42,7 @@
         ],
         "description": "Discussion on the results of your recent MRI",
         "start": "2013-12-10T09:00:00Z",
-        "end": "2013-12-10T11:00:00Z",
+        "end": "2013-12-10T11:00:00Z"
       },
       "response": {
         "location": "Appointment/15/_history/1",
