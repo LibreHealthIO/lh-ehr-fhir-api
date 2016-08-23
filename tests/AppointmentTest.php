@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Response;
 
-class PatientTest extends TestCase
+class AppointmentTest extends TestCase
 {
     // The setUp() and tearDown() template methods are run once for each test
     // // method (and on fresh instances) of the test case class.
@@ -19,9 +19,9 @@ class PatientTest extends TestCase
     public function testJsonPost()
     {
         $path = __DIR__."/data";
-        $data = file_get_contents( "$path/everywoman_simple_create.json");
+        $data = file_get_contents( "$path/appointment-list-response-minimal.json");
         $response = $this->call( 'POST',
-            '/fhir/Patient',
+            '/fhir/Appointment',
             [],
             [],
             [],
@@ -30,13 +30,25 @@ class PatientTest extends TestCase
         echo $response;
     }
 
-    public function testCreatePatient()
+    public function testGetAllPatientAppointments()
+    {
+        $this->get('/fhir/Appointment?patient=1')
+            ->seeJsonStructure([
+                "resourceType",
+                "id",
+                "meta",
+                "type",
+                "total",
+                "link",
+                "entry"
+            ]);
+    }
+
+    public function testCreateAppointment()
     {
         $path = __DIR__."/data";
-        $json =  file_get_contents( "$path/everywoman_simple_create.json");
-        $jsonDecode = json_decode($json, true);
-
-        $this->json('POST', '/fhir/Patient', $jsonDecode)
+        $data =  file_get_contents( "$path/appointment_create.json");
+        $this->json('POST', '/fhir/Appointment', $data)
             ->seeJsonStructure([
                     "resourceType",
                     "identifier",
@@ -46,5 +58,9 @@ class PatientTest extends TestCase
                     "birthDate",
                 ]
             );
+        
+        
+    
     }
+
 }
