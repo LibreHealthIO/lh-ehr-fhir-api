@@ -19,6 +19,11 @@ class AppointmentController extends AbstractController
         return $this->appointmentAdapter->collectionToOutput($request);
     }
 
+    public function post(Request $request)
+    {
+        return $this->appointmentAdapter->store($request);
+    }
+    
     public function put(Request $request)
     {
         return $this->appointmentAdapter->updateStatus($request);

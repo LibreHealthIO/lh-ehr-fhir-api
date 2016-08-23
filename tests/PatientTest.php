@@ -32,17 +32,11 @@ class PatientTest extends TestCase
 
     public function testCreatePatient()
     {
-        $faker = new Faker\Generator();
-        $this->post('/fhir/patient', [
+        $path = __DIR__."/data";
+        $json =  file_get_contents( "$path/everywoman_simple_create.json");
+        $jsonDecode = json_decode($json, true);
 
-                'first_name'  => $faker->name,
-                'last_name'   => $faker->lastName,
-                'email'       => $faker->email,
-                'dateOfBirth' => $faker->unique()->dateTimeBetween($startDate = "-20 years", $endDate = "10 years")->format('Y-m-d'),
-                'gender'      => 'Male',
-                'phone'       => $faker->phoneNumber,
-            ]
-        )
+        $this->json('POST', '/fhir/Patient', $jsonDecode)
             ->seeJsonStructure([
                     "resourceType",
                     "identifier",
