@@ -1,0 +1,53 @@
+// Minimal response from a request like [base]/Appointment?patient=[patient-id]
+
+{
+  "resourceType": "Bundle",
+  "id": "e7bfd2eb-8cca-49fd-965b-c48bce1f1894",
+  "meta": {
+    "lastUpdated": "2016-08-17T19:08:01.483-04:00"
+  },
+  "type": "searchset",
+  "total": 1,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://fhirtest.uhn.ca/baseDstu2/Appointment?patient=107195"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "[base]/Appointment/1",
+      "resource": {
+        "resourceType": "Appointment",
+        "id": "example",
+        "status": "booked",
+        "extension": [
+          {
+            "url": "[base]/extension/vidyo-portal-data",
+            "extension": [
+              {
+                "url": "#portal-uri",
+                "valueString": "[portal-uri]"
+              },
+              {
+                "url": "#room-key",
+                "valueString": "[room-key]"
+              },
+              {
+                "url": "#pin",
+                "valueString": "1234"
+              }
+            ]
+          }
+        ],
+        "description": "Discussion on the results of your recent MRI",
+        "start": "2013-12-10T09:00:00Z",
+        "end": "2013-12-10T11:00:00Z"
+      },
+      "response": {
+        "location": "Appointment/15/_history/1",
+        "lastModified": "2016-05-05T01:43:33Z"
+      }
+    }
+  ]
+}

@@ -8,6 +8,7 @@ use LibreEHR\Core\Contracts\PatientAdapterInterface;
 use LibreEHR\Core\Contracts\PatientInterface;
 use LibreEHR\Core\Contracts\DocumentInterface;
 
+use LibreEHR\Core\Contracts\BaseAdapterInterface;
 use LibreEHR\Core\Contracts\PatientRepositoryInterface;
 use LibreEHR\Core\Emr\Criteria\ByPid;
 use LibreEHR\Core\Emr\Criteria\PatientByPid;
