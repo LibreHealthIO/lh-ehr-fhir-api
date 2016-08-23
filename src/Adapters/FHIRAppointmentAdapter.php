@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use LibreEHR\Core\Contracts\BaseAdapterInterface;
 use LibreEHR\Core\Contracts\AppointmentInterface;
 use LibreEHR\Core\Emr\Criteria\ByPid;
+use LibreEHR\FHIR\Utilities\UUIDClass;
 use PHPFHIRGenerated\FHIRDomainResource\FHIRAppointment;
 use PHPFHIRGenerated\FHIRElement\FHIRIdentifier;
 use PHPFHIRGenerated\FHIRElement\FHIRIdentifierUse;
@@ -108,6 +109,8 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $collection = $this->repository->getAppointmentsByParam($data);
 
         $bundle = new FHIRBundle;
+        $bundleId = UUIDClass::v4();
+        $currentDate = date('Y-m-d H:i:s');
         $count = 0;
         foreach ( $collection as $appointment ) {
 
@@ -117,7 +120,8 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                 $resourceContainer->setAppointment($fhirAppointment);
                 $bundleEntry = new FHIRBundleEntry();
                 $fullUrl = new FHIRUri();
-                $fullUrl->setValue('[base]/Appointment/1');
+                $appointmentUrl = $request->url() . '/' . $bundleId;
+                $fullUrl->setValue($appointmentUrl);
                 $bundleEntry->setFullUrl($fullUrl);
                 $bundleEntry->setResource($resourceContainer);
                 $response = new FHIRBundleResponse;
@@ -125,7 +129,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                 $location->setValue('Appointment/15/_history/1');
                 $response->setLocation($location);
                 $lastModified = new FHIRInstant();
-                $lastModified->setValue('2013-12-10T09:00:00Z');
+                $lastModified->setValue($currentDate);
                 $response->setLastModified($lastModified);
                 $bundleEntry->setResponse($response);
                 $bundle->addEntry($bundleEntry);
@@ -143,12 +147,12 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
 
         $meta = new FHIRMeta;
         $lastUpdated = new FHIRInstant();
-        $lastUpdated->setValue('2016-08-17T19:08:01.483-04:00');
+        $lastUpdated->setValue($currentDate);
         $meta->setLastUpdated($lastUpdated);
         $bundle->setMeta($meta);
 
         $id = new FHIRId;
-        $id->setValue('e7bfd2eb-8cca-49fd-965b-c48bce1f1894');
+        $id->setValue($bundleId);
         $bundle->setId($id);
 
         $link = new FHIRBundleLink;
@@ -237,7 +241,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
 
         $status = new FHIRCode();
         $value = new FHIRString();
-        $value->setValue( 'booked' );
+        $value->setValue( $appointment->getPcApptStatus() );
         $status->setValue( $value );
         $fhirAppointment->setStatus($status);
 
@@ -263,8 +267,9 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $extension->addExtension($extension3);
         $fhirAppointment->addExtension($extension);
 
+        //$description
         $value = new FHIRString();
-        $value->setValue('Discussion on the results of your recent MRI');
+        $value->setValue($appointment->getDescription());
         $fhirAppointment->setDescription($value);
 
         return $fhirAppointment;
