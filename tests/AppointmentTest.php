@@ -35,51 +35,32 @@ class AppointmentTest extends TestCase
         $this->get('/fhir/Appointment?patient=1')
             ->seeJsonStructure([
                 "resourceType",
-                "entry" => [
-                    [
-                        "resource" => [
-                            "resourceType",
-                            "identifier",
-                            "status",
-                            "type" ,
-                            "start",
-                            "end",
-                            "minutesDuration",
-                        ],
-                    ],
-                ]
+                "id",
+                "meta",
+                "type",
+                "total",
+                "link",
+                "entry"
             ]);
     }
 
     public function testCreateAppointment()
     {
-        $faker = new Faker\Generator();
-        $this->post('/fhir/Appointment',
-            [
-                "status" => "Chart-pulled",
-                "type"   => "Office Visit",
-                "start"  => $faker->unique()->dateTimeBetween($startDate = "now", $endDate = "10 days")->format('Y-m-d'),
-                "end"    => $faker->unique()->dateTimeBetween($startDate = "now", $endDate = "10 days")->format('Y-m-d'),
-                "minutesDuration" => 900,
-            ]
-        )
+        $path = __DIR__."/data";
+        $data =  file_get_contents( "$path/appointment_create.json");
+        $this->json('POST', '/fhir/Appointment', $data)
             ->seeJsonStructure([
                     "resourceType",
-                    "entry" => [
-                        [
-                            "resource" => [
-                                "resourceType",
-                                "identifier",
-                                "status",
-                                "type" ,
-                                "start",
-                                "end",
-                                "minutesDuration",
-                            ],
-                        ],
-                    ]
+                    "identifier",
+                    "name",
+                    "telecom",
+                    "gender",
+                    "birthDate",
                 ]
             );
+        
+        
+    
     }
 
 }

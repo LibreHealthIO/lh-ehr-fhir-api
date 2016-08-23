@@ -16,6 +16,11 @@ class PatientController extends AbstractController
         $this->patientAdapter = $patientAdapter;
     }
 
+    public function index(Request $request = null)
+    {
+        return $this->patientAdapter->collectionToOutput($request);
+    }
+
     public function post(Request $request)
     {
         return $this->patientAdapter->store($request);
