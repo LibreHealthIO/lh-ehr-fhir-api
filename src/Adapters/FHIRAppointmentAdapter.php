@@ -3,7 +3,6 @@
 namespace LibreEHR\FHIR\Adapters;
 
 use Illuminate\Http\Request;
-
 use LibreEHR\Core\Contracts\BaseAdapterInterface;
 use LibreEHR\Core\Contracts\AppointmentInterface;
 use LibreEHR\Core\Emr\Criteria\ByPid;
@@ -27,7 +26,8 @@ use PHPFHIRGenerated\FHIRResourceContainer;
 use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleEntry;
 use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleLink;
 use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleResponse;
-use Illuminate\Support\Facades\App;
+use LibreEHR\FHIR\Utilities\Exceptions\FhirException;
+
 class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface
 {
     /**
@@ -105,77 +105,92 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      */
     public function collectionToOutput(Request $request = null)
     {
-        $data = $request->all();
-        $data = $this->parseUrl($request->server->get('QUERY_STRING'));
-        $collection = $this->repository->getAppointmentsByParam($data);
 
-        $bundle = new FHIRBundle;
-        $bundleId = UUIDClass::v4();
-        $currentDate = date('Y-m-d H:i:s');
-        $count = 0;
-        foreach ( $collection as $appointment ) {
-
-            if ( $appointment instanceof AppointmentInterface ) {
-                $fhirAppointment = $this->interfaceToModel( $appointment );
-                $resourceContainer = new FHIRResourceContainer;
-                $resourceContainer->setAppointment($fhirAppointment);
-                $bundleEntry = new FHIRBundleEntry();
-                $fullUrl = new FHIRUri();
-                $appointmentUrl = $request->url() . '/' . $bundleId;
-                $fullUrl->setValue($appointmentUrl);
-                $bundleEntry->setFullUrl($fullUrl);
-                $bundleEntry->setResource($resourceContainer);
-                $response = new FHIRBundleResponse;
-                $location = new FHIRUri;
-                $location->setValue('Appointment/15/_history/1');
-                $response->setLocation($location);
-                $lastModified = new FHIRInstant();
-                $lastModified->setValue($currentDate);
-                $response->setLastModified($lastModified);
-                $bundleEntry->setResponse($response);
-                $bundle->addEntry($bundleEntry);
-
-                $count++;
+        try {
+            $data = $this->parseUrl($request->server->get('QUERY_STRING'));
+            if (!isset($data['patient'])) {
+                $args = array(
+                    'severity'=> 'error',
+                    'code'=> 'processing',
+                    'diagnostics'=> 'Invalid request: Parameter patient is undefined',
+                    'status'=> 'generated',
+                    'div'=> '<div xmlns=\"http://www.w3.org/1999/xhtml\"><h1>Operation Outcome</h1><table border=\"0\"><tr><td style=\"font-weight: bold;\">error</td><td>[]</td><td><pre>Invalid request: Parameter patient is undefined</pre></td>\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t</tr>\n\t\t</table>\n\t</div>'
+                );
+                throw new FhirException($args);
             }
+            $collection = $this->repository->getAppointmentsByParam($data);
+
+            $bundle = new FHIRBundle;
+            $bundleId = UUIDClass::v4();
+            $currentDate = date('Y-m-d H:i:s');
+            $count = 0;
+            foreach ($collection as $appointment) {
+                if ($appointment instanceof AppointmentInterface) {
+                    $fhirAppointment = $this->interfaceToModel($appointment);
+                    $resourceContainer = new FHIRResourceContainer;
+                    $resourceContainer->setAppointment($fhirAppointment);
+                    $bundleEntry = new FHIRBundleEntry();
+                    $fullUrl = new FHIRUri();
+                    $appointmentUrl = $request->url() . '/' . $bundleId;
+                    $fullUrl->setValue($appointmentUrl);
+                    $bundleEntry->setFullUrl($fullUrl);
+                    $bundleEntry->setResource($resourceContainer);
+                    $response = new FHIRBundleResponse;
+                    $location = new FHIRUri;
+                    $location->setValue('Appointment/15/_history/1');
+                    $response->setLocation($location);
+                    $lastModified = new FHIRInstant();
+                    $lastModified->setValue($currentDate);
+                    $response->setLastModified($lastModified);
+                    $bundleEntry->setResponse($response);
+                    $bundle->addEntry($bundleEntry);
+
+                    $count++;
+                }
+            }
+            if (empty($count)) {
+                $args = array(
+                    'severity'=> 'error',
+                    'code'=> 'processing',
+                    'diagnostics'=> 'Empty results: not found',
+                    'status'=> 'generated',
+                    'div'=> '<div xmlns=\"http://www.w3.org/1999/xhtml\"><h1>Operation Outcome</h1><table border=\"0\"><tr><td style=\"font-weight: bold;\">error</td><td>[]</td><td><pre>Empty results: not found</pre></td>\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t</tr>\n\t\t</table>\n\t</div>'
+                );
+
+                throw new FhirException($args);
+            }
+
+            $meta = new FHIRMeta;
+            $lastUpdated = new FHIRInstant();
+            $lastUpdated->setValue($currentDate);
+            $meta->setLastUpdated($lastUpdated);
+            $bundle->setMeta($meta);
+
+            $id = new FHIRId;
+            $id->setValue($bundleId);
+            $bundle->setId($id);
+
+            $link = new FHIRBundleLink;
+            $relation = new FHIRString;
+            $relation->setValue('self');
+            $link->relation = $relation;
+            $fullUrl = $request->fullUrl();
+            $url = new FHIRUri;
+            $url->setValue($fullUrl);
+            $link->url = $url;
+            $bundle->addLink($link);
+
+            $total = new FHIRUnsignedInt;
+            $total->setValue($count);
+            $bundle->total = $total;
+
+            $type = new FHIRCode;
+            $type->setValue('searchset');
+            $bundle->type = $type;
+            return $bundle;
+        } catch (FhirException $e) {
+            return $e->OperationOutcome;
         }
-        if(empty($count)) {
-            return json_encode(
-                array(
-                    'message' => 'No appointments found for patient with id ' . $data['patient'],
-                    'status_code' => '404'
-                ));
-        }
-
-        $meta = new FHIRMeta;
-        $lastUpdated = new FHIRInstant();
-        $lastUpdated->setValue($currentDate);
-        $meta->setLastUpdated($lastUpdated);
-        $bundle->setMeta($meta);
-
-        $id = new FHIRId;
-        $id->setValue($bundleId);
-        $bundle->setId($id);
-
-        $link = new FHIRBundleLink;
-        $relation = new FHIRString;
-        $relation->setValue('self');
-        $link->relation = $relation;
-        $fullUrl = $request->fullUrl();
-        $url = new FHIRUri;
-        $url->setValue($fullUrl);
-        $link->url = $url;
-        $bundle->addLink($link);
-
-        $total = new FHIRUnsignedInt;
-        $total->setValue($count);
-        $bundle->total = $total;
-
-        $type = new FHIRCode;
-        $type->setValue('searchset');
-        $bundle->type = $type;
-
-
-        return $bundle;
     }
 
 
