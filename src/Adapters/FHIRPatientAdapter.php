@@ -86,6 +86,21 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
     }
 
     /**
+     * @param $id
+     * @return array
+     */
+    public function showPatient($id)
+    {
+        $patient = $this->repository->get($id);
+        if (!empty($patient)) {
+            return  $this->interfaceToModel( $patient );
+        } else {
+            abort(404, 'No Patient with id = ' . $id. ' found');
+        }
+    }
+
+
+    /**
      * @param string $data
      * @return PatientInterface
      *
@@ -100,7 +115,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         } else {
             // Error, the Resource does not match, expecting a Patient,
             // // but got something else.
-            App::abort(403, 'Error, the Resource does not match, expecting a Patient, but got "' . typeOf($fhirPatient). '"');
+            abort(403, 'Error, the Resource does not match, expecting a Patient, but got "' . typeOf($fhirPatient). '"');
         }
 
     }
