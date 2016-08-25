@@ -19,52 +19,36 @@ class FhirException extends Exception
     protected $div;
     public $OperationOutcome;
 
-    public function __construct()
+    public function __construct($args = array())
     {
-        $this->create(func_get_args());
-        $this->createOperationOutcome();
-
+        $this->createOperationOutcome($args);
     }
 
-    protected function create(array $args)
-    {
-        $this->id = array_shift($args);
-        $error = $this->errors($this->id);
-        $this->details = vsprintf($error['context'], $args);
-        $this->div = vsprintf($error['div'], $args);
-        return $this->details;
-    }
+    public function createOperationOutcome(array $args) {
 
-    private function errors($id)
-    {
-        $request = new Request;
-        $request->
-        $data= [
-            '404' => [
-                'context'  => 'Invalid request: The FHIR endpoint on this server does not know how to handle GET operation[Patient/107195/Appointment] with parameters [[]]',
-                'div' => '<div xmlns=\"http://www.w3.org/1999/xhtml\"><h1>Operation Outcome</h1><table border=\"0\"><tr><td style=\"font-weight: bold;\">error</td><td>[]</td><td><pre>Invalid request: The FHIR endpoint on this server does not know how to handle GET operation[Patient/107195/Appointment] with parameters [[]]</pre></td>\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t</tr>\n\t\t</table>\n\t</div>'
-            ]
-        ];
-        return $data[$id];
-    }
-    public function createOperationOutcome() {
+        $severityValue = isset($args['severity']) ? $args['severity'] : '';
+        $codeValue = isset($args['code']) ? $args['code'] : '';
+        $diagnosticsValue = isset($args['diagnostics']) ? $args['diagnostics'] : '';
+        $statusValue = isset($args['status']) ? $args['status'] : '';
+        $divValue = isset($args['div']) ? $args['div'] : '';
+
         $operationOutcome = new FHIROperationOutcome;
         $issue = new FHIROperationOutcomeIssue;
         $severity = new FHIRIssueSeverity;
-        $severity->setValue('error');
+        $severity->setValue($severityValue);
         $issue->setSeverity($severity);
         $code = new FHIRIssueType;
-        $code->setValue('processing');
+        $code->setValue($codeValue);
         $issue->setCode($code);
         $diagnostics = new FHIRString;
-        $diagnostics->setValue($this->details);
+        $diagnostics->setValue($diagnosticsValue);
         $issue->setDiagnostics($diagnostics);
         $operationOutcome->addIssue($issue);
         $text = new FHIRNarrative;
         $status = new FHIRNarrativeStatus;
-        $status->setValue('generated');
+        $status->setValue($statusValue);
         $text->setStatus($status);
-        $text->setDiv($this->div);
+        $text->setDiv($divValue);
         $operationOutcome->setText($text);
         $this->OperationOutcome = $operationOutcome;
     }
