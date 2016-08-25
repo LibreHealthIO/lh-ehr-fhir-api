@@ -21,6 +21,11 @@ class PatientController extends AbstractController
         return $this->patientAdapter->collectionToOutput($request);
     }
 
+    public function show($id = null)
+    {
+        return $this->patientAdapter->showPatient($id);
+    }
+
     public function post(Request $request)
     {
         return $this->patientAdapter->store($request);
