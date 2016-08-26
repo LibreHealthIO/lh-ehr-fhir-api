@@ -47,15 +47,16 @@ class AppointmentTest extends TestCase
     public function testCreateAppointment()
     {
         $path = __DIR__."/data";
-        $data =  file_get_contents( "$path/appointment_create.json");
+        $data =  json_decode(file_get_contents( "$path/appointment_create.json"), true);
         $this->json('POST', '/fhir/Appointment', $data)
             ->seeJsonStructure([
+                    "id",
                     "resourceType",
-                    "identifier",
-                    "name",
-                    "telecom",
-                    "gender",
-                    "birthDate",
+                    "extension",
+                    "status",
+                    "description",
+                    "start",
+                    "end",
                 ]
             );
         

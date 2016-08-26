@@ -47,4 +47,22 @@ class PatientTest extends TestCase
                 ]
             );
     }
+
+    public function testUpdatePatient()
+    {
+        $path = __DIR__."/data";
+        $json =  file_get_contents( "$path/everywoman_simple_create.json");
+        $jsonDecode = json_decode($json, true);
+
+        $this->json('POST', '/fhir/Patient', $jsonDecode)
+            ->seeJsonStructure([
+                    "resourceType",
+                    "identifier",
+                    "name",
+                    "telecom",
+                    "gender",
+                    "birthDate",
+                ]
+            );
+    }
 }
