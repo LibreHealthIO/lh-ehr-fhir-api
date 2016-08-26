@@ -3,6 +3,7 @@
 namespace LibreEHR\FHIR\Adapters;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use LibreEHR\Core\Contracts\BaseAdapterInterface;
 use LibreEHR\Core\Contracts\AppointmentInterface;
 use LibreEHR\Core\Emr\Criteria\ByPid;
@@ -105,7 +106,6 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      */
     public function collectionToOutput(Request $request = null)
     {
-
         try {
             $data = $this->parseUrl($request->server->get('QUERY_STRING'));
             if (!isset($data['patient'])) {
@@ -149,6 +149,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                 }
             }
             if (empty($count)) {
+
                 $args = array(
                     'severity'=> 'error',
                     'code'=> 'processing',
@@ -235,7 +236,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      * @param AppointmentInterface $appointment
      * @return FHIRAppointment
      */
-    public function interfaceToModel( AppointmentInterface $appointment )
+    public function interfaceToModel(AppointmentInterface $appointment)
     {
         $fhirAppointment = new FHIRAppointment();
 
@@ -245,19 +246,19 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
 
         $start = new FHIRInstant();
         $value = new FHIRString();
-        $value->setValue( $appointment->getStartTime() );
+        $value->setValue($appointment->getStartTime());
         $start->setValue( $value );
         $fhirAppointment->setStart($start);
 
         $end = new FHIRInstant();
         $value = new FHIRString();
-        $value->setValue( $appointment->getEndTime() );
+        $value->setValue($appointment->getEndTime());
         $end->setValue( $value );
         $fhirAppointment->setEnd($end);
 
         $status = new FHIRCode();
         $value = new FHIRString();
-        $value->setValue( $appointment->getPcApptStatus() );
+        $value->setValue($appointment->getPcApptStatus());
         $status->setValue( $value );
         $fhirAppointment->setStatus($status);
 
@@ -265,7 +266,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $extension1 = new FHIRExtension;
         $extension2 = new FHIRExtension;
         $extension3 = new FHIRExtension;
-        $extension->setUrl('[base]/extension/vidyo-portal-data');
+        $extension->setUrl(url('/') . '/extension/vidyo-portal-data');
         $extension1->setUrl('#portal-uri');
         $value = new FHIRString();
         $value->setValue('https://vircon.vu2vu.com');
