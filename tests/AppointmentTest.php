@@ -34,9 +34,9 @@ class AppointmentTest extends TestCase
     {
         $this->get('/fhir/Appointment?patient=1')
             ->seeJsonStructure([
-                "resourceType",
                 "id",
                 "meta",
+                "resourceType",
                 "type",
                 "total",
                 "link",
@@ -59,9 +59,63 @@ class AppointmentTest extends TestCase
                     "end",
                 ]
             );
-        
-        
-    
+
+
+
     }
 
+    /**
+     * Test checks functionality for getting appointments by EQUAL date
+     */
+    public function testGetPatientAppointmentByDateEQ()
+    {
+        $patientId = 1;
+        $date_eq = '2016-08-04';
+        $response = $this->get('/fhir/Appointment?patient='.$patientId.'&date_eq='.$date_eq);
+        $start = $response->response->original->entry[0]->resource->Appointment->start->value->value;
+        $start = $this->trimDate($start);
+        $this->assertEquals($date_eq, $start);
+    }
+
+    /**
+     * Test checks functionality for getting appointments by NOT EQUAL date
+     */
+    public function testGetPatientAppointmentByDateNE()
+    {
+        $patientId = 1;
+        $date_ne = '2016-08-04';
+        $response = $this->get('/fhir/Appointment?patient='.$patientId.'&date_ne='.$date_ne);
+        $data = $response->response->original->entry;
+        $assertionCount = 0;
+        foreach ($data as $ln) {
+            if ($ln->resource->Appointment->start->value->value == $date_ne) {
+                $assertionCount++;
+            }
+        }
+        $this->assertEquals(0, $assertionCount);
+    }
+
+    /**
+     * Test checks functionality for getting appointments by GREATER THAN and LOWER THAN date
+     */
+    public function testGetPatientAppointmentByDateGtLt()
+    {
+        $patientId = 1;
+        $date_gt = '2016-08-04';
+        $response = $this->get('/fhir/Appointment?patient='.$patientId.'&date_gt'.$date_gt);
+        $data = $response->response->original->entry;
+        $assertionCount = 0;
+        foreach ($data as $ln) {
+            $startDate = $this->trimDate($ln->resource->Appointment->start->value->value);
+            if (($startDate < $date_gt)) {
+                $assertionCount++;
+            }
+        }
+        $this->assertEquals(0, $assertionCount);
+    }
+
+
+    private function trimDate($date){
+        return substr($date, 0, strpos($date, " "));
+    }
 }
