@@ -30,5 +30,16 @@ class PatientController extends AbstractController
     {
         return $this->patientAdapter->store($request);
     }
+
+
+    public function update($id)
+    {
+        return $this->patientAdapter->update($id);
+    }
+
+    public function destroy($id)
+    {
+        return $this->patientAdapter->removePatient($id);
+    }
 }
 

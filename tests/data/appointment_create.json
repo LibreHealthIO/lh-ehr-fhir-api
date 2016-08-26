@@ -1,9 +1,5 @@
 {
     "resourceType": "Appointment",
-    "identifier": [{
-      "use": "usual",
-      "value": 7
-    }],
     "status": "Arrived late",
     "type": {
       "text": "Office Visit"
