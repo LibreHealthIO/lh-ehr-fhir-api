@@ -50,11 +50,47 @@ class PatientTest extends TestCase
 
     public function testUpdatePatient()
     {
-        $path = __DIR__."/data";
-        $json =  file_get_contents( "$path/everywoman_simple_create.json");
-        $jsonDecode = json_decode($json, true);
+        $json =  [
+                    "id"        => 56,
+                    "firstName" => "MMA",
+                    "lastName"  => "WMA",
+                    "gender"    => "male"
+                  ];
+        
+        $patientId = 56;
+        $this->json('PUT', '/fhir/Patient/'.$patientId, $json)
+            ->seeJsonEquals([
+                        "resourceType"  => "Patient",
+                        "identifier"    => [[
+                            "use"       => "usual",
+                            "value"     => $json['id']
+                        ]],
+                        "name" => [[
+                            "use"       => "usual",
+                            "family"    => [$json["lastName"]],
+                            "given"     => [$json["firstName"]]
+                        ]],
+                        "telecom" => [[
+                            "system"    => "phone",
+                            "value"     => "555-555-2003",
+                            "use"       => "primary"
+                        ], [
+                            "system"    => "email",
+                            "value"     => "",
+                            "use"       => "primary"
+                        ]],
+                        "gender"        => $json['gender'],
+                        "birthDate"     => "1955-01-06"
+                ]
+            );
+    }
 
-        $this->json('POST', '/fhir/Patient', $jsonDecode)
+    public function testFindPatientById()
+    {
+
+        $patientId = 56;
+
+        $this->get('/fhir/Patient/'.$patientId)
             ->seeJsonStructure([
                     "resourceType",
                     "identifier",
@@ -65,4 +101,6 @@ class PatientTest extends TestCase
                 ]
             );
     }
+
+
 }
