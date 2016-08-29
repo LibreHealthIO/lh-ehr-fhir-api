@@ -70,11 +70,11 @@ class AppointmentTest extends TestCase
     public function testGetPatientAppointmentByDateEQ()
     {
         $patientId = 1;
-        $date_eq = '2016-08-04';
-        $response = $this->get('/fhir/Appointment?patient='.$patientId.'&date_eq='.$date_eq);
+        $date = 'eq2016-08-04';
+        $response = $this->get('/fhir/Appointment?patient='.$patientId.'&date_eq='.$date);
         $start = $response->response->original->entry[0]->resource->Appointment->start->value->value;
         $start = $this->trimDate($start);
-        $this->assertEquals($date_eq, $start);
+        $this->assertEquals($this->getDate($date, 'eq'), $start);
     }
 
     /**
@@ -83,12 +83,12 @@ class AppointmentTest extends TestCase
     public function testGetPatientAppointmentByDateNE()
     {
         $patientId = 1;
-        $date_ne = '2016-08-04';
-        $response = $this->get('/fhir/Appointment?patient='.$patientId.'&date_ne='.$date_ne);
+        $date = 'ne2016-08-04';
+        $response = $this->get('/fhir/Appointment?patient='.$patientId.'&date='.$date);
         $data = $response->response->original->entry;
         $assertionCount = 0;
         foreach ($data as $ln) {
-            if ($ln->resource->Appointment->start->value->value == $date_ne) {
+            if ($ln->resource->Appointment->start->value->value == $this->getDate($date, 'ne')) {
                 $assertionCount++;
             }
         }
@@ -101,13 +101,13 @@ class AppointmentTest extends TestCase
     public function testGetPatientAppointmentByDateGtLt()
     {
         $patientId = 1;
-        $date_gt = '2016-08-04';
-        $response = $this->get('/fhir/Appointment?patient='.$patientId.'&date_gt'.$date_gt);
+        $date = 'gt2016-08-04';
+        $response = $this->get('/fhir/Appointment?patient='.$patientId.'&date'.$date);
         $data = $response->response->original->entry;
         $assertionCount = 0;
         foreach ($data as $ln) {
             $startDate = $this->trimDate($ln->resource->Appointment->start->value->value);
-            if (($startDate < $date_gt)) {
+            if (($startDate < $this->getDate($date, 'gt'))) {
                 $assertionCount++;
             }
         }
@@ -117,5 +117,10 @@ class AppointmentTest extends TestCase
 
     private function trimDate($date){
         return substr($date, 0, strpos($date, " "));
+    }
+
+    private function getDate($ln, $param)
+    {
+        return substr($ln, strpos($ln, $param) + 2);
     }
 }
