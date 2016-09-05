@@ -86,6 +86,73 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
     }
 
     /**
+     * @param $id
+     * @return array
+     */
+    public function showPatient($id)
+    {
+        $patient = $this->repository->get($id);
+        if (!empty($patient)) {
+            return  $this->interfaceToModel( $patient );
+        } else {
+            abort(404, 'No Patient with id = ' . $id. ' found');
+        }
+    }
+
+    public function update($request)
+    {
+        $data = $request->json()->all();
+
+        if(!isset($data['id'])) {
+            return json_encode(array('error' => 'no arguments'));
+        }
+        // TODO add validation
+        $storedInterface = $this->requestToInterface( $data['id'], $data );
+
+        return $this->interfaceToModel( $storedInterface );
+
+    }
+
+    /**
+     * @param string $data
+     * @return AppointmentInterface
+     *
+     * Takes a FHIR post string and returns a AppointmentInterface
+     */
+    public function requestToInterface( $id, $data )
+    {
+
+        $patientInterface = $this->repository->update($id, $data);
+
+        return $patientInterface;
+    }
+
+    /**
+     * @param PatientInterface $patientInterface
+     * @return PatientInterface
+     */
+    public function updateInterface( PatientInterface $patientInterface )
+    {
+        $patientInterface = $this->repository->update( $patientInterface );
+        return $patientInterface;
+    }
+    
+    
+    
+    
+    
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function removePatient($id)
+    {
+        return $this->repository->delete($id);
+    }
+
+
+    /**
      * @param string $data
      * @return PatientInterface
      *
@@ -95,13 +162,13 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
     {
         $parser = new \PHPFHIRGenerated\PHPFHIRResponseParser();
         $fhirPatient = $parser->parse( $data );
-        if ( is_a( $fhirPatient, 'FHIRPatient' ) ) {
+        if ( $fhirPatient instanceof FHIRPatient ) {
             return $this->modelToInterface( $fhirPatient );
         } else {
             // Error, the Resource does not match, expecting a Patient,
             // // but got something else.
+            abort(403, 'Error, the Resource does not match, expecting a Patient, but got "' . typeOf($fhirPatient). '"');
         }
-
 
     }
 
@@ -123,49 +190,51 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
 
             $phoneNumbers = $fhirPatient->getTelecom();
             $primaryPhone = $phoneNumbers[0]->getValue();
-            $patientInterface->setPrimaryPhone( $primaryPhone );
+            $patientInterface->setPrimaryPhone($primaryPhone);
 
             $extensions = $fhirPatient->getExtension();
-            foreach ( $extensions as $extension ) {
-               $url = $extension->getUrl();
-               switch ( $url ) {
-                   case "https://fhirdev.ttdnow.com/extension/contracts":
-                       $x2s = $extension->getExtension();
-                       foreach ( $x2s as $x2 ) {
-                           $url2 = $x2->getUrl();
-                           switch ( $url2 ) {
-                               case "#terms-of-service":
-                                   break;
-                               case "#allow-sms" :
-                                   $allowSms = $x2->getValueBoolean();
-                                   $allowSms = ( $allowSms->getValue() == 1 ) ? 'YES' : 'NO';
-                                   $patientInterface->setAllowSms( $allowSms );
-                                   break;
-                           }
-                       }
-                       break;
-               }
+            foreach ($extensions as $extension) {
+                $url = $extension->getUrl();
+                switch ($url) {
+                    case "https://fhirdev.ttdnow.com/extension/contracts":
+                        $x2s = $extension->getExtension();
+                        foreach ($x2s as $x2) {
+                            $url2 = $x2->getUrl();
+                            switch ($url2) {
+                                case "#terms-of-service":
+                                    break;
+                                case "#allow-sms" :
+                                    $allowSms = $x2->getValueBoolean();
+                                    $allowSms = ($allowSms->getValue() == 1) ? 'YES' : 'NO';
+                                    $patientInterface->setAllowSms($allowSms);
+                                    break;
+                            }
+                        }
+                        break;
+                }
             }
 
             $photos = $fhirPatient->getPhoto();
-            $photo = $photos[0];
-            $formatCode = $photo->getContentType();
-            $mimetype = $formatCode->getValue();
-            $ext = "";
-            switch ( $mimetype ) {
-                case "image/jpeg":
-                    $ext = "jpg";
-                    break;
-                default:
-                    $ext = "jepg";
-                    break;
+            if(!empty($photos)) {
+                $photo = $photos[0];
+                $formatCode = $photo->getContentType();
+                $mimetype = $formatCode->getValue();
+                $ext = "";
+                switch ($mimetype) {
+                    case "image/jpeg":
+                        $ext = "jpg";
+                        break;
+                    default:
+                        $ext = "jpeg";
+                        break;
+                }
+                $base64Binary = $photo->getData();
+                $photo = App::make('LibreEHR\Core\Contracts\DocumentInterface');
+                $photo->setMimetype($mimetype);
+                $photo->base64Data = $base64Binary->getValue();
+                $photo->filename = rand() . "." . $ext;
+                $patientInterface->setPhoto($photo);
             }
-            $base64Binary = $photo->getData();
-            $photo = App::make( 'LibreEHR\Core\Contracts\DocumentInterface' );
-            $photo->setMimetype( $mimetype );
-            $photo->base64Data = $base64Binary->getValue();
-            $photo->filename = rand().".".$ext;
-            $patientInterface->setPhoto( $photo );
         }
 
         return $patientInterface;
