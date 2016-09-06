@@ -4,6 +4,8 @@ namespace LibreEHR\FHIR\Http\Controllers\Auth\Traits;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Validator;
+use Illuminate\Http\Response;
 
 trait RegistersUsers
 {
@@ -28,14 +30,34 @@ trait RegistersUsers
      */
     public function register(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|max:255',
+            'email' => 'required|email|max:255|unique:users',
+            'password' => 'required|min:6',
+        ]);
         
-        $this->validator($request->all())->validate();
+        if (!empty($validator->errors()->messages())) {
+            return new Response([
+                'status'  => 'FAIL',
+                'message' => 'Fail to save user',
+                'Errors'  =>  $validator->errors()
+            ], 500);
+        } else {
+            try {
+                $this->guard()->login($this->create($request->all()));
+                return new Response([
+                    'status' => 'OK',
+                    'message' => 'User Registered',
+                ], 201);
+            } catch (\Illuminate\Database\QueryException $ex) {
+                return new Response([
+                    'status'  => 'Fail',
+                    'message' => 'Fail registering',
+                    'Errors ' =>  $ex->getMessage()
+                ]);
 
-        $this->guard()->login($this->create($request->all()));
-
-//        return redirect($this->redirectPath());
-        return 'User saved successfully';
-
+            }
+        }
     }
 
     /**
