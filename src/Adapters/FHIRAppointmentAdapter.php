@@ -106,6 +106,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     public function collectionToOutput(Request $request = null)
     {
         $data = $request->all();
+        $data = $this->parseUrl($request->server->get('QUERY_STRING'));
         $collection = $this->repository->getAppointmentsByParam($data);
 
         $bundle = new FHIRBundle;
@@ -273,5 +274,20 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $fhirAppointment->setDescription($value);
 
         return $fhirAppointment;
+    }
+
+    private function parseUrl($url)
+    {
+        $array = explode('&', $url);
+        foreach ($array as $ln) {
+            if (strpos($ln, 'patient') !== false) {
+                $data['patient'] = substr($ln, strpos($ln, "=") + 1);
+            }
+            else{
+                $data[] = substr($ln, strpos($ln, "=") + 1);
+            }
+        }
+        return $data;
+
     }
 }
