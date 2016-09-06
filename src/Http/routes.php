@@ -1,7 +1,5 @@
 <?php
 
-Route::group(['prefix' => 'fhir'], function () {
-
     // See resource routes in Laravel Docs
     Route::resource('Patient', '\LibreEHR\FHIR\Http\Controllers\PatientController');
     Route::resource('Patients', '\LibreEHR\FHIR\Http\Controllers\PatientController');
@@ -19,7 +17,7 @@ Route::group(['prefix' => 'fhir'], function () {
 
     Route::get('/', '\LibreEHR\FHIR\Http\Controllers\BundleController@index');
     Route::post('/', '\LibreEHR\FHIR\Http\Controllers\BundleController@store' );
-});
+
 
 Route::resource('document', '\LibreEHR\FHIR\Http\Controllers\DocumentController');
 
