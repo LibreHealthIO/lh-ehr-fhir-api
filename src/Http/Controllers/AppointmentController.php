@@ -12,7 +12,6 @@ class AppointmentController extends AbstractController
     public function __construct(BaseAdapterInterface $appointmentAdapter)
     {
         $this->appointmentAdapter = $appointmentAdapter;
-        $this->middleware('auth:api');
     }
 
     public function index(Request $request = null)
