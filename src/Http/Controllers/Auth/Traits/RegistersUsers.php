@@ -16,7 +16,8 @@ trait RegistersUsers
      */
     public function showRegistrationForm()
     {
-        return view('auth.register');
+//        return view('auth.register');
+        return 'showRegistrationForm action';
     }
 
     /**
@@ -32,7 +33,8 @@ trait RegistersUsers
 
         $this->guard()->login($this->create($request->all()));
 
-        return redirect($this->redirectPath());
+//        return redirect($this->redirectPath());
+        return 'User saved successfully';
 
     }
 
