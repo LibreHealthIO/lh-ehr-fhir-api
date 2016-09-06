@@ -106,6 +106,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     public function collectionToOutput(Request $request = null)
     {
         $data = $request->all();
+        $data = $this->parseUrl($request->server->get('QUERY_STRING'));
         $collection = $this->repository->getAppointmentsByParam($data);
 
         $bundle = new FHIRBundle;
@@ -249,18 +250,18 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $extension1 = new FHIRExtension;
         $extension2 = new FHIRExtension;
         $extension3 = new FHIRExtension;
-        $extension->setUrl('[base]/extension/vidyo-portal-data');
+        $extension->setUrl(json_decode($appointment->getLocation())->portalUri);
         $extension1->setUrl('#portal-uri');
         $value = new FHIRString();
         $value->setValue('https://vircon.vu2vu.com');
         $extension1->setValueString($value);
         $extension2->setUrl('#room-key');
         $value = new FHIRString();
-        $value->setValue('83mncNGYckBSS612N28eYsNfdQ');
+        $value->setValue(json_decode($appointment->getLocation())->roomKey);
         $extension2->setValueString($value);
         $extension3->setUrl('#pin');
         $value = new FHIRString();
-        $value->setValue('1234');
+        $value->setValue(json_decode($appointment->getLocation())->pin);
         $extension3->setValueString($value);
         $extension->addExtension($extension1);
         $extension->addExtension($extension2);
@@ -273,5 +274,24 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $fhirAppointment->setDescription($value);
 
         return $fhirAppointment;
+    }
+
+    private function parseUrl($url)
+    {
+        $array = explode('&', $url);
+        foreach ($array as $ln) {
+            if (strpos($ln, 'patient') !== false) {
+                $data['patient'] = substr($ln, strpos($ln, "=") + 1);
+            }
+            else{
+                $data[] = substr($ln, strpos($ln, "=") + 1);
+            }
+        }
+        return $data;
+    }
+
+    private function parseAppointmentLocation()
+    {
+
     }
 }
