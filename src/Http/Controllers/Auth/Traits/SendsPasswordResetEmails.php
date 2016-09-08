@@ -35,7 +35,8 @@ trait SendsPasswordResetEmails
         );
 
         if ($response === Password::RESET_LINK_SENT) {
-            return back()->with('status', trans($response));
+
+            return trans($response);
         }
 
         // If an error was returned by the password broker, we will get this message
