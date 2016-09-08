@@ -250,10 +250,10 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $extension1 = new FHIRExtension;
         $extension2 = new FHIRExtension;
         $extension3 = new FHIRExtension;
-        $extension->setUrl(json_decode($appointment->getLocation())->portalUri);
+        $extension->setUrl();
         $extension1->setUrl('#portal-uri');
         $value = new FHIRString();
-        $value->setValue('https://vircon.vu2vu.com');
+        $value->setValue(json_decode($appointment->getLocation())->portalUri);
         $extension1->setValueString($value);
         $extension2->setUrl('#room-key');
         $value = new FHIRString();
