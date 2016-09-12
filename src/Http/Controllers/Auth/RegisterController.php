@@ -2,7 +2,9 @@
 
 namespace LibreEHR\FHIR\Http\Controllers\Auth;
 
+use GuzzleHttp\Psr7\Request;
 use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User;
+use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\Signup;
 use Validator;
 use App\Http\Controllers\Controller;
 use LibreEHR\FHIR\Http\Controllers\Auth\Traits\RegistersUsers;
@@ -48,9 +50,28 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'username' => $data['username'],
+            'username' => $data['firstname'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
+        ]);
+    }
+
+    /**
+     * Create a new user profile after a valid registration.
+     *
+     * @param  array  $data
+     * @param  int    $userId
+     * @return User
+     */
+    protected function createSignup(array $data, $userId)
+    {
+        return Signup::create([
+            'user_id' => $userId,
+            'firstname' => $data['firstname'],
+            'surname' => $data['surname'],
+            'gender' => $data['gender'],
+            'email' => $data['email'],
+            'mobile_number' => $data['mobile_number'],
         ]);
     }
 }

@@ -19,7 +19,8 @@
     Route::resource('metadata', '\LibreEHR\FHIR\Http\Controllers\ConformanceController');
 
     Route::get('/', '\LibreEHR\FHIR\Http\Controllers\BundleController@index');
-    Route::post('/', '\LibreEHR\FHIR\Http\Controllers\BundleController@store' );
+    Route::post('/', '\LibreEHR\FHIR\Http\Controllers\BundleController@store');
+    Route::put('signup/update', 'Auth\RegisterController@signupUpdate');
 
 
 Route::resource('document', '\LibreEHR\FHIR\Http\Controllers\DocumentController');

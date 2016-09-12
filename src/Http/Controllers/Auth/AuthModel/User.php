@@ -29,4 +29,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    public function signup()
+    {
+        return $this->hasOne('LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\Signup');
+    }
+
 }
