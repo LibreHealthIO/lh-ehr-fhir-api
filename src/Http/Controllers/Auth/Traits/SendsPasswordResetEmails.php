@@ -4,6 +4,7 @@ namespace LibreEHR\FHIR\Http\Controllers\Auth\Traits;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\Signup;
 
 trait SendsPasswordResetEmails
 {
@@ -66,4 +67,11 @@ trait SendsPasswordResetEmails
     {
         return Password::broker();
     }
+
+    public function recoverUsernameByPhone(Request $request)
+    {
+        $userId = Signup::where('mobile_number', $request->all('mobile_number'))->value('user_id');
+        $creadentials = User::find($userId);
+        return $creadentials->email;
+    }    
 }
