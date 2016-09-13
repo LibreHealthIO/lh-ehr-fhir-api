@@ -28,4 +28,9 @@ class Signup extends Model
     protected $fillable = [
         'user_id', 'firstname', 'surname', 'gender', 'email', 'mobile_number'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo('LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User');
+    }
 }
