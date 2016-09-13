@@ -28,6 +28,8 @@ use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleEntry;
 use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleLink;
 use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleResponse;
 use Illuminate\Support\Facades\App;
+use Validator;
+
 class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface
 {
     /**
@@ -83,10 +85,31 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     {
 
         // TODO add validation
+
         $data = $request->getContent();
-        $interface = $this->jsonToInterface( $data );
-        $storedInterface = $this->storeInterface( $interface );
-        return $this->interfaceToModel( $storedInterface );
+        $validator = Validator::make($data, [
+            'provider_name'  => 'required|max:255',
+            'date'           => 'required|date|date_format:"Y-m-d H:i:s","Y-m-d"',
+        ]);
+
+        if (!empty($validator->errors()->messages())) {
+            return new Response([
+                'status'  => 'FAIL',
+                'message' => 'Fail to save user',
+                'Errors'  =>  $validator->errors()
+            ], 500);
+        }
+
+
+
+
+
+
+
+        $data = $request->getContent();
+        $interface = $this->jsonToInterface($data);
+        $storedInterface = $this->storeInterface($interface);
+        return $this->interfaceToModel($storedInterface);
     }
 
     /**
