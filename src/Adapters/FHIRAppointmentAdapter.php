@@ -138,13 +138,6 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                 $count++;
             }
         }
-        if(empty($count)) {
-            return json_encode(
-                array(
-                    'message' => 'No appointments found for patient with id ' . $data['patient'],
-                    'status_code' => '404'
-                ));
-        }
 
         $meta = new FHIRMeta;
         $lastUpdated = new FHIRInstant();
