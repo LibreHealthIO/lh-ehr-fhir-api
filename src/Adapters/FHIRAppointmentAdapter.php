@@ -32,6 +32,9 @@ use Validator;
 
 class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface
 {
+
+    private $pcMultiple = 0;
+
     /**
      * @param $id ID identifying resource
      * @return string
@@ -85,8 +88,9 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     {
 
         // TODO add validation
+        
+        $data = $this->fieldNamesToFHIRExtention($request->getContent());
 
-        $data = $request->getContent();
         $interface = $this->jsonToInterface($data);
         $storedInterface = $this->storeInterface($interface);
         return $this->interfaceToModel($storedInterface);
@@ -200,11 +204,26 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     {
         $appointmentInterface = App::make('LibreEHR\Core\Contracts\AppointmentInterface');
         if ($appointmentInterface instanceof AppointmentInterface) {
+
             $start = $fhirAppointment->getStart()->getValue();
             $appointmentInterface->setStartTime($start);
 
             $end = $fhirAppointment->getEnd()->getValue();
             $appointmentInterface->setEndTime($end);
+
+            $appointmentInterface->setPcEventDate($start);
+            $appointmentInterface->setPcEndDate($end);
+
+            $appointmentInterface->setPcMultiple($this->pcMultiple);
+
+            $duration = $fhirAppointment->getMinutesDuration()->getValue();
+            $appointmentInterface->setPcDuration($duration);
+
+            $location = $this->getLocation($fhirAppointment->getExtension());
+            $appointmentInterface->setLocation($location);
+
+            $status = $fhirAppointment->getStatus()->getValue();
+            $appointmentInterface->setPcApptStatus($status);
 
         }
 
@@ -277,8 +296,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         foreach ($array as $ln) {
             if (strpos($ln, 'patient') !== false) {
                 $data['patient'] = substr($ln, strpos($ln, "=") + 1);
-            }
-            else{
+            } else {
                 $data[] = substr($ln, strpos($ln, "=") + 1);
             }
         }
