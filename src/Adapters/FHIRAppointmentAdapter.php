@@ -32,6 +32,9 @@ use Validator;
 
 class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface
 {
+
+    private $pcMultiple = 0;
+
     /**
      * @param $id ID identifying resource
      * @return string
@@ -85,8 +88,9 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     {
 
         // TODO add validation
+        
+        $data = $this->fieldNamesToFHIRExtention($request->getContent());
 
-        $data = $request->getContent();
         $interface = $this->jsonToInterface($data);
         $storedInterface = $this->storeInterface($interface);
         return $this->interfaceToModel($storedInterface);
@@ -182,10 +186,8 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      */
     public function jsonToInterface($data)
     {
-        $data_test = '{"resourceType":"Appointment","identifier":[{"use":"usual","value":1}],"start":"10:00:00","end":"10:15:00"}';
-
         $parser = new PHPFHIRResponseParser();
-        $fhirAppointment = $parser->parse($data_test);
+        $fhirAppointment = $parser->parse($data);
         if ($fhirAppointment instanceof FHIRAppointment) {
             return $this->modelToInterface($fhirAppointment);
         } else {
@@ -199,11 +201,26 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     {
         $appointmentInterface = App::make('LibreEHR\Core\Contracts\AppointmentInterface');
         if ($appointmentInterface instanceof AppointmentInterface) {
+
             $start = $fhirAppointment->getStart()->getValue();
             $appointmentInterface->setStartTime($start);
 
             $end = $fhirAppointment->getEnd()->getValue();
             $appointmentInterface->setEndTime($end);
+
+            $appointmentInterface->setPcEventDate($start);
+            $appointmentInterface->setPcEndDate($end);
+
+            $appointmentInterface->setPcMultiple($this->pcMultiple);
+
+            $duration = $fhirAppointment->getMinutesDuration()->getValue();
+            $appointmentInterface->setPcDuration($duration);
+
+            $location = $this->getLocation($fhirAppointment->getExtension());
+            $appointmentInterface->setLocation($location);
+
+            $status = $fhirAppointment->getStatus()->getValue();
+            $appointmentInterface->setPcApptStatus($status);
 
         }
 
@@ -284,8 +301,30 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         return $data;
     }
 
-    private function parseAppointmentLocation()
+    private function fieldNamesToFHIRExtention($data)
     {
+        $data = json_decode($data, true);
 
+        $extension = $data['extension'];
+        $extension = array_map(function($extension) {
+            return array(
+                'valueUri' => $extension['portalUri'],
+                'valueString' => $extension['roomKey'],
+                'valueInteger' => $extension['pin']
+            );
+        }, $extension);
+        unset($data['extension']);
+        $data['extension'] = $extension;
+        return json_encode($data);
     }
+
+    private function getLocation($extension)
+    {
+        $location['portalUri'] = $extension[0]->getValueUri();
+        $location['roomKey'] = $extension[0]->getValueString();
+        $location['pin'] = $extension[0]->getValueInteger();
+        return json_encode($location);
+    }
+
+
 }
