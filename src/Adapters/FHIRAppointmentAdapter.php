@@ -39,28 +39,28 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      * Takes a resource ID and returns a FHIR JSON or XML string
      * in response
      */
-    public function retrieve( $id )
+    public function retrieve($id)
     {
-        $this->repository->finder()->pushCriteria( new ByPid( $id ) );
+        $this->repository->finder()->pushCriteria(new ByPid($id));
         $patientInterface = $this->repository->find();
-        return $this->interfaceToModel( $patientInterface );
+        return $this->interfaceToModel($patientInterface);
     }
 
     /**
      * @param Request $request
      * @return FHIRAppointment
      */
-    public function updateStatus( Request $request )
+    public function updateStatus(Request $request)
     {
 
         $data = $request->all();
-        if(!isset($data['status']) || !isset($data['id'])) {
+        if (!isset($data['status']) || !isset($data['id'])) {
             return json_encode(array('error' => 'no arguments'));
         }
         // TODO add validation
-        $storedInterface = $this->requestToInterface( $data );
+        $storedInterface = $this->requestToInterface($data);
 
-        return $this->interfaceToModel( $storedInterface );
+        return $this->interfaceToModel($storedInterface);
     }
 
     /**
@@ -69,7 +69,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      *
      * Takes a FHIR post string and returns a AppointmentInterface
      */
-    public function requestToInterface( $data )
+    public function requestToInterface($data)
     {
 
         $appointmentInterface = $this->repository->update($data['id'], $data['status']);
@@ -81,30 +81,10 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      * @param Request $request
      * @return FHIRAppointment
      */
-    public function store( Request $request )
+    public function store(Request $request)
     {
 
         // TODO add validation
-
-        $data = $request->getContent();
-        $validator = Validator::make($data, [
-            'provider_name'  => 'required|max:255',
-            'date'           => 'required|date|date_format:"Y-m-d H:i:s","Y-m-d"',
-        ]);
-
-        if (!empty($validator->errors()->messages())) {
-            return new Response([
-                'status'  => 'FAIL',
-                'message' => 'Fail to save user',
-                'Errors'  =>  $validator->errors()
-            ], 500);
-        }
-
-
-
-
-
-
 
         $data = $request->getContent();
         $interface = $this->jsonToInterface($data);
@@ -116,9 +96,9 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      * @param AppointmentInterface $appointmentInterface
      * @return AppointmentInterface
      */
-    public function storeInterface( AppointmentInterface $appointmentInterface )
+    public function storeInterface(AppointmentInterface $appointmentInterface)
     {
-        $appointmentInterface = $this->repository->create( $appointmentInterface );
+        $appointmentInterface = $this->repository->create($appointmentInterface);
         return $appointmentInterface;
     }
 
@@ -139,10 +119,9 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $bundleId = UUIDClass::v4();
         $currentDate = date('Y-m-d H:i:s');
         $count = 0;
-        foreach ( $collection as $appointment ) {
-
-            if ( $appointment instanceof AppointmentInterface ) {
-                $fhirAppointment = $this->interfaceToModel( $appointment );
+        foreach ($collection as $appointment) {
+            if ($appointment instanceof AppointmentInterface) {
+                $fhirAppointment = $this->interfaceToModel($appointment);
                 $resourceContainer = new FHIRResourceContainer;
                 $resourceContainer->setAppointment($fhirAppointment);
                 $bundleEntry = new FHIRBundleEntry();
@@ -204,12 +183,12 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      *
      * Takes a FHIR post string and returns a AppointmentInterface
      */
-    public function jsonToInterface( $data )
+    public function jsonToInterface($data)
     {
         $parser = new PHPFHIRResponseParser();
-        $fhirAppointment = $parser->parse( $data );
-        if ( $fhirAppointment instanceof FHIRAppointment ) {
-            return $this->modelToInterface( $fhirAppointment );
+        $fhirAppointment = $parser->parse($data);
+        if ($fhirAppointment instanceof FHIRAppointment) {
+            return $this->modelToInterface($fhirAppointment);
         } else {
             // Error, the Resource does not match, expecting a Appointment,
             // // but got something else.
@@ -217,16 +196,15 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         }
     }
 
-    public function modelToInterface( FHIRAppointment $fhirAppointment )
+    public function modelToInterface(FHIRAppointment $fhirAppointment)
     {
         $appointmentInterface = App::make('LibreEHR\Core\Contracts\AppointmentInterface');
         if ($appointmentInterface instanceof AppointmentInterface) {
-
             $start = $fhirAppointment->getStart()->getValue();
-            $appointmentInterface->setStartTime( $start );
+            $appointmentInterface->setStartTime($start);
 
             $end = $fhirAppointment->getEnd()->getValue();
-            $appointmentInterface->setEndTime( $end );
+            $appointmentInterface->setEndTime($end);
 
         }
 
@@ -237,7 +215,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      * @param AppointmentInterface $appointment
      * @return FHIRAppointment
      */
-    public function interfaceToModel( AppointmentInterface $appointment )
+    public function interfaceToModel(AppointmentInterface $appointment)
     {
         $fhirAppointment = new FHIRAppointment();
 
@@ -247,20 +225,20 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
 
         $start = new FHIRInstant();
         $value = new FHIRString();
-        $value->setValue( $appointment->getStartTime() );
-        $start->setValue( $value );
+        $value->setValue($appointment->getStartTime());
+        $start->setValue($value);
         $fhirAppointment->setStart($start);
 
         $end = new FHIRInstant();
         $value = new FHIRString();
-        $value->setValue( $appointment->getEndTime() );
-        $end->setValue( $value );
+        $value->setValue($appointment->getEndTime());
+        $end->setValue($value);
         $fhirAppointment->setEnd($end);
 
         $status = new FHIRCode();
         $value = new FHIRString();
-        $value->setValue( $appointment->getPcApptStatus() );
-        $status->setValue( $value );
+        $value->setValue($appointment->getPcApptStatus());
+        $status->setValue($value);
         $fhirAppointment->setStatus($status);
 
         $extension = new FHIRExtension;
