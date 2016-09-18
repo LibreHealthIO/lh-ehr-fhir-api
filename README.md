@@ -17,9 +17,9 @@ Get composer
 
 getcomposer.com
 
-Create a Laravel project
+Create a Laravel 5.3 project
 ``` bash
-$ composer create-project laravel/laravel libre-ehr-laravel --prefer-dist
+$ composer create-project --prefer-dist laravel/laravel=5.3.* libre-ehr-laravel-5-3
 ```
 
 Require the fhir package which includes LibreEHR/core for as an interface to the LibreEHR database, for now it is in development and should be grabbed by developers via github.
@@ -65,7 +65,37 @@ Then from the root of libre-ehr-laravel, run the following to pull in the LibreE
 $ composer update
 ```
 
+Install the Passport Auth package.
+
+``` bash
+$ composer require laravel/passport
+```
+
 Place your database credentials in the file libre-ehr-laravel/config/database.php in the mysql section
+
+Create a new section for 'auth' and make auth the default in config/database.php like this:
+``` bash
+...
+
+    'default' => 'auth',
+
+...
+
+    'auth' => [
+        'driver' => 'mysql',
+        'host' => '127.0.0.1',
+        'port' => '3336',
+        'database' => 'libreehr_api',
+        'username' => 'libreehr_api',
+        'password' => 'libreehr_api',
+        'charset' => 'utf8',
+        'collation' => 'utf8_unicode_ci',
+        'prefix' => '',
+        'strict' => false,
+    ],
+        
+...        
+```
 
 Point a vhost to libre-ehr-laravel/public. 
 
@@ -83,8 +113,38 @@ Add the following to the end of the "providers" array in libre-ehr-laravel/confi
 
 'providers' => [
     '...',
-    LibreEHR\FHIR\Utilities\Providers\FHIRServiceProvider::class
+    LibreEHR\FHIR\Utilities\Providers\FHIRServiceProvider::class,
+    LibreEHR\FHIR\Utilities\Providers\CustomPassportServiceProvider::class,
 ];
+```
+
+run 'php artisan migrate' to install the users table and oauth tables
+
+run 'php artisan passport:install' to generate auth keys keys
+
+run "php artisan passport:client --password" to create a new client if needed (a password grant client is automatically created from passport:install command)
+
+
+Change driver in guards => api section of auth.php to 'passport'
+
+```
+'guards' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+        'api' => [
+            'driver' => 'passport',
+            'provider' => 'users',
+        ],
+    ],
+```
+
+change user model in providers => users in auth.php to our custom user model, default user model missing hasPITokens
+
+```
+'model' => LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User::class,
 ```
 
 You will then be able to browse to the FHIR endpoint like so:
