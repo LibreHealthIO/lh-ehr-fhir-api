@@ -10,6 +10,7 @@ use Laravel\Passport\Bridge\AccessTokenRepository;
 use Laravel\Passport\Bridge\ScopeRepository;
 use Laravel\Passport\Bridge\UserRepository;
 use Laravel\Passport\Bridge\RefreshTokenRepository;
+use Illuminate\Support\Facades\Route;
 
 use LibreEHR\FHIR\Auth\CustomAuthServer;
 
@@ -46,5 +47,29 @@ class CustomPassportServiceProvider extends PassportServiceProvider
         $grant->setRefreshTokenTTL(Passport::refreshTokensExpireIn());
 
         return $grant;
+    }
+
+    public function register()
+    {
+        parent::register();
+
+        Passport::routes();
+
+        Route::group([
+            'middleware' => 'api',
+            'namespace' => '\LibreEHR\FHIR\Http\Controllers',
+            'prefix' => 'fhir',
+        ], function ($router) {
+            require base_path('vendor/libre-ehr/fhir/src/Http/routes.php');
+        });
+
+        Route::group([
+            'middleware' => 'api',
+            'namespace' => '\LibreEHR\FHIR\Http\Controllers',
+            'prefix' => '',
+        ], function ($router) {
+            require base_path('vendor/libre-ehr/fhir/src/Http/authRoutes.php');
+        });
+
     }
 }
