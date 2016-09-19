@@ -36,7 +36,7 @@ trait RegistersUsers
             'firstname'      => 'required|max:255',
             'surname'        => 'required|max:255',
             'email'          => 'required|email|max:255|unique:users',
-            'mobile_number'  => 'required|min:10',
+            'mobile_number'  => 'required|min:10|unique:signup_data',
             'password'       => 'required|min:6',
             'gender'         => 'required'
         ]);
