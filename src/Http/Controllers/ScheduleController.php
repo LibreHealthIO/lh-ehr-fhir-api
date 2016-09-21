@@ -7,7 +7,7 @@ class ScheduleController extends AbstractController
 {
     protected $scheduleAdapter = null;
 
-    public function __construct( BaseAdapterInterface $scheduleAdapter )
+    public function __construct(BaseAdapterInterface $scheduleAdapter)
     {
         $this->scheduleAdapter = $scheduleAdapter;
     }
@@ -16,5 +16,4 @@ class ScheduleController extends AbstractController
     {
         return $this->scheduleAdapter->getSchedule($scheduleDate);
     }
-
 }

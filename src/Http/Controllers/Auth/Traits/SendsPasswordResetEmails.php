@@ -32,11 +32,11 @@ trait SendsPasswordResetEmails
         // to send the link, we will examine the response then see the message we
         // need to show to the user. Finally, we'll send out a proper response.
         $response = $this->broker()->sendResetLink(
-            $request->only('email'), $this->resetNotifier()
+            $request->only('email'),
+            $this->resetNotifier()
         );
 
         if ($response === Password::RESET_LINK_SENT) {
-
             return trans($response);
         }
 
@@ -73,5 +73,5 @@ trait SendsPasswordResetEmails
         $userId = Signup::where('mobile_number', $request->all('mobile_number'))->value('user_id');
         $creadentials = User::find($userId);
         return $creadentials->email;
-    }    
+    }
 }

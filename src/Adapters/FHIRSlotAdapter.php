@@ -28,9 +28,8 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
      * Takes a resource ID and returns a FHIR JSON or XML string
      * in response
      */
-    public function retrieve( $id )
+    public function retrieve($id)
     {
-
     }
 
     /**
@@ -44,47 +43,42 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
     {
 
         $weekend = array('Sat', 'Sun');
-        if(!$startDate) {
+        if (!$startDate) {
             $startDate = date('Y-m-d');
         }
 
         $dateArr = explode('-', $startDate);
-        $mk_time = mktime(0, 0, 0, $dateArr[1], $dateArr[2], $dateArr[0]);
-        $day = date('D', $mk_time);
+        $mkTime = mktime(0, 0, 0, $dateArr[1], $dateArr[2], $dateArr[0]);
+        $day = date('D', $mkTime);
 
-        if(!in_array($day, $weekend)) {
-
+        if (!in_array($day, $weekend)) {
             $slotBusy = $this->repository->getSlots($startDate);
 
             $output = array();
-            foreach ( $slotBusy as $slot ) {
-                $fhirSlot = $this->interfaceToModel( $slot );
+            foreach ($slotBusy as $slot) {
+                $fhirSlot = $this->interfaceToModel($slot);
                 $output[]= $fhirSlot;
-
             }
 
             return $output;
 
         }
-        //return $fhirSchedule;
     }
 
     /**
      * @param Request $request
      * @return FHIRPatient
      */
-    public function store( Request $request )
+    public function store(Request $request)
     {
-
     }
 
     /**
-     * @param PatientInterface $patientInterface
-     * @return PatientInterface
+     * @param AppointmentInterface $appointmentInterface
+     * @return AppointmentInterface
      */
-    public function storeInterface( AppointmentInterface $appointmentInterface)
+    public function storeInterface(AppointmentInterface $appointmentInterface)
     {
-
     }
 
     /**
@@ -94,9 +88,9 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
     {
         $collection = $this->repository->getSlots();
         $output = array();
-        foreach ( $collection as $slot ) {
-            if ( $slot instanceof AppointmentInterface ) {
-                $fhirSlot = $this->interfaceToModel( $slot );
+        foreach ($collection as $slot) {
+            if ($slot instanceof AppointmentInterface) {
+                $fhirSlot = $this->interfaceToModel($slot);
                 $output[]= $fhirSlot;
             }
         }
@@ -110,55 +104,48 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
      *
      * Takes a FHIR post string and returns a PatientInterface
      */
-    public function jsonToInterface( $data )
+    public function jsonToInterface($data)
     {
-
-
     }
 
-    public function modelToInterface( AppointmentInterface $appointment  )
+    public function modelToInterface(AppointmentInterface $appointment)
     {
-
-
     }
 
     /**
      * @param AppointmentInterface $appointment
      * @return FHIRAppointment
      */
-    public function interfaceToModel( $slot )
+    public function interfaceToModel($slot)
     {
         $fhirSlot = new FHIRSlot();
-
-
         $start = new FHIRInstant();
         $value = new FHIRString();
-        $value->setValue( $slot['startTime'] );
-        $start->setValue( $value );
+        $value->setValue($slot['startTime']);
+        $start->setValue($value);
         $fhirSlot->setStart($start);
 
         $end = new FHIRInstant();
         $value = new FHIRString();
-        $value->setValue( $slot['endTime'] );
-        $end->setValue( $value );
+        $value->setValue($slot['endTime']);
+        $end->setValue($value);
         $fhirSlot->setEnd($end);
 
         $status = new FHIRCode();
         $value = new FHIRString();
-        $value->setValue( $slot['status'] );
-        $status->setValue( $value );
+        $value->setValue($slot['status']);
+        $status->setValue($value);
         $fhirSlot->setFreeBusyType($status);
 
         $schedule = new FHIRReference();
-        $reference 	 = new FHIRString();
-        $reference->setValue( '/fhir/Schedule' );
-        $display 	 = new FHIRString();
-        $display->setValue( 'Schedule' );
-        $schedule->setReference( $reference );
-        $schedule->setDisplay( $display );
+        $reference = new FHIRString();
+        $reference->setValue('/fhir/Schedule');
+        $display = new FHIRString();
+        $display->setValue('Schedule');
+        $schedule->setReference($reference);
+        $schedule->setDisplay($display);
         $fhirSlot->setSchedule($schedule);
 
         return $fhirSlot;
-
     }
 }

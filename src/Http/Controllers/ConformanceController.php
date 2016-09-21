@@ -22,34 +22,7 @@ class ConformanceController extends Controller
      */
     public function index()
     {
-//        $conformance = new FHIRConformance();
-//
-//        $id = new FHIRId();
-//        $id->setValue( 'openemr' );
-//        $conformance->setId( $id );
-//
-//        $text = new FHIRNarrative();
-//        $status = new FHIRNarrativeStatus();
-//        $status->setValue( "human" );
-//        $text->setStatus( $status );
-//        $text->setDiv( "<div>!-- Snipped for Brevity --></div>" );
-//        $conformance->setText( $text );
-//
-//        $url = new FHIRString();
-//        $url->setValue( "http://emr_api:8888/fhir" );
-//        $conformance->setUrl( $url );
-//
-//        $version = new FHIRString();
-//        $version->setValue( "1.0" );
-//        $conformance->setVersion( $version );
-//
-//        $name = new FHIRString();
-//        $name->setValue( "OpenEMR FHIR Server" );
-//        $conformance->setName( $name );
-//
-//        return $conformance->xmlSerialize();
-
-        return file_get_contents( __DIR__."/../../../files/conformance.xml" );
+        return file_get_contents(__DIR__."/../../../files/conformance.xml");
     }
 
     /**
@@ -59,7 +32,6 @@ class ConformanceController extends Controller
      */
     public function create()
     {
-
     }
 
     /**
@@ -67,9 +39,8 @@ class ConformanceController extends Controller
      *
      * @return Response
      */
-    public function store( Request $request )
+    public function store(Request $request)
     {
-
     }
 
     /**
@@ -90,7 +61,6 @@ class ConformanceController extends Controller
      */
     public function edit($id)
     {
-        //
     }
 
     /**
@@ -101,7 +71,6 @@ class ConformanceController extends Controller
      */
     public function update($id)
     {
-        //
     }
 
     /**
@@ -112,6 +81,5 @@ class ConformanceController extends Controller
      */
     public function destroy($id)
     {
-        //
     }
 }

@@ -3,7 +3,7 @@ namespace LibreEHR\FHIR\Utilities;
 
 class ConnectionManager
 {
-    public static function connect( $model, $databaseKey )
+    public static function connect($model, $databaseKey)
     {
         $dataSync = AtlasBases::find($id_client);
 
@@ -20,6 +20,6 @@ class ConnectionManager
 
         // And set the new connection to my models
 
-        $model->setConnection( $databaseKey );
+        $model->setConnection($databaseKey);
     }
 }

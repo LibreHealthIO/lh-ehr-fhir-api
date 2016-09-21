@@ -14,7 +14,7 @@ class EncounterController extends Controller
     protected $encounterRepository = null;
     protected $encounterAdapter = null;
 
-    public function __construct( PatientRepositoryInterface $patientRepository, PatientAdapterInterface $patientAdapter )
+    public function __construct(PatientRepositoryInterface $patientRepository, PatientAdapterInterface $patientAdapter)
     {
         $this->patientRepository = $patientRepository;
         $this->patientAdapter = $patientAdapter;
@@ -27,7 +27,7 @@ class EncounterController extends Controller
      */
     public function index()
     {
-        return $this->patientAdapter->toOutput( $this->patientRepository->fetchAll() );
+        return $this->patientAdapter->toOutput($this->patientRepository->fetchAll());
     }
 
     /**
@@ -37,7 +37,6 @@ class EncounterController extends Controller
      */
     public function create()
     {
-
     }
 
     /**
@@ -45,11 +44,11 @@ class EncounterController extends Controller
      *
      * @return Response
      */
-    public function store( Request $request )
+    public function store(Request $request)
     {
         $data = $request->getContent();
-        $patientInterface = $this->patientAdapter->toPatientInterface( $data );
-        $this->patientRepository->create( $patientInterface );
+        $patientInterface = $this->patientAdapter->toPatientInterface($data);
+        $this->patientRepository->create($patientInterface);
         // TODO return response code
     }
 
@@ -61,7 +60,7 @@ class EncounterController extends Controller
      */
     public function show($id)
     {
-        return $this->patientAdapter->toOutput( $this->patientRepository->find()->byPid( $id ) );
+        return $this->patientAdapter->toOutput($this->patientRepository->find()->byPid($id));
     }
 
     /**
@@ -72,7 +71,6 @@ class EncounterController extends Controller
      */
     public function edit($id)
     {
-        //
     }
 
     /**
@@ -83,7 +81,6 @@ class EncounterController extends Controller
      */
     public function update($id)
     {
-        //
     }
 
     /**
@@ -94,6 +91,5 @@ class EncounterController extends Controller
      */
     public function destroy($id)
     {
-        //
     }
 }

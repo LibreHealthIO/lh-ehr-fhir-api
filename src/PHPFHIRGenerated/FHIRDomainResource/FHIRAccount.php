@@ -141,7 +141,8 @@ class FHIRAccount extends FHIRDomainResource implements JsonSerializable
     private $_fhirElementName = 'Account';
 
     /**
-     * Unique identifier used to reference the account.  May or may not be intended for human use (e.g. credit card number).
+     * Unique identifier used to reference the account.
+     * May or may not be intended for human use (e.g. credit card number).
      * @return \PHPFHIRGenerated\FHIRElement\FHIRIdentifier[]
      */
     public function getIdentifier()
@@ -150,7 +151,8 @@ class FHIRAccount extends FHIRDomainResource implements JsonSerializable
     }
 
     /**
-     * Unique identifier used to reference the account.  May or may not be intended for human use (e.g. credit card number).
+     * Unique identifier used to reference the account.
+     * May or may not be intended for human use (e.g. credit card number).
      * @param \PHPFHIRGenerated\FHIRElement\FHIRIdentifier[] $identifier
      * @return $this
      */
@@ -261,7 +263,8 @@ class FHIRAccount extends FHIRDomainResource implements JsonSerializable
     }
 
     /**
-     * Represents the sum of all credits less all debits associated with the account.  Might be positive, zero or negative.
+     * Represents the sum of all credits less all debits associated with the account.
+     * Might be positive, zero or negative.
      * @return \PHPFHIRGenerated\FHIRMoney
      */
     public function getBalance()
@@ -270,7 +273,8 @@ class FHIRAccount extends FHIRDomainResource implements JsonSerializable
     }
 
     /**
-     * Represents the sum of all credits less all debits associated with the account.  Might be positive, zero or negative.
+     * Represents the sum of all credits less all debits associated with the account.
+     * Might be positive, zero or negative.
      * @param \PHPFHIRGenerated\FHIRMoney $balance
      * @return $this
      */
@@ -385,20 +389,40 @@ class FHIRAccount extends FHIRDomainResource implements JsonSerializable
         $json['resourceType'] = $this->_fhirElementName;
         if (0 < count($this->identifier)) {
             $json['identifier'] = array();
-            foreach($this->identifier as $identifier) {
+            foreach ($this->identifier as $identifier) {
                 $json['identifier'][] = $identifier->jsonSerialize();
             }
         }
-        if (null !== $this->name) $json['name'] = $this->name->jsonSerialize();
-        if (null !== $this->type) $json['type'] = $this->type->jsonSerialize();
-        if (null !== $this->status) $json['status'] = $this->status->jsonSerialize();
-        if (null !== $this->activePeriod) $json['activePeriod'] = $this->activePeriod->jsonSerialize();
-        if (null !== $this->currency) $json['currency'] = $this->currency->jsonSerialize();
-        if (null !== $this->balance) $json['balance'] = $this->balance->jsonSerialize();
-        if (null !== $this->coveragePeriod) $json['coveragePeriod'] = $this->coveragePeriod->jsonSerialize();
-        if (null !== $this->subject) $json['subject'] = $this->subject->jsonSerialize();
-        if (null !== $this->owner) $json['owner'] = $this->owner->jsonSerialize();
-        if (null !== $this->description) $json['description'] = $this->description->jsonSerialize();
+        if (null !== $this->name) {
+            $json['name'] = $this->name->jsonSerialize();
+        }
+        if (null !== $this->type) {
+            $json['type'] = $this->type->jsonSerialize();
+        }
+        if (null !== $this->status) {
+            $json['status'] = $this->status->jsonSerialize();
+        }
+        if (null !== $this->activePeriod) {
+            $json['activePeriod'] = $this->activePeriod->jsonSerialize();
+        }
+        if (null !== $this->currency) {
+            $json['currency'] = $this->currency->jsonSerialize();
+        }
+        if (null !== $this->balance) {
+            $json['balance'] = $this->balance->jsonSerialize();
+        }
+        if (null !== $this->coveragePeriod) {
+            $json['coveragePeriod'] = $this->coveragePeriod->jsonSerialize();
+        }
+        if (null !== $this->subject) {
+            $json['subject'] = $this->subject->jsonSerialize();
+        }
+        if (null !== $this->owner) {
+            $json['owner'] = $this->owner->jsonSerialize();
+        }
+        if (null !== $this->description) {
+            $json['description'] = $this->description->jsonSerialize();
+        }
         return $json;
     }
 
@@ -409,26 +433,48 @@ class FHIRAccount extends FHIRDomainResource implements JsonSerializable
      */
     public function xmlSerialize($returnSXE = false, $sxe = null)
     {
-        if (null === $sxe) $sxe = new \SimpleXMLElement('<Account xmlns="http://hl7.org/fhir"></Account>');
+        if (null === $sxe) {
+            $sxe = new \SimpleXMLElement('<Account xmlns="http://hl7.org/fhir"></Account>');
+        }
         parent::xmlSerialize(true, $sxe);
         if (0 < count($this->identifier)) {
-            foreach($this->identifier as $identifier) {
+            foreach ($this->identifier as $identifier) {
                 $identifier->xmlSerialize(true, $sxe->addChild('identifier'));
             }
         }
-        if (null !== $this->name) $this->name->xmlSerialize(true, $sxe->addChild('name'));
-        if (null !== $this->type) $this->type->xmlSerialize(true, $sxe->addChild('type'));
-        if (null !== $this->status) $this->status->xmlSerialize(true, $sxe->addChild('status'));
-        if (null !== $this->activePeriod) $this->activePeriod->xmlSerialize(true, $sxe->addChild('activePeriod'));
-        if (null !== $this->currency) $this->currency->xmlSerialize(true, $sxe->addChild('currency'));
-        if (null !== $this->balance) $this->balance->xmlSerialize(true, $sxe->addChild('balance'));
-        if (null !== $this->coveragePeriod) $this->coveragePeriod->xmlSerialize(true, $sxe->addChild('coveragePeriod'));
-        if (null !== $this->subject) $this->subject->xmlSerialize(true, $sxe->addChild('subject'));
-        if (null !== $this->owner) $this->owner->xmlSerialize(true, $sxe->addChild('owner'));
-        if (null !== $this->description) $this->description->xmlSerialize(true, $sxe->addChild('description'));
-        if ($returnSXE) return $sxe;
+        if (null !== $this->name) {
+            $this->name->xmlSerialize(true, $sxe->addChild('name'));
+        }
+        if (null !== $this->type) {
+            $this->type->xmlSerialize(true, $sxe->addChild('type'));
+        }
+        if (null !== $this->status) {
+            $this->status->xmlSerialize(true, $sxe->addChild('status'));
+        }
+        if (null !== $this->activePeriod) {
+            $this->activePeriod->xmlSerialize(true, $sxe->addChild('activePeriod'));
+        }
+        if (null !== $this->currency) {
+            $this->currency->xmlSerialize(true, $sxe->addChild('currency'));
+        }
+        if (null !== $this->balance) {
+            $this->balance->xmlSerialize(true, $sxe->addChild('balance'));
+        }
+        if (null !== $this->coveragePeriod) {
+            $this->coveragePeriod->xmlSerialize(true, $sxe->addChild('coveragePeriod'));
+        }
+        if (null !== $this->subject) {
+            $this->subject->xmlSerialize(true, $sxe->addChild('subject'));
+        }
+        if (null !== $this->owner) {
+            $this->owner->xmlSerialize(true, $sxe->addChild('owner'));
+        }
+        if (null !== $this->description) {
+            $this->description->xmlSerialize(true, $sxe->addChild('description'));
+        }
+        if ($returnSXE) {
+            return $sxe;
+        }
         return $sxe->saveXML();
     }
-
-
 }

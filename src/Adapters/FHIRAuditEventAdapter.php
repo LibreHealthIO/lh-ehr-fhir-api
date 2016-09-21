@@ -14,7 +14,7 @@ class FHIRAuditEventAdapter implements AuditEventAdapterInterface
 {
     protected $repository = null;
 
-    public function __construct( AuditEventRepositoryInterface $repositoryInterface )
+    public function __construct(AuditEventRepositoryInterface $repositoryInterface)
     {
         $this->repository = $repositoryInterface;
     }
@@ -25,25 +25,24 @@ class FHIRAuditEventAdapter implements AuditEventAdapterInterface
      * Takes a resource ID and returns a FHIR JSON or XML string
      * in response
      */
-    public function retrieve( $id )
+    public function retrieve($id)
     {
-        $interface = $this->repository->find()->byId( $id );
-        return $this->interfaceToModel( $interface );
+        $interface = $this->repository->find()->byId($id);
+        return $this->interfaceToModel($interface);
     }
 
-    public function store( Request $request )
+    public function store(Request $request)
     {
         // TODO add validation
         $data = $request->getContent();
-        $interface = $this->jsonToInterface( $data );
-        $storedInterface = $this->storeInterface( $interface );
-        return $this->interfaceToModel( $storedInterface );
+        $interface = $this->jsonToInterface($data);
+        $storedInterface = $this->storeInterface($interface);
+        return $this->interfaceToModel($storedInterface);
     }
 
-    public function storeInterface( AuditEventInterface $auditEventInterface )
+    public function storeInterface(AuditEventInterface $auditEventInterface)
     {
-        $patientInterface = $this->repository->create( $auditEventInterface );
-        return $patientInterface;
+        return $this->repository->create($auditEventInterface);
     }
 
     /**
@@ -52,7 +51,6 @@ class FHIRAuditEventAdapter implements AuditEventAdapterInterface
      */
     public function collectionToOutput()
     {
-
     }
 
     /**
@@ -61,34 +59,34 @@ class FHIRAuditEventAdapter implements AuditEventAdapterInterface
      *
      * Takes a FHIR post string and returns a
      */
-    public function jsonToInterface( $data )
+    public function jsonToInterface($data)
     {
         $parser = new \PHPFHIRGenerated\PHPFHIRResponseParser();
-        $fhirModel = $parser->parse( $data );
-        if ( is_a( $fhirModel, 'FHIRAuditEvent' ) ) {
-            return $this->modelToInterface( $fhirModel );
+        $fhirModel = $parser->parse($data);
+        if (is_a($fhirModel, 'FHIRAuditEvent')) {
+            return $this->modelToInterface($fhirModel);
         } else {
             // Error, the Resource does not match, expecting a Patient,
             // // but got something else.
         }
     }
 
-    public function modelToInterface( FHIRAuditEvent $fhirAuditEvent )
+    public function modelToInterface(FHIRAuditEvent $fhirAuditEvent)
     {
-        $auditEventInterface = App::make( 'LibreEHR\Core\Contracts\AuditEventInterface' );
-        if ( $auditEventInterface instanceof AuditEventInterface ) {
+        $auditEventInterface = App::make('LibreEHR\Core\Contracts\AuditEventInterface');
+        if ($auditEventInterface instanceof AuditEventInterface) {
             $participants = $fhirAuditEvent->getParticipant();
             $firstParticipant = $participants[0];
             $username = $firstParticipant->getAltId()->getValue();
-            $auditEventInterface->setUsername( $username );
+            $auditEventInterface->setUsername($username);
 
-            $auditEventInterface->setEventJson( json_encode( $fhirAuditEvent->jsonSerialize() ) );
+            $auditEventInterface->setEventJson(json_encode($fhirAuditEvent->jsonSerialize()));
         }
 
         return $auditEventInterface;
     }
 
-    public function interfaceToModel( AuditEventInterface $auditEventInterface )
+    public function interfaceToModel(AuditEventInterface $auditEventInterface)
     {
         return new FHIRAuditEvent();
     }
