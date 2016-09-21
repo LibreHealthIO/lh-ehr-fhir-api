@@ -37,33 +37,33 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
      * Takes a resource ID and returns a FHIR JSON or XML string
      * in response
      */
-    public function retrieve( $id )
+    public function retrieve($id)
     {
-        $this->repository->finder()->pushCriteria( new ByPid( $id ) );
+        $this->repository->finder()->pushCriteria(new ByPid($id));
         $patientInterface = $this->repository->find();
-        return $this->interfaceToModel( $patientInterface );
+        return $this->interfaceToModel($patientInterface);
     }
 
     /**
      * @param Request $request
      * @return FHIRPatient
      */
-    public function store( Request $request )
+    public function store(Request $request)
     {
         // TODO add validation
         $data = $request->getContent();
-        $interface = $this->jsonToInterface( $data );
-        $storedInterface = $this->storeInterface( $interface );
-        return $this->interfaceToModel( $storedInterface );
+        $interface = $this->jsonToInterface($data);
+        $storedInterface = $this->storeInterface($interface);
+        return $this->interfaceToModel($storedInterface);
     }
 
     /**
      * @param PatientInterface $patientInterface
      * @return PatientInterface
      */
-    public function storeInterface( PatientInterface $patientInterface )
+    public function storeInterface(PatientInterface $patientInterface)
     {
-        $patientInterface = $this->repository->create( $patientInterface );
+        $patientInterface = $this->repository->create($patientInterface);
         return $patientInterface;
     }
 
@@ -75,9 +75,9 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
     {
         $collection = $this->repository->fetchAll();
         $output = array();
-        foreach ( $collection as $patient ) {
-            if ( $patient instanceof PatientInterface ) {
-                $fhirPatient = $this->interfaceToModel( $patient );
+        foreach ($collection as $patient) {
+            if ($patient instanceof PatientInterface) {
+                $fhirPatient = $this->interfaceToModel($patient);
                 $output[]= $fhirPatient;
             }
         }
@@ -93,7 +93,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
     {
         $patient = $this->repository->get($id);
         if (!empty($patient)) {
-            return  $this->interfaceToModel( $patient );
+            return  $this->interfaceToModel($patient);
         } else {
             abort(404, 'No Patient with id = ' . $id. ' found');
         }
@@ -103,14 +103,13 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
     {
         $data = $request->json()->all();
 
-        if(!isset($data['id'])) {
+        if (!isset($data['id'])) {
             return json_encode(array('error' => 'no arguments'));
         }
         // TODO add validation
-        $storedInterface = $this->requestToInterface( $data['id'], $data );
+        $storedInterface = $this->requestToInterface($data['id'], $data);
 
-        return $this->interfaceToModel( $storedInterface );
-
+        return $this->interfaceToModel($storedInterface);
     }
 
     /**
@@ -119,7 +118,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
      *
      * Takes a FHIR post string and returns a AppointmentInterface
      */
-    public function requestToInterface( $id, $data )
+    public function requestToInterface($id, $data)
     {
 
         $patientInterface = $this->repository->update($id, $data);
@@ -131,17 +130,12 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
      * @param PatientInterface $patientInterface
      * @return PatientInterface
      */
-    public function updateInterface( PatientInterface $patientInterface )
+    public function updateInterface(PatientInterface $patientInterface)
     {
-        $patientInterface = $this->repository->update( $patientInterface );
+        $patientInterface = $this->repository->update($patientInterface);
         return $patientInterface;
     }
     
-    
-    
-    
-    
-
     /**
      * @param $id
      * @return array
@@ -151,28 +145,29 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         return $this->repository->delete($id);
     }
 
-
     /**
      * @param string $data
      * @return PatientInterface
      *
      * Takes a FHIR post string and returns a PatientInterface
      */
-    public function jsonToInterface( $data )
+    public function jsonToInterface($data)
     {
         $parser = new \PHPFHIRGenerated\PHPFHIRResponseParser();
-        $fhirPatient = $parser->parse( $data );
-        if ( $fhirPatient instanceof FHIRPatient ) {
-            return $this->modelToInterface( $fhirPatient );
+        $fhirPatient = $parser->parse($data);
+        if ($fhirPatient instanceof FHIRPatient) {
+            return $this->modelToInterface($fhirPatient);
         } else {
             // Error, the Resource does not match, expecting a Patient,
             // // but got something else.
-            abort(403, 'Error, the Resource does not match, expecting a Patient, but got "' . typeOf($fhirPatient). '"');
+            abort(
+                403,
+                'Error, the Resource does not match, expecting a Patient, but got "'. typeOf($fhirPatient). '"'
+            );
         }
-
     }
 
-    public function modelToInterface( FHIRPatient $fhirPatient )
+    public function modelToInterface(FHIRPatient $fhirPatient)
     {
         $patientInterface = App::make('LibreEHR\Core\Contracts\PatientInterface');
         if ($patientInterface instanceof PatientInterface) {
@@ -203,7 +198,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                             switch ($url2) {
                                 case "#terms-of-service":
                                     break;
-                                case "#allow-sms" :
+                                case "#allow-sms":
                                     $allowSms = $x2->getValueBoolean();
                                     $allowSms = ($allowSms->getValue() == 1) ? 'YES' : 'NO';
                                     $patientInterface->setAllowSms($allowSms);
@@ -215,11 +210,10 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             }
 
             $photos = $fhirPatient->getPhoto();
-            if(!empty($photos)) {
+            if (!empty($photos)) {
                 $photo = $photos[0];
                 $formatCode = $photo->getContentType();
                 $mimetype = $formatCode->getValue();
-                $ext = "";
                 switch ($mimetype) {
                     case "image/jpeg":
                         $ext = "jpg";
@@ -244,71 +238,71 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
      * @param PatientInterface $patient
      * @return FHIRPatient
      */
-    public function interfaceToModel( PatientInterface $patient )
+    public function interfaceToModel(PatientInterface $patient)
     {
         $fhirPatient = new FHIRPatient();
 
         $identifier = new FHIRIdentifier();
         $use = new FHIRIdentifierUse();
-        $use->setValue( "usual" );
-        $identifier->setUse( $use );
+        $use->setValue("usual");
+        $identifier->setUse($use);
         $value = new FHIRString();
-        $value->setValue( $patient->getId() );
-        $identifier->setValue( $value );
-        $fhirPatient->addIdentifier( $identifier );
+        $value->setValue($patient->getId());
+        $identifier->setValue($value);
+        $fhirPatient->addIdentifier($identifier);
 
         $dob = new FHIRDate();
-        $dob->setValue( $patient->getDOB() );
-        $fhirPatient->setBirthDate( $dob );
+        $dob->setValue($patient->getDOB());
+        $fhirPatient->setBirthDate($dob);
 
         $name = new FHIRHumanName();
         $nameUse = new FHIRNameUse();
-        $nameUse->setValue( "usual" );
-        $name->setUse( $nameUse );
+        $nameUse->setValue("usual");
+        $name->setUse($nameUse);
         $givenName = new FHIRString();
-        $name->addGiven( $givenName->setValue( $patient->getFirstName() ) );
+        $name->addGiven($givenName->setValue($patient->getFirstName()));
         $familyName = new FHIRString();
-        $name->addFamily( $familyName->setValue( $patient->getLastName() ) );
-        $fhirPatient->addName( $name );
+        $name->addFamily($familyName->setValue($patient->getLastName()));
+        $fhirPatient->addName($name);
 
         $gender = new FHIRCode();
-        $gender->setValue( $patient->getGender() );
-        $fhirPatient->setGender( $gender );
+        $gender->setValue($patient->getGender());
+        $fhirPatient->setGender($gender);
 
         $phone = new FHIRContactPoint();
         $use = new FHIRContactPointUse();
-        $use->setValue( 'primary' );
-        $phone->setUse( $use );
+        $use->setValue('primary');
+        $phone->setUse($use);
         $system = new FHIRContactPointSystem();
-        $system->setValue( 'phone' );
-        $phone->setSystem( $system );
+        $system->setValue('phone');
+        $phone->setSystem($system);
         $phoneNumber = new FHIRString();
-        $phoneNumber->setValue( $patient->getPrimaryPhone() );
-        $phone->setValue( $phoneNumber );
-        $fhirPatient->addTelecom( $phone );
+        $phoneNumber->setValue($patient->getPrimaryPhone());
+        $phone->setValue($phoneNumber);
+        $fhirPatient->addTelecom($phone);
 
         $email = new FHIRContactPoint();
         $use = new FHIRContactPointUse();
-        $use->setValue( 'primary' );
-        $email->setUse( $use );
+        $use->setValue('primary');
+        $email->setUse($use);
         $system = new FHIRContactPointSystem();
-        $system->setValue( 'email' );
-        $email->setSystem( $system );
+        $system->setValue('email');
+        $email->setSystem($system);
         $emailAddress = new FHIRString();
-        $emailAddress->setValue( $patient->getEmailAddress() );
-        $email->setValue( $emailAddress );
-        $fhirPatient->addTelecom( $email );
+        $emailAddress->setValue($patient->getEmailAddress());
+        $email->setValue($emailAddress);
+        $fhirPatient->addTelecom($email);
 
 
-        if ( $patient->getPhoto() ) {
+        if ($patient->getPhoto()) {
             $photo = new FHIRAttachment();
             $contentType = new FHIRCode();
-            $contentType->setValue( $patient->getPhoto()->getMimetype() );
-            $photo->setContentType( $contentType );
+            $contentType->setValue($patient->getPhoto()->getMimetype());
+            $photo->setContentType($contentType);
             $photoUrl = new FHIRUri();
-            $photoUrl->setValue( $patient->getPhoto()->getPublicUrl() );
-            $photo->setUrl( $photoUrl );
-            $fhirPatient->addPhoto( $photo );
+            $photoUrl->setValue($patient->getPhoto()->getPublicUrl());
+            $photo->setUrl($photoUrl);
+            $fhirPatient->addPhoto($photo);
         }
         // TODO provide other data to FHIR models
         //

@@ -70,6 +70,5 @@ class CustomPassportServiceProvider extends PassportServiceProvider
         ], function ($router) {
             require base_path('vendor/libre-ehr/fhir/src/Http/authRoutes.php');
         });
-
     }
 }

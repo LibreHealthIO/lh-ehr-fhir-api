@@ -6,7 +6,7 @@ use LibreEHR\Core\Contracts\BundleAdapterInterface;
 
 class BundleController extends AbstractController
 {
-    public function __construct( BundleAdapterInterface $adapter)
+    public function __construct(BundleAdapterInterface $adapter)
     {
         $this->adapter = $adapter;
     }

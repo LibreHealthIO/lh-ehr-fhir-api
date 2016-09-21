@@ -64,13 +64,17 @@ use PHPFHIRGenerated\FHIRResource\FHIRDomainResource;
 use PHPFHIRGenerated\JsonSerializable;
 
 /**
- * Risk of harmful or undesirable, physiological response which is unique to an individual and associated with exposure to a substance.
+ * Risk of harmful or undesirable, physiological response which is unique
+ * to an individual and associated with exposure to a substance.
  * If the element is present, it must have either a @value, an @id, or extensions
  */
 class FHIRAllergyIntolerance extends FHIRDomainResource implements JsonSerializable
 {
     /**
-     * This records identifiers associated with this allergy/intolerance concern that are defined by business processes and/or used to refer to it when a direct URL reference to the resource itself is not appropriate (e.g. in CDA documents, or in written / printed documentation).
+     * This records identifiers associated with this allergy/intolerance concern
+     * that are defined by business processes and/or used to refer to it
+     * when a direct URL reference to the resource itself is not appropriate
+     * (e.g. in CDA documents, or in written / printed documentation).
      * @var \PHPFHIRGenerated\FHIRElement\FHIRIdentifier[]
      */
     public $identifier = array();
@@ -463,25 +467,49 @@ class FHIRAllergyIntolerance extends FHIRDomainResource implements JsonSerializa
         $json['resourceType'] = $this->_fhirElementName;
         if (0 < count($this->identifier)) {
             $json['identifier'] = array();
-            foreach($this->identifier as $identifier) {
+            foreach ($this->identifier as $identifier) {
                 $json['identifier'][] = $identifier->jsonSerialize();
             }
         }
-        if (null !== $this->onset) $json['onset'] = $this->onset->jsonSerialize();
-        if (null !== $this->recordedDate) $json['recordedDate'] = $this->recordedDate->jsonSerialize();
-        if (null !== $this->recorder) $json['recorder'] = $this->recorder->jsonSerialize();
-        if (null !== $this->patient) $json['patient'] = $this->patient->jsonSerialize();
-        if (null !== $this->reporter) $json['reporter'] = $this->reporter->jsonSerialize();
-        if (null !== $this->substance) $json['substance'] = $this->substance->jsonSerialize();
-        if (null !== $this->status) $json['status'] = $this->status->jsonSerialize();
-        if (null !== $this->criticality) $json['criticality'] = $this->criticality->jsonSerialize();
-        if (null !== $this->type) $json['type'] = $this->type->jsonSerialize();
-        if (null !== $this->category) $json['category'] = $this->category->jsonSerialize();
-        if (null !== $this->lastOccurence) $json['lastOccurence'] = $this->lastOccurence->jsonSerialize();
-        if (null !== $this->note) $json['note'] = $this->note->jsonSerialize();
+        if (null !== $this->onset) {
+            $json['onset'] = $this->onset->jsonSerialize();
+        }
+        if (null !== $this->recordedDate) {
+            $json['recordedDate'] = $this->recordedDate->jsonSerialize();
+        }
+        if (null !== $this->recorder) {
+            $json['recorder'] = $this->recorder->jsonSerialize();
+        }
+        if (null !== $this->patient) {
+            $json['patient'] = $this->patient->jsonSerialize();
+        }
+        if (null !== $this->reporter) {
+            $json['reporter'] = $this->reporter->jsonSerialize();
+        }
+        if (null !== $this->substance) {
+            $json['substance'] = $this->substance->jsonSerialize();
+        }
+        if (null !== $this->status) {
+            $json['status'] = $this->status->jsonSerialize();
+        }
+        if (null !== $this->criticality) {
+            $json['criticality'] = $this->criticality->jsonSerialize();
+        }
+        if (null !== $this->type) {
+            $json['type'] = $this->type->jsonSerialize();
+        }
+        if (null !== $this->category) {
+            $json['category'] = $this->category->jsonSerialize();
+        }
+        if (null !== $this->lastOccurence) {
+            $json['lastOccurence'] = $this->lastOccurence->jsonSerialize();
+        }
+        if (null !== $this->note) {
+            $json['note'] = $this->note->jsonSerialize();
+        }
         if (0 < count($this->reaction)) {
             $json['reaction'] = array();
-            foreach($this->reaction as $reaction) {
+            foreach ($this->reaction as $reaction) {
                 $json['reaction'][] = $reaction->jsonSerialize();
             }
         }
@@ -495,31 +523,59 @@ class FHIRAllergyIntolerance extends FHIRDomainResource implements JsonSerializa
      */
     public function xmlSerialize($returnSXE = false, $sxe = null)
     {
-        if (null === $sxe) $sxe = new \SimpleXMLElement('<AllergyIntolerance xmlns="http://hl7.org/fhir"></AllergyIntolerance>');
+        if (null === $sxe) {
+            $sxe = new \SimpleXMLElement('<AllergyIntolerance xmlns="http://hl7.org/fhir"></AllergyIntolerance>');
+        }
         parent::xmlSerialize(true, $sxe);
         if (0 < count($this->identifier)) {
-            foreach($this->identifier as $identifier) {
+            foreach ($this->identifier as $identifier) {
                 $identifier->xmlSerialize(true, $sxe->addChild('identifier'));
             }
         }
-        if (null !== $this->onset) $this->onset->xmlSerialize(true, $sxe->addChild('onset'));
-        if (null !== $this->recordedDate) $this->recordedDate->xmlSerialize(true, $sxe->addChild('recordedDate'));
-        if (null !== $this->recorder) $this->recorder->xmlSerialize(true, $sxe->addChild('recorder'));
-        if (null !== $this->patient) $this->patient->xmlSerialize(true, $sxe->addChild('patient'));
-        if (null !== $this->reporter) $this->reporter->xmlSerialize(true, $sxe->addChild('reporter'));
-        if (null !== $this->substance) $this->substance->xmlSerialize(true, $sxe->addChild('substance'));
-        if (null !== $this->status) $this->status->xmlSerialize(true, $sxe->addChild('status'));
-        if (null !== $this->criticality) $this->criticality->xmlSerialize(true, $sxe->addChild('criticality'));
-        if (null !== $this->type) $this->type->xmlSerialize(true, $sxe->addChild('type'));
-        if (null !== $this->category) $this->category->xmlSerialize(true, $sxe->addChild('category'));
-        if (null !== $this->lastOccurence) $this->lastOccurence->xmlSerialize(true, $sxe->addChild('lastOccurence'));
-        if (null !== $this->note) $this->note->xmlSerialize(true, $sxe->addChild('note'));
+        if (null !== $this->onset) {
+            $this->onset->xmlSerialize(true, $sxe->addChild('onset'));
+        }
+        if (null !== $this->recordedDate) {
+            $this->recordedDate->xmlSerialize(true, $sxe->addChild('recordedDate'));
+        }
+        if (null !== $this->recorder) {
+            $this->recorder->xmlSerialize(true, $sxe->addChild('recorder'));
+        }
+        if (null !== $this->patient) {
+            $this->patient->xmlSerialize(true, $sxe->addChild('patient'));
+        }
+        if (null !== $this->reporter) {
+            $this->reporter->xmlSerialize(true, $sxe->addChild('reporter'));
+        }
+        if (null !== $this->substance) {
+            $this->substance->xmlSerialize(true, $sxe->addChild('substance'));
+        }
+        if (null !== $this->status) {
+            $this->status->xmlSerialize(true, $sxe->addChild('status'));
+        }
+        if (null !== $this->criticality) {
+            $this->criticality->xmlSerialize(true, $sxe->addChild('criticality'));
+        }
+        if (null !== $this->type) {
+            $this->type->xmlSerialize(true, $sxe->addChild('type'));
+        }
+        if (null !== $this->category) {
+            $this->category->xmlSerialize(true, $sxe->addChild('category'));
+        }
+        if (null !== $this->lastOccurence) {
+            $this->lastOccurence->xmlSerialize(true, $sxe->addChild('lastOccurence'));
+        }
+        if (null !== $this->note) {
+            $this->note->xmlSerialize(true, $sxe->addChild('note'));
+        }
         if (0 < count($this->reaction)) {
-            foreach($this->reaction as $reaction) {
+            foreach ($this->reaction as $reaction) {
                 $reaction->xmlSerialize(true, $sxe->addChild('reaction'));
             }
         }
-        if ($returnSXE) return $sxe;
+        if ($returnSXE) {
+            return $sxe;
+        }
         return $sxe->saveXML();
     }
 

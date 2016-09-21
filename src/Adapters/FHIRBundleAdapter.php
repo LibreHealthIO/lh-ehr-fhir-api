@@ -32,26 +32,25 @@ class FHIRBundleAdapter implements BundleAdapterInterface
      *
      * Takes a FHIR post string and returns a BundleInterface
      */
-    public function store( Request $request )
+    public function store(Request $request)
     {
         $data = $request->getContent();
         $parser = new \PHPFHIRGenerated\PHPFHIRResponseParser();
-        $fhirBundle = $parser->parse( $data );
-        if ( is_a( $fhirBundle, '\PHPFHIRGenerated\FHIRResource\FHIRBundle' ) ) {
-
+        $fhirBundle = $parser->parse($data);
+        if (is_a($fhirBundle, '\PHPFHIRGenerated\FHIRResource\FHIRBundle')) {
             // Instansiate the response bundle
             $fhirResponseBundle = new FHIRBundle();
 
             // Iterate over each entry in the Request Bundle and handle them according to
             // their Request elements
             $entries = $fhirBundle->getEntry();
-            foreach ( $entries as $entry ) {
 
+            foreach ($entries as $entry) {
                 // First get the proper resource out of the Resource Container
                 $resourceContainer = $entry->getResource();
-                $publicVars = get_object_vars( $resourceContainer );
-                foreach ( $publicVars as $resourceKey => $value ) {
-                    if ( $value !== null ) {
+                $publicVars = get_object_vars($resourceContainer);
+                foreach ($publicVars as $resourceKey => $value) {
+                    if ($value !== null) {
                         // This is resource that our Resource Container is holding
                         $resource = $resourceContainer->{$resourceKey};
                         break;
@@ -67,7 +66,7 @@ class FHIRBundleAdapter implements BundleAdapterInterface
                     //$repository = App::make( $repositoryClass );
 
                     $adapterClass = "\\Mi2\\FHIR\\Adapters\\FHIR{$resourceKey}Adapter";
-                    $adapter = App::make( $adapterClass );
+                    $adapter = App::make($adapterClass);
                     //$adapter = new $adapterClass( $repository );
 
                     // Figure out what to do with the Resource by processing the Request for the Entry
@@ -75,42 +74,42 @@ class FHIRBundleAdapter implements BundleAdapterInterface
                     $method = $request->getMethod();
 
                     // Take action and build appropriate response
-                    if ( $method->getValue() == 'POST' ) {
+                    if ($method->getValue() == 'POST') {
                         // Store the Resource and get the newly created interface
                         // TODO check to make sure adapter implements these methods
-                        $interface = $adapter->modelToInterface( $resource );
-                        $storedInterface = $adapter->storeInterface( $interface );
+                        $interface = $adapter->modelToInterface($resource);
+                        $storedInterface = $adapter->storeInterface($interface);
 
                         // Build response
                         $bundleResponseStatus = new FHIRString();
                         $bundleResponseStatus->setValue('201 Created');
-                        $bundleResponse->setStatus( $bundleResponseStatus );
+                        $bundleResponse->setStatus($bundleResponseStatus);
 
                         $bundleResponseLocation = new FHIRUri();
                         $bundleResponseLocation->setValue("{$resourceKey}/{$interface->getId()}");
-                        $bundleResponse->setLocation( $bundleResponseLocation );
+                        $bundleResponse->setLocation($bundleResponseLocation);
 
                     }
 
-                    $responseResource = $adapter->interfaceToModel( $storedInterface );
+                    $responseResource = $adapter->interfaceToModel($storedInterface);
                     $responseResourceId = new FHIRId();
-                    $responseResourceId->setValue( $interface->getId() );
-                    $responseResource->setId( $responseResourceId );
+                    $responseResourceId->setValue($interface->getId());
+                    $responseResource->setId($responseResourceId);
                     $responseResourceContainer = new FHIRResourceContainer();
                     $responseResourceContainer->{$resourceKey} = $responseResource;
 
-                    $responseEntry->setResource( $responseResourceContainer );
+                    $responseEntry->setResource($responseResourceContainer);
 
-                } catch ( Exception $e ) {
+                } catch (Exception $e) {
                     // TODO Put error codes in response
                     // Build error response
                     $bundleResponseStatus = new FHIRString();
                     $bundleResponseStatus->setValue('500 Internal Server Error');
-                    $bundleResponse->setStatus( $bundleResponseStatus );
+                    $bundleResponse->setStatus($bundleResponseStatus);
                 }
 
-                $responseEntry->setResponse( $bundleResponse );
-                $fhirResponseBundle->addEntry( $responseEntry );
+                $responseEntry->setResponse($bundleResponse);
+                $fhirResponseBundle->addEntry($responseEntry);
 
             }
 
@@ -121,14 +120,21 @@ class FHIRBundleAdapter implements BundleAdapterInterface
 
         // Complete the response
         $fhirBundleType = new FHIRBundleType();
-        $fhirBundleType->setValue( 'transaction-response' );
-        $fhirResponseBundle->setType( $fhirBundleType );
+        $fhirBundleType->setValue('transaction-response');
+        $fhirResponseBundle->setType($fhirBundleType);
 
         return $fhirResponseBundle;
     }
 
-    public function retrieve( $id )
+    public function retrieve($id)
     {
+    }
 
+    /**
+     * @param Request $request
+     * @return FHIRBundle $bundle
+     */
+    public function collectionToOutput(Request $request = null)
+    {
     }
 }

@@ -11,11 +11,10 @@ class PatientController extends AbstractController
 
     protected $patientAdapter = null;
 
-    public function __construct( BaseAdapterInterface $patientAdapter )
+    public function __construct(BaseAdapterInterface $patientAdapter)
     {
         $this->patientAdapter = $patientAdapter;
         $this->middleware('auth:api');
-
     }
 
     public function index(Request $request = null)
@@ -34,7 +33,7 @@ class PatientController extends AbstractController
     }
 
 
-    public function update( Request $request)
+    public function update(Request $request)
     {
         return $this->patientAdapter->update($request);
     }
@@ -44,4 +43,3 @@ class PatientController extends AbstractController
         return $this->patientAdapter->removePatient($id);
     }
 }
-

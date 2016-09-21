@@ -24,5 +24,3 @@
 
 
 Route::resource('document', '\LibreEHR\FHIR\Http\Controllers\DocumentController');
-
-

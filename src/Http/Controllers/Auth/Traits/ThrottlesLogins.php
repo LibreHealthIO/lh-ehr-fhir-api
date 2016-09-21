@@ -18,9 +18,7 @@ trait ThrottlesLogins
      */
     protected function hasTooManyLoginAttempts(Request $request)
     {
-        return $this->limiter()->tooManyAttempts(
-            $this->throttleKey($request), 5, 1
-        );
+        return $this->limiter()->tooManyAttempts($this->throttleKey($request), 5, 1);
     }
 
     /**

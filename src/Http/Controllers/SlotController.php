@@ -7,7 +7,7 @@ class SlotController extends AbstractController
 {
     protected $slotAdapter = null;
 
-    public function __construct( BaseAdapterInterface $slotAdapter )
+    public function __construct(BaseAdapterInterface $slotAdapter)
     {
         $this->slotAdapter = $slotAdapter;
     }

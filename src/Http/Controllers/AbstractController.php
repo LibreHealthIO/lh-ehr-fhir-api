@@ -33,7 +33,6 @@ class AbstractController extends Controller
      */
     public function create()
     {
-
     }
 
     /**
@@ -41,9 +40,9 @@ class AbstractController extends Controller
      *
      * @return Response
      */
-    public function store( Request $request )
+    public function store(Request $request)
     {
-        return $this->adapter->store( $request );
+        return $this->adapter->store($request);
     }
 
     /**
@@ -54,7 +53,7 @@ class AbstractController extends Controller
      */
     public function show($id)
     {
-        return $this->adapter->retrieve( $id );
+        return $this->adapter->retrieve($id);
     }
 
     /**
@@ -74,7 +73,7 @@ class AbstractController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function update( Request $request )
+    public function update(Request $request)
     {
         //
     }

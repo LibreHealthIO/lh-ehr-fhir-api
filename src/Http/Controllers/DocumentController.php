@@ -25,7 +25,6 @@ class DocumentController extends Controller
      */
     public function create()
     {
-
     }
 
     /**
@@ -33,7 +32,7 @@ class DocumentController extends Controller
      *
      * @return Response
      */
-    public function store( Request $request )
+    public function store(Request $request)
     {
     }
 
@@ -46,8 +45,8 @@ class DocumentController extends Controller
     public function show($id)
     {
         $documentRepository = new DocumentRepository();
-        $file = $documentRepository->getFile( $id );
-        return response( $file, 200 )->header( 'Content-Type', 'image/jpeg' );
+        $file = $documentRepository->getFile($id);
+        return response($file, 200)->header('Content-Type', 'image/jpeg');
     }
 
     /**
@@ -69,7 +68,6 @@ class DocumentController extends Controller
      */
     public function update($id)
     {
-        //
     }
 
     /**
@@ -80,6 +78,5 @@ class DocumentController extends Controller
      */
     public function destroy($id)
     {
-        //
     }
 }

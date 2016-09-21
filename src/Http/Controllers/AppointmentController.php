@@ -29,6 +29,4 @@ class AppointmentController extends AbstractController
     {
         return $this->appointmentAdapter->updateStatus($request);
     }
-
 }
-

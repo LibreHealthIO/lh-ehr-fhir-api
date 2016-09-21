@@ -13,20 +13,21 @@ class AppointmentTest extends TestCase
 
     public function tearDown()
     {
-
     }
 
     public function testJsonPost()
     {
         $path = __DIR__."/data";
-        $data = file_get_contents( "$path/appointment-list-response-minimal.json");
-        $response = $this->call( 'POST',
+        $data = file_get_contents("$path/appointment-list-response-minimal.json");
+        $response = $this->call(
+            'POST',
             '/fhir/Appointment',
             [],
             [],
             [],
             $headers = ['HTTP_CONTENT_TYPE' => 'application/json'],
-            $data );
+            $data
+        );
         echo $response;
     }
 
@@ -47,9 +48,10 @@ class AppointmentTest extends TestCase
     public function testCreateAppointment()
     {
         $path = __DIR__."/data";
-        $data =  json_decode(file_get_contents( "$path/appointment_create.json"), true);
+        $data = json_decode(file_get_contents("$path/appointment_create.json"), true);
         $this->json('POST', '/fhir/Appointment', $data)
-            ->seeJsonStructure([
+            ->seeJsonStructure(
+                [
                     "id",
                     "resourceType",
                     "extension",
@@ -59,9 +61,6 @@ class AppointmentTest extends TestCase
                     "end",
                 ]
             );
-
-
-
     }
 
     /**
@@ -115,7 +114,8 @@ class AppointmentTest extends TestCase
     }
 
 
-    private function trimDate($date){
+    private function trimDate($date)
+    {
         return substr($date, 0, strpos($date, " "));
     }
 

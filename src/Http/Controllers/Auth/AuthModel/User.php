@@ -34,5 +34,4 @@ class User extends Authenticatable
     {
         return $this->hasOne('LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\Signup');
     }
-
 }

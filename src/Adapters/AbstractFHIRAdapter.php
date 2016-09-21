@@ -9,11 +9,11 @@ abstract class AbstractFHIRAdapter implements BaseAdapterInterface
 {
     protected $repository = null;
 
-    public function __construct( RepositoryInterface $repositoryInterface )
+    public function __construct(RepositoryInterface $repositoryInterface)
     {
         $this->repository = $repositoryInterface;
 
         // TODO this should be a ConnectionManager passed into me
-        $this->repository->setDatabaseKey( 'mysql' );
+        $this->repository->setDatabaseKey('mysql');
     }
 }
