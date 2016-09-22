@@ -14,6 +14,6 @@ abstract class AbstractFHIRAdapter implements BaseAdapterInterface
         $this->repository = $repositoryInterface;
 
         // TODO this should be a ConnectionManager passed into me
-        $this->repository->setDatabaseKey( 'mysql' );
+//        $this->repository->setDatabaseKey( 'mysql' );
     }
 }
