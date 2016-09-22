@@ -34,7 +34,7 @@ class CreatePharmacyTable extends Migration
                     'town'             => 'Chandler',
                     'state'            => 'AZ',
                     'country'          => 'US',
-                    'registeredStatus' => 'notregistered',
+                    'status' => 'notregistered',
                 ]
             );
 
@@ -47,7 +47,7 @@ class CreatePharmacyTable extends Migration
                     'town'             => 'Mesa',
                     'state'            => 'NJ',
                     'country'          => 'US',
-                    'registeredStatus' => 'registered',
+                    'status' => 'registered',
 
                 ]
             );

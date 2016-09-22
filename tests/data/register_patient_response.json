@@ -1,0 +1,82 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction-response",
+  "total": 1,
+  "entry": [
+    {
+      "fullUrl": "https://gponline-fhir.vu2vu.com/fhir/Patient/47",
+      "resource": {
+        "id": 47,
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "use": "usual",
+            "value": 47
+          }
+        ],
+        "name": [
+          {
+            "use": "usual",
+            "family": ["Everywoman3"],
+            "given": ["Judy Simple"]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "555-555-2003",
+            "use": "primary"
+          },
+          {
+            "system": "email",
+            "value": "",
+            "use": "primary"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1955-01-06",
+        "address" : [
+          {
+            "use" : "home",
+            "line" : [
+              "45 pine st",
+              "Mt eden"
+            ],
+            "city" : "Auckland"
+          }
+        ],
+        "extension" : [
+          {
+            "url" : "https://gponline-fhir.vu2vu.com/gponline-patient-extensions",
+            "extension" : [
+              {
+                "url" : "#groupId",
+                "valueString" : "47"
+              },
+              {
+                "url" : "#status",
+                "valueString" : "pending"
+              },
+              {
+                "url" : "#providerId",
+                "valueString" : "34"
+              },
+              {
+                "url" : "#pharmacyId",
+                "valueString" : "5"
+              },
+              {
+                "url" : "#stripeToken",
+                "valueString" : "some-value"
+              }
+            ]
+          }
+        ]
+      },
+      "response": {
+        "status": "201 Created",
+        "location": "Patient\/47"
+      }
+    }
+  ]
+}
