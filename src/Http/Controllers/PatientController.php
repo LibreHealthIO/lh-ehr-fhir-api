@@ -14,7 +14,7 @@ class PatientController extends AbstractController
     public function __construct( BaseAdapterInterface $patientAdapter )
     {
         $this->patientAdapter = $patientAdapter;
-        $this->middleware('auth:api');
+//        $this->middleware('auth:api');
 
     }
 

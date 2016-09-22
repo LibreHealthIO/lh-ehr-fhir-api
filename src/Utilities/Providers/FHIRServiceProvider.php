@@ -29,6 +29,14 @@ class FHIRServiceProvider extends ServiceProvider
             return new \LibreEHR\Core\Emr\Eloquent\AppointmentData();
         });
 
+        $this->app->bind('LibreEHR\Core\Contracts\ProviderInterface', 'LibreEHR\Core\Emr\Eloquent\ProviderData', function( $app ) {
+            return new \LibreEHR\Core\Emr\Eloquent\ProviderData();
+        });
+
+        $this->app->bind('LibreEHR\Core\Contracts\PharmacyInterface', 'LibreEHR\Core\Emr\Eloquent\PharmacyData', function( $app ) {
+            return new \LibreEHR\Core\Emr\Eloquent\PharmacyData();
+        });
+
         // When AppointmentController needs Adapter Logic point IoC to give the FHIRScheduleAdapter
         $this->app->when( 'LibreEHR\FHIR\Http\Controllers\SlotController' )
             ->needs( 'LibreEHR\Core\Contracts\BaseAdapterInterface' )
@@ -94,6 +102,22 @@ class FHIRServiceProvider extends ServiceProvider
         $this->app->when( 'LibreEHR\FHIR\Http\Controllers\BundleController' )
             ->needs( 'LibreEHR\Core\Contracts\BaseAdapterInterface' )
             ->give( 'LibreEHR\FHIR\Adapters\FHIRBundleAdapter' );
+
+        
+        // When PatientController needs Adapter Logic point IoC to give the FHIRPatientAdapter
+        $this->app->when( 'LibreEHR\FHIR\Http\Controllers\ValuesetController' )
+            ->needs( 'LibreEHR\Core\Contracts\BaseAdapterInterface' )
+            ->give( 'LibreEHR\FHIR\Adapters\FHIRValuesetAdapter' );
+
+        // When Adapter needs Repository Logic point IoC to give the PatientRepository
+        $this->app->when( 'LibreEHR\FHIR\Adapters\FHIRValuesetAdapter' )
+            ->needs( 'LibreEHR\Core\Contracts\RepositoryInterface' )
+            ->give( 'LibreEHR\Core\Emr\Repositories\ProviderRepository' );
+
+        // When Adapter needs Repository Logic point IoC to give the PatientRepository
+        $this->app->when( 'LibreEHR\FHIR\Adapters\FHIRValuesetAdapter' )
+            ->needs( 'LibreEHR\Core\Contracts\RepositoryInterface' )
+            ->give( 'LibreEHR\Core\Emr\Repositories\PharmacyRepository' );
 
 
         // Set up document binding

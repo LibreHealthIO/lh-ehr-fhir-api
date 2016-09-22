@@ -22,6 +22,7 @@
     Route::post('/', '\LibreEHR\FHIR\Http\Controllers\BundleController@store');
     Route::put('signup/update', 'Auth\RegisterController@signupUpdate');
 
+    Route::resource('valueset', '\LibreEHR\FHIR\Http\Controllers\ValuesetController');
 
 Route::resource('document', '\LibreEHR\FHIR\Http\Controllers\DocumentController');
 
