@@ -17,8 +17,12 @@ use PHPFHIRGenerated\FHIRElement\FHIRInstant;
 use PHPFHIRGenerated\FHIRElement\FHIRCode;
 use PHPFHIRGenerated\FHIRElement\FHIRReference;
 //	Reference
+use PHPFHIRGenerated\FHIRResource\FHIRValueSet\FHIRValueSetCompose;
 use PHPFHIRGenerated\FHIRResource\FHIRValueSet\FHIRValueSetContains;
 use PHPFHIRGenerated\FHIRResource\FHIRValueSet\FHIRValueSetExpansion;
+use PHPFHIRGenerated\FHIRResource\FHIRValueSet\FHIRValueSetInclude;
+use PHPFHIRGenerated\FHIRElement\FHIRCoding;
+use PHPFHIRGenerated\FHIRElement\FHIRNarrative;
 use PHPFHIRGenerated\PHPFHIRResponseParser;
 use Illuminate\Support\Facades\App;
 
@@ -35,7 +39,7 @@ class FHIRValueSetAdapter extends AbstractFHIRAdapter implements BaseAdapterInte
      * Takes a resource ID and returns a FHIR JSON or XML string
      * in response
      */
-    public function retrieve( $id )
+    public function retrieve($id)
     {
         // First get the models using the resource specified in the database
         // using the appropriate connection
@@ -49,16 +53,64 @@ class FHIRValueSetAdapter extends AbstractFHIRAdapter implements BaseAdapterInte
 
         // Create the value set and expansion to fill with the model data
         $FHIRValueSet = new FHIRValueSet();
+        $valueSetID = new FHIRString();
+        $valueSetID->setValue('test_id');
+        $FHIRValueSet->setId($valueSetID);
+        $text = new FHIRNarrative();
+        $div = new FHIRString();
+        $div->setValue("<div>\n      <h3>Value Set Contents</h3>\n      <p>This value set contains 3 concepts</p>\n      <table class=\"codes\">\n        <tr>\n          <td>\n            <b>Code</b>\n          </td>\n          <td>\n            <b>System</b>\n          </td>\n          <td>\n            <b>Display</b>\n          </td>\n        </tr>\n        <tr>\n          <td>\n            <a name=\"http---hl7.org-fhir-v2-0136-Y\"> </a>\n            <a href=\"v2/0136/index.html#Y\">Y</a>\n          </td>\n          <td>http://hl7.org/fhir/v2/0136</td>\n          <td>Yes</td>\n        </tr>\n        <tr>\n          <td>\n            <a name=\"http---hl7.org-fhir-v2-0136-N\"> </a>\n            <a href=\"v2/0136/index.html#N\">N</a>\n          </td>\n          <td>http://hl7.org/fhir/v2/0136</td>\n          <td>No</td>\n        </tr>\n        <tr>\n          <td>\n            <a name=\"http---hl7.org-fhir-data-absent-reason-asked\"> </a>\n            <a href=\"valueset-data-absent-reason.html#asked\">asked</a>\n          </td>\n          <td>http://hl7.org/fhir/data-absent-reason</td>\n          <td>Don't know</td>\n        </tr>\n      </table>\n      <h2>Yes/No/Don't Know</h2>\n      <p>For Capturing simple yes-no-don't know answers</p>\n      <p>This value set includes codes from the following code systems:</p>\n      <ul>\n        <li>Import all the codes that are contained in \n          <a href=\"v2/0136/index.html\">http://hl7.org/fhir/ValueSet/v2-0136</a>\n        </li>\n        <li>Include these codes as defined in \n          <a href=\"valueset-data-absent-reason.html\">http://hl7.org/fhir/data-absent-reason</a>\n          <table>\n            <tr>\n              <td>\n                <b>Code</b>\n              </td>\n              <td>\n                <b>Display</b>\n              </td>\n            </tr>\n            <tr>\n              <td>asked</td>\n              <td>Don't know</td>\n              <td>The source human does not know the value.</td>\n            </tr>\n          </table>\n        </li>\n      </ul>\n    </div>");
+        $text->setDiv($div);
+
+        $narrativeStatus = new FHIRString();
+        $narrativeStatus->setValue("generated");
+        $text->setStatus($narrativeStatus);
+        $FHIRValueSet->setText($text);
+
+        $url = new FHIRString();
+        $url->setValue("http://hl7.org/fhir/ValueSet/yesnodontknow");
+        $FHIRValueSet->setUrl($url);
+        $name = new FHIRString();
+        $name->setValue("Yes/No/Don\\'t Know");
+        $FHIRValueSet->setName($name);
+        $status = new FHIRString();
+        $status ->setValue("draft");
+        $FHIRValueSet->setStatus($status);
+        $description = new FHIRString();
+        $description->setValue("For Capturing simple yes-no-don't know answers");
+        $FHIRValueSet->setDescription($description);
+        $compose = new FHIRValueSetCompose();
+        $import = new FHIRString();
+        $import->setValue("http://hl7.org/fhir/ValueSet/v2-0136");
+        $compose->addImport($import);
+        
+        $concept =  new FHIRCoding();
+        $code = new FHIRString();
+        $code->setValue("asked");
+        $concept->setCode($code);
+        $display = new FHIRString();
+        $display->setValue("Don't know");
+
+        $include = new FHIRValueSetInclude();
+        $system = new FHIRString();
+        $system->setValue("http://hl7.org/fhir/data-absent-reason");
+        $include->setSystem($system);
+        $include->addConcept($concept);
+        $concept->setDisplay($display);
+
+        $compose->addInclude($include);
+
+        $FHIRValueSet->setCompose($compose);
+
         $FHIRExpansion = new FHIRValueSetExpansion();
         $timestamp = new FHIRString();
         $timestamp->setValue(date("Y-m-d H:i:s"));
         $FHIRExpansion->setTimestamp($timestamp);
         $identifier = new FHIRString();
-        $identifier->setValue(uniqid($resource.'_'));
+        $identifier->setValue(uniqid($resource . '_'));
         $FHIRExpansion->setIdentifier($identifier);
 
-        foreach ( $models as $model ) {
-            if ( $model instanceof ValueSetInterface ) {
+        foreach ($models as $model) {
+            if ($model instanceof ValueSetInterface) {
 
                 // Models that implement ValueSetInterface are
                 // capable of exporting the name (for display field), code
@@ -80,5 +132,14 @@ class FHIRValueSetAdapter extends AbstractFHIRAdapter implements BaseAdapterInte
         }
 
         return $FHIRValueSet->setExpansion($FHIRExpansion);
+    }
+
+
+    public function collectionToOutput()
+    {
+    }
+
+    public function store(Request $request)
+    {
     }
 }
