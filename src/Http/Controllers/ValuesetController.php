@@ -8,56 +8,36 @@ use Illuminate\Http\Request;
 
 class ValuesetController extends AbstractController
 {
+    protected $valueSetAdapter = null;
 
-//    protected $valuesetAdapter = null;
-    protected $providerAdapter = null;
-    protected $pharmacyAdapter = null;
-
-    public function __construct(BaseAdapterInterface $pharmacyAdapter, BaseAdapterInterface $providerAdapter)
+    public function __construct(BaseAdapterInterface $valueSetAdapter)
     {
-        $this->providerAdapter = $providerAdapter;
-        $this->pharmacyAdapter = $pharmacyAdapter;
+        $this->valueSetAdapter = $valueSetAdapter;
 //        $this->middleware('auth:api');
     }
 
     public function index(Request $request = null)
     {
-        $adapter = $this->setAdapter($request);
-        return $adapter->collectionToOutput();
+        return $this->valueSetAdapter->collectionToOutput();
     }
 
     public function show($id)
     {
-//        $this->setAdapter($request);
-        return $this->valuesetAdapter->show($id);
+        return $this->valueSetAdapter->retrieve($id);
     }
 
     public function post(Request $request)
     {
-//        $this->setAdapter($request);
-        return $this->valuesetAdapter->store($request);
+        return $this->valueSetAdapter->store($request);
     }
-
 
     public function update(Request $request)
     {
-//        $this->setAdapter($request);
-        return $this->valuesetAdapter->update($request);
+        return $this->valueSetAdapter->update($request);
     }
 
     public function destroy($id)
     {
-//        $this->setAdapter($request);
-        return $this->valuesetAdapter->remove($id);
-    }
-
-    private function setAdapter($request)
-    {
-        if ($request->header('type') == 'provider') {
-            $this->valuesetAdapter = $this->providerAdapter;
-        }
-        if ($request->header('type')== 'pharmacy') {
-            $this->valuesetAdapter = $this->pharmacyAdapter;
-        }
+        return $this->valueSetAdapter->remove($id);
     }
 }

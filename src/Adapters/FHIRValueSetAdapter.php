@@ -26,6 +26,8 @@ use Illuminate\Support\Facades\App;
 class FHIRValueSetAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface
 {
 
+    private $repositoryPath = '\LibreEHR\Core\Emr\Repositories\\';
+
     /**
      * @param $id ID identifying resource
      * @return string
@@ -40,7 +42,7 @@ class FHIRValueSetAdapter extends AbstractFHIRAdapter implements BaseAdapterInte
         $valueSet = ValueSet::find($id);
         $resource = $valueSet->resource;
         $connection = $valueSet->connection;
-        $repositoryClass = ucfirst($resource) . 'Repository';
+        $repositoryClass = $this->repositoryPath . ucfirst($resource) . 'Repository';
         $repository = new $repositoryClass();
         $repository->setConnection($connection);
         $models = $repository->fetchAll();
@@ -54,21 +56,24 @@ class FHIRValueSetAdapter extends AbstractFHIRAdapter implements BaseAdapterInte
 
                 // Models that implement ValueSetInterface are
                 // capable of exporting the name (for display field), code
-
-                // TODO @leo implement the Provider and Pharmacy models
                 // So that they conform to the ValueSetInterface
                 // and properly fill the ValueSet->expansion->contains[]
                 $FHIRContains = new FHIRValueSetContains();
                 $display = new FHIRString();
-                $display->setValue( $model->getName() );
-                $FHIRContains->setDisplay( $display );
-                $FHIRExpansion->addContains( $FHIRContains );
+                $display->setValue($model->getName());
+                $code = new FHIRString();
+                $code->setValue($model->getCode());
+                $system = new FHIRString();
+                $system->setValue(\URL::current());
+
+                $FHIRContains->setDisplay($display);
+                $FHIRContains->setCode($code);
+                $FHIRContains->setSystem($system);
+                $FHIRExpansion->addContains($FHIRContains);
             }
         }
 
-        $FHIRValueSet->setExpansion( $FHIRExpansion );
-
-
+        return $FHIRValueSet->setExpansion($FHIRExpansion);
     }
 
 
@@ -96,16 +101,7 @@ class FHIRValueSetAdapter extends AbstractFHIRAdapter implements BaseAdapterInte
      */
     public function collectionToOutput()
     {
-        $collection = $this->repository->getSlots();
-        $output = array();
-        foreach ( $collection as $slot ) {
-            if ( $slot instanceof AppointmentInterface ) {
-                $fhirSlot = $this->interfaceToModel( $slot );
-                $output[]= $fhirSlot;
-            }
-        }
 
-        return $output;
     }
 
     /**
@@ -117,12 +113,10 @@ class FHIRValueSetAdapter extends AbstractFHIRAdapter implements BaseAdapterInte
     public function jsonToInterface( $data )
     {
 
-
     }
 
     public function modelToInterface( AppointmentInterface $appointment  )
     {
-
 
     }
 
