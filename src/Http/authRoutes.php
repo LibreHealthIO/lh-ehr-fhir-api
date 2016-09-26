@@ -6,4 +6,4 @@ Route::post('/recover-password', 'Auth\ForgotPasswordController@sendResetLinkEma
 Route::post('/recover-username', 'Auth\ForgotPasswordController@recoverUsernameByPhone');
 
 
-
+Route::get('/api/user/{id}', 'Auth\UserController@show', ['only' => [ 'show' ]]);
