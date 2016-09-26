@@ -21,6 +21,7 @@ class CreateProvidersTable extends Migration
             $table->string('practice_name');
             $table->string('address');
             $table->string('town');
+            $table->string('state');
             $table->string('country');
             $table->string('email')->unique();
         });
@@ -34,10 +35,11 @@ class CreateProvidersTable extends Migration
                     'firstname'     => 'John',
                     'lastname'      => 'Dow',
                     'email'         => 'example@example.com',
-                    'practice_name'      => 'ophthalmologist',
+                    'practice_name' => 'ophthalmologist',
                     'address'       => '1757 E. Baseline Rd',
                     'town'          => 'Gilbert',
-                    'country'       => 'AZ',
+                    'state'         => 'AZ',
+                    'country'       => 'US',
                 ]
             );
 
@@ -48,10 +50,11 @@ class CreateProvidersTable extends Migration
                     'firstname'     => 'Wolly',
                     'lastname'      => 'Morris',
                     'email'         => 'mirris@example.com',
-                    'practice_name'      => 'otolaryngologist',
+                    'practice_name' => 'otolaryngologist',
                     'address'       => '944 S. Mill Ave',
                     'town'          => 'Tempe',
-                    'country'       => 'AZ',
+                    'state'         => 'AZ',
+                    'country'       => 'US',
                 ]
             );
     }

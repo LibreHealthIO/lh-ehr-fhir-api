@@ -15,7 +15,7 @@ class CreatePharmacyTable extends Migration
     {
         Schema::connection($this->connection)->create('pharmacy', function (Blueprint $table) {
             $table->increments('id', true);
-            $table->string('name');
+            $table->string('pharmacy_name');
             $table->string('address');
             $table->string('town');
             $table->string('state');
@@ -29,7 +29,7 @@ class CreatePharmacyTable extends Migration
             ->insert(
                 [
                     'id'               => 1,
-                    'name'             => 'realty-and-mortgage',
+                    'pharmacy_name'             => 'realty-and-mortgage',
                     'address'          => '3928 E. Beverly Rd',
                     'town'             => 'Chandler',
                     'state'            => 'AZ',
@@ -42,7 +42,7 @@ class CreatePharmacyTable extends Migration
             ->insert(
                 [
                     'id'               => 2,
-                    'name'             => '3d-hypnosis-center',
+                    'pharmacy_name'             => '3d-hypnosis-center',
                     'address'          => '545 W Mariposa St',
                     'town'             => 'Mesa',
                     'state'            => 'NJ',
