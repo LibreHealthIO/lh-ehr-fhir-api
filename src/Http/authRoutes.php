@@ -9,4 +9,8 @@ Route::get('/login', function () {
     return json_encode([ 'error' => 'Unauthorised.', 'code' => 401], true);
 });
 
-Route::get('/api/user/{id}', 'Auth\UserController@show', ['only' => [ 'show' ]]);
+Route::post('/register', '\LibreEHR\FHIR\Http\Controllers\PatientController@post');
+
+Route::get('/api/user/{id}', 'Auth\UserController@show', ['only' => [ 'show' ]])->middleware('auth:api');
+
+Route::get('/user', 'Auth\UserController@index' )->middleware('auth:api');
