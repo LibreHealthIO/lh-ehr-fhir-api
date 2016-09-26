@@ -18,6 +18,7 @@ class CreateValueSetTable extends Migration
             $table->increments('id');
             $table->string('key')->unique();
             $table->string('resource');
+            $table->text('description');
             $table->string('connection');
             $table->timestamps();
         });
