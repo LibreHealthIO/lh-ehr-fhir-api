@@ -302,4 +302,29 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         }
         return $data;
     }
+
+    private function fieldNamesToFHIRExtention($data)
+    {
+        $data = json_decode($data, true);
+
+        $extension = $data['extension'];
+        $extension = array_map(function($extension) {
+            return array(
+                'valueUri' => $extension['portalUri'],
+                'valueString' => $extension['roomKey'],
+                'valueInteger' => $extension['pin']
+            );
+        }, $extension);
+        unset($data['extension']);
+        $data['extension'] = $extension;
+        return json_encode($data);
+    }
+
+    private function getLocation($extension)
+    {
+        $location['portalUri'] = $extension[0]->getValueUri();
+        $location['roomKey'] = $extension[0]->getValueString();
+        $location['pin'] = $extension[0]->getValueInteger();
+        return json_encode($location);
+    }
 }
