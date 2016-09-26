@@ -105,9 +105,12 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      */
     public function collectionToOutput(Request $request = null)
     {
-        $data = $request->all();
-        $data = $this->parseUrl($request->server->get('QUERY_STRING'));
-        $collection = $this->repository->getAppointmentsByParam($data);
+        if (!empty($request->server->get('QUERY_STRING'))) {
+            $data = $this->parseUrl($request->server->get('QUERY_STRING'));
+            $collection = $this->repository->getAppointmentsByParam($data);
+        } else {
+            $collection = $this->repository->fetchAll();
+        }
 
         $bundle = new FHIRBundle;
         $bundleId = UUIDClass::v4();
@@ -180,10 +183,8 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      */
     public function jsonToInterface( $data )
     {
-        $data_test = '{"resourceType":"Appointment","identifier":[{"use":"usual","value":1}],"start":"10:00:00","end":"10:15:00"}';
-
         $parser = new PHPFHIRResponseParser();
-        $fhirAppointment = $parser->parse( $data_test );
+        $fhirAppointment = $parser->parse( $data );
         if ( $fhirAppointment instanceof FHIRAppointment ) {
             return $this->modelToInterface( $fhirAppointment );
         } else {
@@ -243,7 +244,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $extension1 = new FHIRExtension;
         $extension2 = new FHIRExtension;
         $extension3 = new FHIRExtension;
-        $extension->setUrl( "#" );
+        $extension->setUrl( \URL::to('/fhir') . "/extension/vidyo-portal-data" );
         $extension1->setUrl('#portal-uri');
         $value = new FHIRString();
         $value->setValue(json_decode($appointment->getLocation())->portalUri);
@@ -281,10 +282,5 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
             }
         }
         return $data;
-    }
-
-    private function parseAppointmentLocation()
-    {
-
     }
 }
