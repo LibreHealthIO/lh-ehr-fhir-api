@@ -14,47 +14,44 @@ class CreateProvidersTable extends Migration
      */
     public function up()
     {
-        Schema::connection($this->connection)->create('provider', function (Blueprint $table) {
+        Schema::connection($this->connection)->create('providers', function (Blueprint $table) {
             $table->increments('id', true);
             $table->string('firstname');
             $table->string('lastname');
             $table->string('practice_name');
             $table->string('address');
             $table->string('town');
-            $table->string('state');
             $table->string('country');
             $table->string('email')->unique();
         });
 
 
 
-        DB::connection($this->connection)->table('provider')
+        DB::connection($this->connection)->table('providers')
             ->insert(
                 [
                     'id'            => 1,
                     'firstname'     => 'John',
                     'lastname'      => 'Dow',
                     'email'         => 'example@example.com',
-                    'practice_name' => 'ophthalmologist',
+                    'practice_name'      => 'ophthalmologist',
                     'address'       => '1757 E. Baseline Rd',
                     'town'          => 'Gilbert',
-                    'state'         => 'AZ',
-                    'country'       => 'US',
+                    'country'       => 'AZ',
                 ]
             );
 
-        DB::connection($this->connection)->table('provider')
+        DB::connection($this->connection)->table('providers')
             ->insert(
                 [
                     'id'            => 2,
                     'firstname'     => 'Wolly',
                     'lastname'      => 'Morris',
                     'email'         => 'mirris@example.com',
-                    'practice_name' => 'otolaryngologist',
+                    'practice_name'      => 'otolaryngologist',
                     'address'       => '944 S. Mill Ave',
                     'town'          => 'Tempe',
-                    'state'         => 'AZ',
-                    'country'       => 'US',
+                    'country'       => 'AZ',
                 ]
             );
     }
@@ -66,6 +63,6 @@ class CreateProvidersTable extends Migration
      */
     public function down()
     {
-        Schema::connection($this->connection)->drop('provider');
+        Schema::connection($this->connection)->drop('providers');
     }
 }
