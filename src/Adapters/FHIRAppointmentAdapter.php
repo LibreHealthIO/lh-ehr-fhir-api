@@ -244,7 +244,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $extension1 = new FHIRExtension;
         $extension2 = new FHIRExtension;
         $extension3 = new FHIRExtension;
-        $extension->setUrl( "#" );
+        $extension->setUrl( \URL::to('/fhir') . "/extension/vidyo-portal-data" );
         $extension1->setUrl('#portal-uri');
         $value = new FHIRString();
         $value->setValue(json_decode($appointment->getLocation())->portalUri);
