@@ -67,16 +67,16 @@ class FHIRValueSetAdapter extends AbstractFHIRAdapter implements BaseAdapterInte
         $FHIRValueSet->setText($text);
 
         $url = new FHIRString();
-        $url->setValue("http://hl7.org/fhir/ValueSet/yesnodontknow");
+        $url->setValue($valueSet->getValueSetUrl());
         $FHIRValueSet->setUrl($url);
         $name = new FHIRString();
-        $name->setValue("Yes/No/Don\\'t Know");
+        $name->setValue($valueSet->getValueSetName());
         $FHIRValueSet->setName($name);
         $status = new FHIRString();
         $status ->setValue("draft");
         $FHIRValueSet->setStatus($status);
         $description = new FHIRString();
-        $description->setValue("For Capturing simple yes-no-don't know answers");
+        $description->setValue($valueSet->getValueSetDescription());
         $FHIRValueSet->setDescription($description);
         $compose = new FHIRValueSetCompose();
         $import = new FHIRString();
