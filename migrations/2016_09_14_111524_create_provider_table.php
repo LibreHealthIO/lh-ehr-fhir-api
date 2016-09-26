@@ -14,7 +14,7 @@ class CreateProvidersTable extends Migration
      */
     public function up()
     {
-        Schema::connection($this->connection)->create('providers', function (Blueprint $table) {
+        Schema::connection($this->connection)->create('provider', function (Blueprint $table) {
             $table->increments('id', true);
             $table->string('firstname');
             $table->string('lastname');
@@ -27,7 +27,7 @@ class CreateProvidersTable extends Migration
 
 
 
-        DB::connection($this->connection)->table('providers')
+        DB::connection($this->connection)->table('provider')
             ->insert(
                 [
                     'id'            => 1,
@@ -41,7 +41,7 @@ class CreateProvidersTable extends Migration
                 ]
             );
 
-        DB::connection($this->connection)->table('providers')
+        DB::connection($this->connection)->table('provider')
             ->insert(
                 [
                     'id'            => 2,
@@ -63,6 +63,6 @@ class CreateProvidersTable extends Migration
      */
     public function down()
     {
-        Schema::connection($this->connection)->drop('providers');
+        Schema::connection($this->connection)->drop('provider');
     }
 }
