@@ -1,4 +1,5 @@
 <?php
+Route::group( [ 'prefix' => 'fhir/{connection}', 'as' => 'connection' ], function () {
 
     // See resource routes in Laravel Docs
     Route::resource('Patient', '\LibreEHR\FHIR\Http\Controllers\PatientController');
@@ -23,7 +24,7 @@
     Route::put('signup/update', 'Auth\RegisterController@signupUpdate');
 
     Route::resource('ValueSet', '\LibreEHR\FHIR\Http\Controllers\ValuesetController');
-
+});
 Route::resource('document', '\LibreEHR\FHIR\Http\Controllers\DocumentController');
 
 

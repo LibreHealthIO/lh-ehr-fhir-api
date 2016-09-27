@@ -12,6 +12,8 @@ use LibreEHR\Core\Contracts\BaseAdapterInterface;
 use LibreEHR\Core\Contracts\PatientRepositoryInterface;
 use LibreEHR\Core\Emr\Criteria\ByPid;
 use LibreEHR\Core\Emr\Criteria\PatientByPid;
+use LibreEHR\Core\Emr\Repositories\PharmacyRepository;
+use LibreEHR\Core\Emr\Repositories\ProviderRepository;
 use PHPFHIRGenerated\FHIRDomainResource\FHIRPatient;
 use PHPFHIRGenerated\FHIRElement\FHIRCode;
 use \PHPFHIRGenerated\FHIRElement\FHIRAttachment;
@@ -59,11 +61,31 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
     }
 
     /**
-     * @param PatientInterface $patientInterface
-     * @return PatientInterface
-     */
+ * @param PatientInterface $patientInterface
+ * @return PatientInterface
+ */
     public function storeInterface( PatientInterface $patientInterface )
     {
+        // Before we store the patient:
+        // 1. figure out which connection to use
+        // 2. get the emr_provider ID from provider table
+        // 3. get the emr_pharmacy ID from the pharmacy table
+
+        $pharmacyId = $patientInterface->getPharmacyId();
+        $pharmRepo = new PharmacyRepository();
+        $pharmacy = $pharmRepo->get( $pharmacyId );
+        $emrId = $pharmacy->getEmrId();
+        $patientInterface->setPharmacyId( $emrId );
+
+        $providerId = $patientInterface->getProviderId();
+        $providerRepo = new ProviderRepository();
+        $provider = $providerRepo->get( $providerId );
+        $emrId = $provider->getEmrId();
+        $patientInterface->setProviderId( $emrId );
+
+        $connection = $provider->getConnection();
+        $this->repository->setConnection( $connection );
+
         $patientInterface = $this->repository->create( $patientInterface );
         return $patientInterface;
     }
@@ -197,7 +219,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             foreach ($extensions as $extension) {
                 $url = $extension->getUrl();
                 switch ($url) {
-                    case "https://fhirdev.ttdnow.com/extension/contracts":
+                    case \URL::to('/fhir') . "/extension/contracts":
                         $x2s = $extension->getExtension();
                         foreach ($x2s as $x2) {
                             $url2 = $x2->getUrl();
@@ -205,6 +227,22 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                                 case "#terms-of-service":
                                     break;
                                 case "#allow-sms" :
+                                    $allowSms = $x2->getValueBoolean();
+                                    $allowSms = ($allowSms->getValue() == 1) ? 'YES' : 'NO';
+                                    $patientInterface->setAllowSms($allowSms);
+                                    break;
+                            }
+                        }
+                        break;
+
+                    case \URL::to('/fhir') . "/extension/gponline-patient-data":
+                        $x2s = $extension->getExtension();
+                        foreach ($x2s as $x2) {
+                            $url2 = $x2->getUrl();
+                            switch ($url2) {
+                                case "#providerId":
+                                    break;
+                                case "#pharmacyId" :
                                     $allowSms = $x2->getValueBoolean();
                                     $allowSms = ($allowSms->getValue() == 1) ? 'YES' : 'NO';
                                     $patientInterface->setAllowSms($allowSms);
