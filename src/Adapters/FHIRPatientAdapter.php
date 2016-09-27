@@ -26,6 +26,7 @@ use PHPFHIRGenerated\FHIRElement\FHIRHumanName;
 use PHPFHIRGenerated\FHIRElement\FHIRString;
 use PHPFHIRGenerated\FHIRElement\FHIRUri;
 use PHPFHIRGenerated\PHPFHIRResponseParser;
+use PHPFHIRGenerated\FHIRElement\FHIRExtension;
 use ArrayAccess;
 
 class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface, PatientAdapterInterface
@@ -310,8 +311,48 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             $photo->setUrl( $photoUrl );
             $fhirPatient->addPhoto( $photo );
         }
-        // TODO provide other data to FHIR models
-        //
+
+        $extension = new FHIRExtension;
+        $extension1 = new FHIRExtension;
+        $extension2 = new FHIRExtension;
+        $extension3 = new FHIRExtension;
+        $extension4 = new FHIRExtension;
+        $extension5 = new FHIRExtension;
+
+        $extension->setUrl( \URL::to('/fhir') . "/extension/gponline-patient-data" );
+
+        $extension1->setUrl('#groupId');
+        $value = new FHIRString();
+        $value->setValue("1001");
+        $extension1->setValueString($value);
+
+        $extension2->setUrl('#status');
+        $value = new FHIRString();
+        $value->setValue("pending");
+        $extension2->setValueString($value);
+
+        $extension3->setUrl('#providerId');
+        $value = new FHIRString();
+        $value->setValue("34");
+        $extension3->setValueString($value);
+
+        $extension4->setUrl('#pharmacyId');
+        $value = new FHIRString();
+        $value->setValue("5");
+        $extension4->setValueString($value);
+
+        $extension5->setUrl('#stripeToken');
+        $value = new FHIRString();
+        $value->setValue("Some value of stripeToken");
+        $extension5->setValueString($value);
+
+        $extension->addExtension($extension1);
+        $extension->addExtension($extension2);
+        $extension->addExtension($extension3);
+        $extension->addExtension($extension4);
+        $extension->addExtension($extension5);
+        
+        $fhirPatient->addExtension($extension);
 
         return $fhirPatient;
     }
