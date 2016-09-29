@@ -25,10 +25,15 @@ use PHPFHIRGenerated\FHIRElement\FHIRIdentifier;
 use PHPFHIRGenerated\FHIRElement\FHIRIdentifierUse;
 use PHPFHIRGenerated\FHIRElement\FHIRNameUse;
 use PHPFHIRGenerated\FHIRElement\FHIRHumanName;
+use PHPFHIRGenerated\FHIRElement\FHIRResponseType;
 use PHPFHIRGenerated\FHIRElement\FHIRString;
 use PHPFHIRGenerated\FHIRElement\FHIRUri;
+use PHPFHIRGenerated\FHIRResource;
+use PHPFHIRGenerated\FHIRResource\FHIRBundle;
 use PHPFHIRGenerated\PHPFHIRResponseParser;
 use PHPFHIRGenerated\FHIRElement\FHIRExtension;
+use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleEntry;
+use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleResponse;
 use ArrayAccess;
 
 class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface, PatientAdapterInterface
@@ -87,6 +92,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $this->repository->setConnection( $connection );
 
         $patientInterface = $this->repository->create( $patientInterface );
+        
         return $patientInterface;
     }
 
@@ -218,6 +224,27 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             $extensions = $fhirPatient->getExtension();
             foreach ($extensions as $extension) {
                 $url = $extension->getUrl();
+
+                if (strpos($url, '/gponline-patient-extensions') !== false)
+                {
+                    $patientExtensions = $extension->getExtension();
+                    foreach ($patientExtensions as $extension2) {
+                        if ($extension2->getUrl() == "#providerId") {
+                            $providerId = $extension2->getValueString();
+                            $patientInterface->setProviderId($providerId->getValue());
+                        }
+                        if ($extension2->getUrl() == "#pharmacyId") {
+                            $pharmacyId = $extension2->getValueString();
+                            $patientInterface->setPharmacyId($pharmacyId->getValue());
+                        }
+                        if ($extension2->getUrl() == "#status") {
+                            $status = $extension2->getValueString();
+                            $patientInterface->setStatus($status->getValue());
+                        }
+                    }
+
+                }
+
                 switch ($url) {
                     case \URL::to('/fhir') . "/extension/contracts":
                         $x2s = $extension->getExtension();
@@ -275,7 +302,6 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                 $patientInterface->setPhoto($photo);
             }
         }
-
         return $patientInterface;
     }
 
@@ -285,6 +311,16 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
      */
     public function interfaceToModel( PatientInterface $patient )
     {
+        $fhirBundle = new FHIRBundle();
+        $bundleType = new FHIRString();
+        $bundleType->setValue('transaction-response');
+        $fhirBundle->setType($bundleType);
+        $total = new FHIRString();
+        $total->setValue('1');
+        $fhirBundle->setTotal($total);
+
+
+
         $fhirPatient = new FHIRPatient();
 
         $identifier = new FHIRIdentifier();
@@ -392,6 +428,22 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         
         $fhirPatient->addExtension($extension);
 
-        return $fhirPatient;
+        $entry = new FHIRBundleEntry();
+        $entry->setResource($fhirPatient);
+        $fullUrl = new FHIRString();
+        $fullUrl->setValue("https://gponline-fhir.vu2vu.com/fhir/mysql/Patient/47");
+        $entry->setFullUrl($fullUrl);
+
+        $response = new FHIRBundleResponse();
+        $status = new FHIRString();
+        $status->setValue('201 Created');
+        $response->setStatus($status);
+        $location = new FHIRString();
+        $location->setValue('Patient/'. $patient->getId());
+        $response->setLocation($location);
+        $entry->setResponse($response);
+        $fhirBundle->addEntry($entry);
+
+        return $fhirBundle;
     }
 }
