@@ -36,6 +36,9 @@ use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleEntry;
 use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleResponse;
 use ArrayAccess;
 
+use Illuminate\Support\Facades\Auth;
+use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User;
+
 class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface, PatientAdapterInterface
 {
     /**
@@ -92,7 +95,13 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $this->repository->setConnection( $connection );
 
         $patientInterface = $this->repository->create( $patientInterface );
-        
+
+        $providerOriginal = $provider->getOriginal();
+        $currentUser = Auth::user();
+        $currentUser->ehr_pid = $providerId;
+        $currentUser->connection = $providerOriginal['connection'];
+        $currentUser->save();
+
         return $patientInterface;
     }
 
@@ -431,7 +440,9 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $entry = new FHIRBundleEntry();
         $entry->setResource($fhirPatient);
         $fullUrl = new FHIRString();
-        $fullUrl->setValue("https://gponline-fhir.vu2vu.com/fhir/mysql/Patient/47");
+
+        $currentUser = Auth::user();
+        $fullUrl->setValue(\URL::current().'/fhir/' . $currentUser->connection. '/Patient/' . $patient->getId());
         $entry->setFullUrl($fullUrl);
 
         $response = new FHIRBundleResponse();
