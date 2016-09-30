@@ -2,6 +2,7 @@
 namespace LibreEHR\FHIR\Http\Controllers;
 
 use LibreEHR\Core\Contracts\BaseAdapterInterface;
+use Illuminate\Http\Request;
 
 class SlotController extends AbstractController
 {
@@ -12,8 +13,8 @@ class SlotController extends AbstractController
         $this->slotAdapter = $slotAdapter;
     }
 
-    public function index($slotDate = null)
+    public function index(Request $request = null)
     {
-        return $this->slotAdapter->getSlots($slotDate);
+        return $this->slotAdapter->getSlots($request);
     }
 }

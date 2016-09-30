@@ -40,32 +40,25 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
      * Returns a FHIR JSON or XML string
      * in response
      */
-    public function getSlots($startDate)
+    public function getSlots(Request $request)
     {
 
-        $weekend = array('Sat', 'Sun');
-        if(!$startDate) {
-            $startDate = date('Y-m-d');
+        if (!empty($request->server->get('QUERY_STRING'))) {
+            $data = $this->parseUrl($request->server->get('QUERY_STRING'));
+            $slotBusy = $this->repository->getSlots($data);
+        } else {
+            $data['startDate'] = date('Y-m-d');
+                $slotBusy = $this->repository->getSlots($data);
         }
 
-        $dateArr = explode('-', $startDate);
-        $mk_time = mktime(0, 0, 0, $dateArr[1], $dateArr[2], $dateArr[0]);
-        $day = date('D', $mk_time);
-
-        if(!in_array($day, $weekend)) {
-
-            $slotBusy = $this->repository->getSlots($startDate);
-
-            $output = array();
+        $output = array();
             foreach ( $slotBusy as $slot ) {
                 $fhirSlot = $this->interfaceToModel( $slot );
                 $output[]= $fhirSlot;
-
             }
-
             return $output;
 
-        }
+
         //return $fhirSchedule;
     }
 
@@ -88,11 +81,19 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
     }
 
     /**
+     * @param Request $request
      * @return array
      */
-    public function collectionToOutput()
+    public function collectionToOutput(Request $request = null)
     {
-        $collection = $this->repository->getSlots();
+
+        if (!empty($request->server->get('QUERY_STRING'))) {
+            $data = $this->parseUrl($request->server->get('QUERY_STRING'));
+            $collection = $this->repository->getAppointmentsByParam($data);
+        } else {
+            $collection = $this->repository->getSlots();
+        }
+
         $output = array();
         foreach ( $collection as $slot ) {
             if ( $slot instanceof AppointmentInterface ) {
@@ -160,5 +161,18 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
 
         return $fhirSlot;
 
+    }
+
+    private function parseUrl($url)
+    {
+        $array = explode('&', $url);
+        foreach ($array as $ln) {
+            if (strpos($ln, 'patient') !== false) {
+                $data['provider'] = substr($ln, strpos($ln, "=") + 1);
+            } else {
+                $data[] = substr($ln, strpos($ln, "=") + 1);
+            }
+        }
+        return $data;
     }
 }
