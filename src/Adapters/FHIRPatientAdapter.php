@@ -71,6 +71,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         // 2. get the emr_provider ID from provider table
         // 3. get the emr_pharmacy ID from the pharmacy table
 
+        // TODO Throw exception when not a valid pharmacy or provider
         $pharmacyId = $patientInterface->getPharmacyId();
         $pharmRepo = new PharmacyRepository();
         $pharmacy = $pharmRepo->get( $pharmacyId );
@@ -83,7 +84,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $emrId = $provider->getEmrId();
         $patientInterface->setProviderId( $emrId );
 
-        $connection = $provider->getConnection();
+        $connection = $provider->getConnectionKey();
         $this->repository->setConnection( $connection );
 
         $patientInterface = $this->repository->create( $patientInterface );
@@ -218,38 +219,44 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             $extensions = $fhirPatient->getExtension();
             foreach ($extensions as $extension) {
                 $url = $extension->getUrl();
-                switch ($url) {
-                    case \URL::to('/fhir') . "/extension/contracts":
-                        $x2s = $extension->getExtension();
-                        foreach ($x2s as $x2) {
-                            $url2 = $x2->getUrl();
-                            switch ($url2) {
-                                case "#terms-of-service":
-                                    break;
-                                case "#allow-sms" :
-                                    $allowSms = $x2->getValueBoolean();
-                                    $allowSms = ($allowSms->getValue() == 1) ? 'YES' : 'NO';
-                                    $patientInterface->setAllowSms($allowSms);
-                                    break;
-                            }
+                if ( strpos( $url, "/extension/contracts" ) !== false ) {
+                    $x2s = $extension->getExtension();
+                    foreach ($x2s as $x2) {
+                        $url2 = $x2->getUrl();
+                        switch ($url2) {
+                            case "#terms-of-service":
+                                break;
+                            case "#allow-sms" :
+                                $allowSms = $x2->getValueBoolean();
+                                $allowSms = ($allowSms->getValue() == 1) ? 'YES' : 'NO';
+                                $patientInterface->setAllowSms($allowSms);
+                                break;
                         }
-                        break;
+                    }
+                } else if ( strpos( $url, "/extension/gponline-patient-data" ) !== false ) {
 
-                    case \URL::to('/fhir') . "/extension/gponline-patient-data":
                         $x2s = $extension->getExtension();
                         foreach ($x2s as $x2) {
                             $url2 = $x2->getUrl();
                             switch ($url2) {
                                 case "#providerId":
+                                    $providerId = $x2->getValueString();
+                                    $patientInterface->setProviderId( $providerId->getValue() );
                                     break;
                                 case "#pharmacyId" :
-                                    $allowSms = $x2->getValueBoolean();
-                                    $allowSms = ($allowSms->getValue() == 1) ? 'YES' : 'NO';
-                                    $patientInterface->setAllowSms($allowSms);
+                                    $pharmacyId = $x2->getValueString();
+                                    $patientInterface->setPharmacyId( $pharmacyId->getValue() );
+                                    break;
+                                case "#groupId" :
+                                    $groupId = $x2->getValueString();
+                                    $patientInterface->setGroupId( $groupId->getValue() );
+                                    break;
+                                case "#status" :
+                                    $status = $x2->getValueString();
+                                    $patientInterface->setStatus( $status->getValue() );
                                     break;
                             }
                         }
-                        break;
                 }
             }
 

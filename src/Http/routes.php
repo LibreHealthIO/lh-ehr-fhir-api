@@ -1,5 +1,5 @@
 <?php
-Route::group( [ 'prefix' => 'fhir/{connection}', 'as' => 'connection' ], function () {
+Route::group( [ 'prefix' => 'fhir' ], function () {
 
     // See resource routes in Laravel Docs
     Route::resource('Patient', '\LibreEHR\FHIR\Http\Controllers\PatientController');

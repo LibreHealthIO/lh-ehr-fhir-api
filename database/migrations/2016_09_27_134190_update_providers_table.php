@@ -15,7 +15,7 @@ class UpdateProvidersTable extends Migration
     {
         //
         Schema::table('provider', function ($table) {
-            $table->string('emr_id')->default('new');
+            $table->dropColumn('connection');
             $table->string('connection_key')->default('mysql');
         });
     }
@@ -29,7 +29,6 @@ class UpdateProvidersTable extends Migration
     {
         //
         Schema::table('provider', function ($table) {
-            $table->dropColumn('emr_id');
             $table->dropColumn('connection_key');
         });
     }
