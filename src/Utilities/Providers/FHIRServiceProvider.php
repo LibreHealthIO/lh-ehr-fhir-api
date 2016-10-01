@@ -95,6 +95,10 @@ class FHIRServiceProvider extends ServiceProvider
             ->needs( 'LibreEHR\Core\Contracts\RepositoryInterface' )
             ->give( 'LibreEHR\Core\Emr\Repositories\ProfileRepository' );
 
+        // When RegisterController needs Adapter Logic point IoC to give the FHIRPatientAdapter
+        $this->app->when( 'LibreEHR\FHIR\Http\Controllers\RegisterController' )
+            ->needs( 'LibreEHR\Core\Contracts\BaseAdapterInterface' )
+            ->give( 'LibreEHR\FHIR\Adapters\FHIRPatientAdapter' );
 
         // When PatientController needs Adapter Logic point IoC to give the FHIRPatientAdapter
         $this->app->when( 'LibreEHR\FHIR\Http\Controllers\PatientController' )
