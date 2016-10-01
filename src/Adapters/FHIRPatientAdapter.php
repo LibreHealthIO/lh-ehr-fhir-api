@@ -160,11 +160,11 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $patientInterface = $this->repository->update( $patientInterface );
         return $patientInterface;
     }
-    
-    
-    
-    
-    
+
+
+
+
+
 
     /**
      * @param $id
@@ -396,7 +396,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $extension->addExtension($extension3);
         $extension->addExtension($extension4);
         $extension->addExtension($extension5);
-        
+
         $fhirPatient->addExtension($extension);
 
         return $fhirPatient;
