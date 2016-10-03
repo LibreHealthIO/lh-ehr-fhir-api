@@ -1,5 +1,5 @@
 <?php
-Route::group( [ 'prefix' => 'fhir' ], function () {
+Route::group( [ 'middleware' => 'auth:api', 'prefix' => 'fhir' ], function () {
 
     // See resource routes in Laravel Docs
     Route::resource('Patient', '\LibreEHR\FHIR\Http\Controllers\PatientController');

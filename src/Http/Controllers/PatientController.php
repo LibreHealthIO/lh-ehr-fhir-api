@@ -9,39 +9,34 @@ use Illuminate\Http\Request;
 class PatientController extends AbstractController
 {
 
-    protected $patientAdapter = null;
-
-    public function __construct( BaseAdapterInterface $patientAdapter )
-    {
-        $this->patientAdapter = $patientAdapter;
-//        $this->middleware('auth:api');
-
-    }
-
     public function index(Request $request = null)
     {
-        return $this->patientAdapter->collectionToOutput($request);
+        $this->init();
+        return $this->adapter->collectionToOutput($request);
     }
 
     public function show($id = null)
     {
-        return $this->patientAdapter->showPatient($id);
+        $this->init();
+        return $this->adapter->showPatient($id);
     }
 
     public function post(Request $request)
     {
-        return $this->patientAdapter->store($request);
+        $this->init();
+        return $this->adapter->store($request);
     }
-
 
     public function update( Request $request)
     {
-        return $this->patientAdapter->update($request);
+        $this->init();
+        return $this->adapter->update($request);
     }
 
     public function destroy($id)
     {
-        return $this->patientAdapter->removePatient($id);
+        $this->init();
+        return $this->adapter->removePatient($id);
     }
 }
 

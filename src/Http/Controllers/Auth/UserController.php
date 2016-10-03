@@ -44,6 +44,7 @@ class UserController extends Controller
             // User status can be new, pending, active, suspended
             if ( $status == User::STATUS_ACTIVE ||
                 $status == User::STATUS_REGISTERED ) {
+
                 // Endpoint to get the Patient Bundle
                 $endpoints[] = [
                     'name' => 'profile',
@@ -51,6 +52,14 @@ class UserController extends Controller
                     'protocol' => 'https',
                     'path' => '/profile'
                 ];
+
+                $endpoints[] = [
+                    'name' => 'register',
+                    'host' => $host,
+                    'protocol' => 'https',
+                    'path' =>  '/register'
+                ];
+
             } else if ( $status == 'new' ) {
                 $endpoints[] = [
                     'name' => 'register',
