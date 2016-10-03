@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use LibreEHR\Core\Contracts\BaseAdapterInterface;
 use LibreEHR\Core\Contracts\AppointmentInterface;
 
+use LibreEHR\Core\Emr\Repositories\ProviderRepository;
 use PHPFHIRGenerated\FHIRDomainResource\FHIRSlot;
 use PHPFHIRGenerated\FHIRElement\FHIRIdentifier;
 use PHPFHIRGenerated\FHIRElement\FHIRIdentifierUse;
@@ -13,6 +14,7 @@ use PHPFHIRGenerated\FHIRElement\FHIRString;
 use PHPFHIRGenerated\FHIRElement\FHIRInstant;
 use PHPFHIRGenerated\FHIRElement\FHIRCode;
 use PHPFHIRGenerated\FHIRElement\FHIRReference;
+use Illuminate\Http\Response;
 //	Reference
 use PHPFHIRGenerated\PHPFHIRResponseParser;
 use Illuminate\Support\Facades\App;
@@ -45,6 +47,9 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
 
         if (!empty($request->server->get('QUERY_STRING'))) {
             $data = $this->parseUrl($request->server->get('QUERY_STRING'));
+            $providerRepo = new ProviderRepository();
+            $provider = $providerRepo->get($data['provider']);
+            $this->repository->setConnection($provider->getConnectionKey());
             $slotBusy = $this->repository->getSlots($data);
         } else {
             $data['startDate'] = date('Y-m-d');
@@ -52,11 +57,19 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
         }
 
         $output = array();
+        if (!empty($slotBusy)) {
             foreach ( $slotBusy as $slot ) {
-                $fhirSlot = $this->interfaceToModel( $slot );
+                $fhirSlot = $this->interfaceToModel($slot);
                 $output[]= $fhirSlot;
             }
             return $output;
+        } else {
+            return new Response([
+                'accountRegistered' => 0,
+                'status'  => 'Fail',
+                'message' => 'No slots found',
+            ]);
+        }
 
 
         //return $fhirSchedule;
@@ -167,7 +180,7 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
     {
         $array = explode('&', $url);
         foreach ($array as $ln) {
-            if (strpos($ln, 'patient') !== false) {
+            if (strpos($ln, 'provider') !== false) {
                 $data['provider'] = substr($ln, strpos($ln, "=") + 1);
             } else {
                 $data[] = substr($ln, strpos($ln, "=") + 1);
