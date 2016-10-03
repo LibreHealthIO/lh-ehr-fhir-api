@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class UpdateProvidersTable extends Migration
+class UpdateUsersTable2 extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class UpdateProvidersTable extends Migration
      */
     public function up()
     {
-        //
-        Schema::table('provider', function ($table) {
-            $table->dropColumn('connection');
-            $table->string('connection_key')->default('mysql');
+        Schema::table('users', function ($table) {
+            $table->integer('ehr_pid');
         });
     }
 
@@ -27,9 +25,8 @@ class UpdateProvidersTable extends Migration
      */
     public function down()
     {
-        //
-        Schema::table('provider', function ($table) {
-            $table->dropColumn('connection_key');
+        Schema::table('users', function ($table) {
+            $table->dropColumn('ehr_pid');
         });
     }
 }
