@@ -18,10 +18,10 @@ class UserController extends Controller
             $data['user'] = $user;
             $patient = null;
             if ( $user->connection &&
-                $user->ehr_id ) {
+                $user->ehr_pid ) {
                 $patientRepo = new PatientRepository();
                 $patientRepo->setConnection( $user->connection );
-                $patient = $patientRepo->find( $user->ehr_id );
+                $patient = $patientRepo->find( $user->ehr_pid );
             }
 
             $status = User::STATUS_NEW;
@@ -66,7 +66,7 @@ class UserController extends Controller
             return new Response([
                 'accountRegistered' => 0,
                 'status'  => 'Fail',
-                'message' => 'No user with id='.$id. ' found',
+                'message' => 'No patients found',
             ]);
         }
     }
