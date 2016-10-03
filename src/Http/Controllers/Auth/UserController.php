@@ -32,10 +32,11 @@ class UserController extends Controller
                 $user->save();
             }
 
+            $host = $_SERVER['HTTP_HOST'];
             $endpoints = array();
             $endpoints []= [
                 'name' => 'user',
-                'host' => 'gponline.com',
+                'host' => $host,
                 'protocol' => 'https',
                 'path' =>  '/user'
             ];
@@ -46,14 +47,14 @@ class UserController extends Controller
                 // Endpoint to get the Patient Bundle
                 $endpoints[] = [
                     'name' => 'profile',
-                    'host' => 'gponline.com',
+                    'host' => $host,
                     'protocol' => 'https',
                     'path' => '/profile'
                 ];
             } else if ( $status == 'new' ) {
                 $endpoints[] = [
                     'name' => 'register',
-                    'host' => 'gponline.com',
+                    'host' => $host,
                     'protocol' => 'https',
                     'path' =>  '/register'
                 ];
