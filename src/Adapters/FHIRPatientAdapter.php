@@ -76,28 +76,35 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         // TODO Throw exception when not a valid pharmacy or provider
         $pharmacyId = $patientInterface->getPharmacyId();
         $pharmRepo = new PharmacyRepository();
-        $pharmacy = $pharmRepo->get( $pharmacyId );
+        $pharmacy = $pharmRepo->get($pharmacyId);
         $emrId = $pharmacy->getEmrId();
-        $patientInterface->setPharmacyId( $emrId );
+        $patientInterface->setPharmacyId($emrId);
 
         $providerId = $patientInterface->getProviderId();
         $providerRepo = new ProviderRepository();
-        $provider = $providerRepo->get( $providerId );
+        $provider = $providerRepo->get($providerId);
         $emrId = $provider->getEmrId();
-        $patientInterface->setProviderId( $emrId );
+        $patientInterface->setProviderId($emrId);
 
         $connection = $provider->getConnectionKey();
-        $this->repository->setConnection( $connection );
+        $this->repository->setConnection($connection);
 
-        $patientInterface->setStatus( User::STATUS_REGISTERED );
-        $patientInterface = $this->repository->create( $patientInterface );
+        $user = Auth::user();
+        if ( $user->connection == $connection &&
+            $user->ehr_pid &&
+            $patientInterface->getId() ) {
+            // We already have a patient link in the EHR database using this connection
+            $patientInterface = $this->repository->update( $patientInterface );
+        } else {
+            $patientInterface->setStatus(User::STATUS_REGISTERED);
+            $patientInterface = $this->repository->create($patientInterface);
+        }
 
         // Need to set the EHR ID and connection in the user's data
-        $user = Auth::user();
         $user->connection = $connection;
         $user->ehr_pid = $patientInterface->getId();
         $user->save();
-        Auth::setUser( $user );
+        Auth::setUser($user);
 
         return $patientInterface;
     }

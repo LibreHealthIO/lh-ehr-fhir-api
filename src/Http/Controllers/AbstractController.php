@@ -5,6 +5,7 @@ namespace LibreEHR\FHIR\Http\Controllers;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use LibreEHR\Core\Contracts\BaseAdapterInterface;
 
 class AbstractController extends Controller
@@ -16,6 +17,17 @@ class AbstractController extends Controller
         $this->adapter = $patientAdapter;
     }
 
+    public function init()
+    {
+        // TODO this should be a ConnectionManager passed into me
+        $user = Auth::user();
+        if ( $user->connection ) {
+            $this->adapter->setConnection($user->connection);
+        } else {
+            $this->adapter->setConnection('mysql');
+        }
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -23,6 +35,7 @@ class AbstractController extends Controller
      */
     public function index()
     {
+        $this->init();
         return $this->adapter->collectionToOutput();
     }
 
@@ -33,7 +46,7 @@ class AbstractController extends Controller
      */
     public function create()
     {
-
+        $this->init();
     }
 
     /**
@@ -43,6 +56,7 @@ class AbstractController extends Controller
      */
     public function store( Request $request )
     {
+        $this->init();
         return $this->adapter->store( $request );
     }
 
@@ -54,6 +68,7 @@ class AbstractController extends Controller
      */
     public function show($id)
     {
+        $this->init();
         return $this->adapter->retrieve( $id );
     }
 
