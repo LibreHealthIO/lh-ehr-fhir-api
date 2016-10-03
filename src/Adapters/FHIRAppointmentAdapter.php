@@ -53,17 +53,15 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      * @param Request $request
      * @return FHIRAppointment
      */
-    public function updateStatus(Request $request)
+    public function update(Request $request)
     {
-
-        $data = $request->all();
-        if (!isset($data['status']) || !isset($data['id'])) {
+        $data = $request->json()->all();
+        if(!isset($data['id'])) {
             return json_encode(array('error' => 'no arguments'));
         }
-        // TODO add validation
         $storedInterface = $this->requestToInterface($data);
 
-        return $this->interfaceToModel($storedInterface);
+        return $this->interfaceToModel( $storedInterface );
     }
 
     /**
@@ -75,7 +73,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     public function requestToInterface($data)
     {
 
-        $appointmentInterface = $this->repository->update($data['id'], $data['status']);
+        $appointmentInterface = $this->repository->update($data['id'], $data);
 
         return $appointmentInterface;
     }
@@ -88,8 +86,8 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     {
 
         // TODO add validation
-        
-        $data = $this->fieldNamesToFHIRExtention($request->getContent());
+
+        $data = $request->getContent();
 
         $interface = $this->jsonToInterface($data);
         $storedInterface = $this->storeInterface($interface);
@@ -216,15 +214,41 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
 
             $appointmentInterface->setPcMultiple($this->pcMultiple);
 
-            $duration = $fhirAppointment->getMinutesDuration()->getValue();
+            $duration = $this->countDuration($start, $end);
             $appointmentInterface->setPcDuration($duration);
 
-            $location = $this->getLocation($fhirAppointment->getExtension());
-            $appointmentInterface->setLocation($location);
+            $description = $fhirAppointment->getDescription()->getValue();
+            $appointmentInterface->setDescription($description);
 
             $status = $fhirAppointment->getStatus()->getValue();
             $appointmentInterface->setPcApptStatus($status);
 
+            $extensions = $fhirAppointment->getExtension();
+            foreach ($extensions as $extension) {
+                $url = $extension->getUrl();
+                if (strpos($url, "vidyo-portal-data") !== false) {
+                    $x2s = $extension->getExtension();
+                    $location = [];
+                    foreach ($x2s as $x2) {
+                        $url2 = $x2->getUrl();
+                        switch ($url2) {
+                            case "#portal-uri":
+                                $portalUri = $x2->getValueString();
+                                $location['portalUri'] = $portalUri;
+                                break;
+                            case "#room-key":
+                                $roomKey = $x2->getValueString();
+                                $location['roomKey'] = $roomKey;
+                                break;
+                            case "#pin":
+                                $pin = $x2->getValueString();
+                                $location['pin'] = $pin;
+                                break;
+                        }
+                        $appointmentInterface->setLocation(json_encode($location, true));
+                    }
+                }
+            }
         }
 
         return $appointmentInterface;
@@ -290,41 +314,8 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         return $fhirAppointment;
     }
 
-    private function parseUrl($url)
+    private function countDuration($start, $end)
     {
-        $array = explode('&', $url);
-        foreach ($array as $ln) {
-            if (strpos($ln, 'patient') !== false) {
-                $data['patient'] = substr($ln, strpos($ln, "=") + 1);
-            } else {
-                $data[] = substr($ln, strpos($ln, "=") + 1);
-            }
-        }
-        return $data;
-    }
-
-    private function fieldNamesToFHIRExtention($data)
-    {
-        $data = json_decode($data, true);
-
-        $extension = $data['extension'];
-        $extension = array_map(function($extension) {
-            return array(
-                'valueUri' => $extension['portalUri'],
-                'valueString' => $extension['roomKey'],
-                'valueInteger' => $extension['pin']
-            );
-        }, $extension);
-        unset($data['extension']);
-        $data['extension'] = $extension;
-        return json_encode($data);
-    }
-
-    private function getLocation($extension)
-    {
-        $location['portalUri'] = $extension[0]->getValueUri();
-        $location['roomKey'] = $extension[0]->getValueString();
-        $location['pin'] = $extension[0]->getValueInteger();
-        return json_encode($location);
+        return $duration = ($end - $start)/60;
     }
 }
