@@ -8,6 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
+
+    const STATUS_NEW = 'new';
+    const STATUS_REGISTERED = 'registered';
+    const STATUS_ACTIVE = 'active';
+
     use HasApiTokens, Notifiable;
 
     public $timestamps = false;

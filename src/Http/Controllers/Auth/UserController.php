@@ -15,35 +15,48 @@ class UserController extends Controller
     {
         $user = Auth::user();
         if ($user) {
-            $patientRepo = new PatientRepository();
-            $patientRepo->setConnection($user->connection);
-            $patients = $patientRepo->fetchAll();
             $data['user'] = $user;
-            $data['user_signup_data'] = $user->signup;
+            $patient = null;
+            if ( $user->connection &&
+                $user->ehr_id ) {
+                $patientRepo = new PatientRepository();
+                $patientRepo->setConnection( $user->connection );
+                $patient = $patientRepo->find( $user->ehr_id );
+            }
 
-            $endpoints[0] = [
+            $status = User::STATUS_NEW;
+            if ( $patient ) {
+                // If we have a ehr_id and a DB connection,
+                // // get the reg_status from the EHR
+                $status = $user->status = $patient->getStatus();
+                $user->save();
+            }
+
+            $endpoints = array();
+            $endpoints []= [
                 'name' => 'user',
                 'host' => 'gponline.com',
                 'protocol' => 'https',
                 'path' =>  '/user'
             ];
 
-            foreach ($patients as $patient) {
-                if ($patient->getStatus() == 'registered') {
-                    $endpoints[] = [
-                        'name' => 'user',
-                        'host' => 'gponline.com',
-                        'protocol' => 'https',
-                        'path' => '/fhir/'.$user->connection.'/Patient/'.$patient->id
-                    ];
-                } else {
-                    $endpoints[] = [
-                        'name' => 'user',
-                        'host' => 'gponline.com',
-                        'protocol' => 'https',
-                        'path' =>  '/register'
-                    ];
-                }
+            // User status can be new, pending, active, suspended
+            if ( $status == User::STATUS_ACTIVE ||
+                $status == User::STATUS_REGISTERED ) {
+                // Endpoint to get the Patient Bundle
+                $endpoints[] = [
+                    'name' => 'profile',
+                    'host' => 'gponline.com',
+                    'protocol' => 'https',
+                    'path' => '/profile'
+                ];
+            } else if ( $status == 'new' ) {
+                $endpoints[] = [
+                    'name' => 'register',
+                    'host' => 'gponline.com',
+                    'protocol' => 'https',
+                    'path' =>  '/register'
+                ];
             }
 
             $data['endpoints'] = $endpoints;

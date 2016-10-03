@@ -1,0 +1,28 @@
+{
+  "user": {
+    "id": 1,
+    "name": "",
+    "email": "ken104@kenchapple.com",
+    "remember_token": null,
+    "created_at": null,
+    "updated_at": null,
+    "tmpPwd": 0,
+    "status": "new",
+    "connection": "mysql",
+    "ehr_pid": 12
+  },
+  "endpoints": [
+    {
+      "name": "user",
+      "host": "gponline.com",
+      "protocol": "https",
+      "path": "\/user"
+    },
+    {
+      "name": "register",
+      "host": "gponline.com",
+      "protocol": "https",
+      "path": "\/register"
+    }
+  ]
+}

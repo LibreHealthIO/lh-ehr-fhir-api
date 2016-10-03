@@ -4,6 +4,7 @@ namespace LibreEHR\FHIR\Adapters;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use LibreEHR\Core\Contracts\PatientAdapterInterface;
 use LibreEHR\Core\Contracts\PatientInterface;
 use LibreEHR\Core\Contracts\DocumentInterface;
@@ -14,6 +15,7 @@ use LibreEHR\Core\Emr\Criteria\ByPid;
 use LibreEHR\Core\Emr\Criteria\PatientByPid;
 use LibreEHR\Core\Emr\Repositories\PharmacyRepository;
 use LibreEHR\Core\Emr\Repositories\ProviderRepository;
+use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User;
 use PHPFHIRGenerated\FHIRDomainResource\FHIRPatient;
 use PHPFHIRGenerated\FHIRElement\FHIRCode;
 use \PHPFHIRGenerated\FHIRElement\FHIRAttachment;
@@ -87,7 +89,16 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $connection = $provider->getConnectionKey();
         $this->repository->setConnection( $connection );
 
+        $patientInterface->setStatus( User::STATUS_REGISTERED );
         $patientInterface = $this->repository->create( $patientInterface );
+
+        // Need to set the EHR ID and connection in the user's data
+        $user = Auth::user();
+        $user->connection = $connection;
+        $user->ehr_pid = $patientInterface->getId();
+        $user->save();
+        Auth::setUser( $user );
+
         return $patientInterface;
     }
 
