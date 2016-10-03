@@ -1,0 +1,61 @@
+{
+  "resourceType": "Patient",
+  "extension": [
+    {
+      "extension": [
+        {
+          "valueString": "1001",
+          "url": "#groupId"
+        },
+        {
+          "valueString": "pending",
+          "url": "#status"
+        },
+        {
+          "valueString": "34",
+          "url": "#providerId"
+        },
+        {
+          "valueString": "5",
+          "url": "#pharmacyId"
+        },
+        {
+          "valueString": "Some value of stripeToken",
+          "url": "#stripeToken"
+        }
+      ],
+      "url": "http:\/\/emr_api:8888\/fhir\/extension\/gponline-patient-data"
+    }
+  ],
+  "identifier": [
+    {
+      "use": "usual",
+      "value": 12
+    }
+  ],
+  "name": [
+    {
+      "use": "usual",
+      "family": [
+        "Everywoman3"
+      ],
+      "given": [
+        "Judy Simple"
+      ]
+    }
+  ],
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "555-555-2003",
+      "use": "primary"
+    },
+    {
+      "system": "email",
+      "value": "",
+      "use": "primary"
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1955-01-06"
+}
