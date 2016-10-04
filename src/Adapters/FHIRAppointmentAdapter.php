@@ -245,8 +245,8 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                                 $location['pin'] = $pin;
                                 break;
                         }
-                        $appointmentInterface->setLocation(json_encode($location, true));
                     }
+                    $appointmentInterface->setLocation(json_encode($location, true));
                 }
             }
         }
