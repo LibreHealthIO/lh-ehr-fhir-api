@@ -244,6 +244,14 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                                 $pin = $x2->getValueString();
                                 $location['pin'] = $pin;
                                 break;
+                            case "#provider-id":
+                                $providerId = $x2->getValueString();
+                                $location['providerId'] = $providerId;
+                                break;
+                            case "#patient-id":
+                                $patientId = $x2->getValueString();
+                                $appointmentInterface->setPatientId($patientId);
+                                break;
                         }
                     }
                     $appointmentInterface->setLocation(json_encode($location, true));
@@ -288,6 +296,8 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $extension1 = new FHIRExtension;
         $extension2 = new FHIRExtension;
         $extension3 = new FHIRExtension;
+        $extension4 = new FHIRExtension;
+        $extension5 = new FHIRExtension;
         $extension->setUrl( \URL::to('/fhir') . "/extension/vidyo-portal-data" );
         $extension1->setUrl('#portal-uri');
         $value = new FHIRString();
@@ -301,9 +311,19 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $value = new FHIRString();
         $value->setValue(json_decode($appointment->getLocation())->pin);
         $extension3->setValueString($value);
+        $extension4->setUrl('#provider-id');
+        $value = new FHIRString();
+        $value->setValue(json_decode($appointment->getLocation())->providerId);
+        $extension4->setValueString($value);
+        $extension5->setUrl('#patient-id');
+        $value = new FHIRString();
+        $value->setValue($appointment->getPatientId());
+        $extension5->setValueString($value);
         $extension->addExtension($extension1);
         $extension->addExtension($extension2);
         $extension->addExtension($extension3);
+        $extension->addExtension($extension4);
+        $extension->addExtension($extension5);
         $fhirAppointment->addExtension($extension);
 
         //$description
@@ -317,5 +337,18 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     private function countDuration($start, $end)
     {
         return $duration = ($end - $start)/60;
+    }
+
+    private function parseUrl($url)
+    {
+        $array = explode('&', $url);
+        foreach ($array as $ln) {
+            if (strpos($ln, 'patient') !== false) {
+                $data['patient'] = substr($ln, strpos($ln, "=") + 1);
+            } else {
+                $data[] = substr($ln, strpos($ln, "=") + 1);
+            }
+        }
+        return $data;
     }
 }
