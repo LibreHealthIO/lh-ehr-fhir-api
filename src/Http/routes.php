@@ -12,6 +12,7 @@ Route::group( [ 'middleware' => 'auth:api', 'prefix' => 'fhir' ], function () {
     Route::get('Appointment', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@index');
     Route::post('Appointment', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@post');
     Route::put('Appointment', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@put');
+    Route::delete('Appointment/{id}', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@destroy');
 
     Route::get('Slot/{slotDate?}', '\LibreEHR\FHIR\Http\Controllers\SlotController@index');
     Route::get('Schedule/{scheduleDate?}', '\LibreEHR\FHIR\Http\Controllers\ScheduleController@index');
