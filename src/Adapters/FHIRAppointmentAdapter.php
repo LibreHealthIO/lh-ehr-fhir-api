@@ -255,11 +255,11 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                                 break;
                             case "#provider-id":
                                 $providerId = $x2->getValueString();
-                                $location['providerId'] = $providerId;
+                                $appointmentInterface->setProviderId( $providerId->getValue() );
                                 break;
                             case "#patient-id":
                                 $patientId = $x2->getValueString();
-                                $appointmentInterface->setPatientId($patientId);
+                                $appointmentInterface->setPatientId($patientId->getValue());
                                 break;
                         }
                     }
@@ -322,7 +322,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $extension3->setValueString($value);
         $extension4->setUrl('#provider-id');
         $value = new FHIRString();
-        $value->setValue(json_decode($appointment->getLocation())->providerId);
+        $value->setValue($appointment->getProviderId());
         $extension4->setValueString($value);
         $extension5->setUrl('#patient-id');
         $value = new FHIRString();
