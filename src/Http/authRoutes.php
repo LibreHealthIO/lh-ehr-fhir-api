@@ -10,5 +10,6 @@ Route::get('/login', function () {
 });
 
 Route::post('/register', '\LibreEHR\FHIR\Http\Controllers\RegisterController@post')->middleware('auth:api');
+Route::get('/register', '\LibreEHR\FHIR\Http\Controllers\RegisterController@get')->middleware('auth:api');
 
 Route::get('/user', 'Auth\UserController@index', ['only' => [ 'index' ]])->middleware('auth:api');

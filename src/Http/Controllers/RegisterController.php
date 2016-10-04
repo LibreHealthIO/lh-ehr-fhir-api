@@ -3,6 +3,7 @@
 namespace LibreEHR\FHIR\Http\Controllers;
 
 use App\Http\Requests;
+use Illuminate\Support\Facades\Auth;
 use LibreEHR\Core\Contracts\BaseAdapterInterface;
 use Illuminate\Http\Request;
 
@@ -23,9 +24,10 @@ class RegisterController extends AbstractController
         return $this->patientAdapter->collectionToOutput($request);
     }
 
-    public function show($id = null)
+    public function get()
     {
-        return $this->patientAdapter->showPatient($id);
+        $user = Auth::user();
+        return $this->patientAdapter->showPatient($user->ehr_pid);
     }
 
     public function post(Request $request)
