@@ -348,16 +348,28 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         return $duration = ($end - $start)/60;
     }
 
-    private function parseUrl($url)
+    private function fieldNamesToFHIRExtention($data)
     {
-        $array = explode('&', $url);
-        foreach ($array as $ln) {
-            if (strpos($ln, 'patient') !== false) {
-                $data['patient'] = substr($ln, strpos($ln, "=") + 1);
-            } else {
-                $data[] = substr($ln, strpos($ln, "=") + 1);
-            }
-        }
-        return $data;
+        $data = json_decode($data, true);
+
+        $extension = $data['extension'];
+        $extension = array_map(function($extension) {
+            return array(
+                'valueUri' => $extension['portalUri'],
+                'valueString' => $extension['roomKey'],
+                'valueInteger' => $extension['pin']
+            );
+        }, $extension);
+        unset($data['extension']);
+        $data['extension'] = $extension;
+        return json_encode($data);
+    }
+
+    private function getLocation($extension)
+    {
+        $location['portalUri'] = $extension[0]->getValueUri();
+        $location['roomKey'] = $extension[0]->getValueString();
+        $location['pin'] = $extension[0]->getValueInteger();
+        return json_encode($location);
     }
 }

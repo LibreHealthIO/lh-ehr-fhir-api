@@ -16,6 +16,7 @@ use LibreEHR\Core\Emr\Criteria\PatientByPid;
 use LibreEHR\Core\Emr\Repositories\PharmacyRepository;
 use LibreEHR\Core\Emr\Repositories\ProviderRepository;
 use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User;
+use LibreEHR\FHIR\Utilities\UUIDClass;
 use PHPFHIRGenerated\FHIRDomainResource\FHIRPatient;
 use PHPFHIRGenerated\FHIRElement\FHIRCode;
 use \PHPFHIRGenerated\FHIRElement\FHIRAttachment;
@@ -23,12 +24,18 @@ use PHPFHIRGenerated\FHIRElement\FHIRContactPoint;
 use PHPFHIRGenerated\FHIRElement\FHIRContactPointSystem;
 use PHPFHIRGenerated\FHIRElement\FHIRContactPointUse;
 use PHPFHIRGenerated\FHIRElement\FHIRDate;
+use PHPFHIRGenerated\FHIRElement\FHIRId;
 use PHPFHIRGenerated\FHIRElement\FHIRIdentifier;
 use PHPFHIRGenerated\FHIRElement\FHIRIdentifierUse;
+use PHPFHIRGenerated\FHIRElement\FHIRInstant;
+use PHPFHIRGenerated\FHIRElement\FHIRMeta;
 use PHPFHIRGenerated\FHIRElement\FHIRNameUse;
 use PHPFHIRGenerated\FHIRElement\FHIRHumanName;
 use PHPFHIRGenerated\FHIRElement\FHIRString;
+use PHPFHIRGenerated\FHIRElement\FHIRUnsignedInt;
 use PHPFHIRGenerated\FHIRElement\FHIRUri;
+use PHPFHIRGenerated\FHIRResource\FHIRBundle;
+use PHPFHIRGenerated\FHIRResourceContainer;
 use PHPFHIRGenerated\PHPFHIRResponseParser;
 use PHPFHIRGenerated\FHIRElement\FHIRExtension;
 use ArrayAccess;
@@ -42,31 +49,31 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
      * Takes a resource ID and returns a FHIR JSON or XML string
      * in response
      */
-    public function retrieve( $id )
+    public function retrieve($id)
     {
-        $this->repository->finder()->pushCriteria( new ByPid( $id ) );
+        $this->repository->finder()->pushCriteria(new ByPid($id));
         $patientInterface = $this->repository->find();
-        return $this->interfaceToModel( $patientInterface );
+        return $this->interfaceToModel($patientInterface);
     }
 
     /**
      * @param Request $request
      * @return FHIRPatient
      */
-    public function store( Request $request )
+    public function store(Request $request)
     {
         // TODO add validation
         $data = $request->getContent();
-        $interface = $this->jsonToInterface( $data );
-        $storedInterface = $this->storeInterface( $interface );
-        return $this->interfaceToModel( $storedInterface );
+        $interface = $this->jsonToInterface($data);
+        $storedInterface = $this->storeInterface($interface);
+        return $this->interfaceToModel($storedInterface);
     }
 
     /**
- * @param PatientInterface $patientInterface
- * @return PatientInterface
- */
-    public function storeInterface( PatientInterface $patientInterface )
+     * @param PatientInterface $patientInterface
+     * @return PatientInterface
+     */
+    public function storeInterface(PatientInterface $patientInterface)
     {
         // Before we store the patient:
         // 1. figure out which connection to use
@@ -90,11 +97,12 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $this->repository->setConnection($connection);
 
         $user = Auth::user();
-        if ( $user->connection == $connection &&
+        if ($user->connection == $connection &&
             $user->ehr_pid &&
-            $patientInterface->getId() ) {
+            $patientInterface->getId()
+        ) {
             // We already have a patient link in the EHR database using this connection
-            $patientInterface = $this->repository->update( $patientInterface );
+            $patientInterface = $this->repository->update($patientInterface);
         } else {
             $patientInterface->setStatus(User::STATUS_REGISTERED);
             $patientInterface = $this->repository->create($patientInterface);
@@ -113,18 +121,93 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
      * @param ArrayAccess $collection
      * @return array
      */
-    public function collectionToOutput()
+    public function collectionToOutput(Request $request = null)
     {
-        $collection = $this->repository->fetchAll();
-        $output = array();
+        if (!empty($request->server->get('QUERY_STRING'))) {
+            $data = $this->parseUrl($request->server->get('QUERY_STRING'));
+            $collection = $this->repository->getPatientsByParam($data);
+        } else {
+            $collection = $this->repository->fetchAll();
+        }
+
+        $bundle = $this->buildBundle($collection);
+
+        return $bundle;
+    }
+
+    /**
+     * @param $groupId
+     * @return FHIRBundle
+     *
+     * Return a bundle of all patients in my group
+     */
+    public function showGroup( $groupId )
+    {
+        $collection = $this->repository->getPatientsByParam( ['groupId' => $groupId ] );
+        return $this->buildBundle( $collection );
+    }
+
+    protected function buildBundle( $collection )
+    {
+        $bundle = new FHIRBundle();
+        $bundleId = UUIDClass::v4();
+        $currentDate = date('Y-m-d H:i:s');
+        $count = 0;
         foreach ( $collection as $patient ) {
             if ( $patient instanceof PatientInterface ) {
                 $fhirPatient = $this->interfaceToModel( $patient );
-                $output[]= $fhirPatient;
+                $resourceContainer = new FHIRResourceContainer();
+                $resourceContainer->setPatient($fhirPatient);
+                $bundleEntry = new FHIRBundle\FHIRBundleEntry();
+                $fullUrl = new FHIRUri();
+                $patientUrl = $_SERVER['HTTP_HOST'] . '/' . $bundleId;
+                $fullUrl->setValue($patientUrl);
+                $bundleEntry->setFullUrl($fullUrl);
+                $bundleEntry->setResource($resourceContainer);
+                $response = new FHIRBundle\FHIRBundleResponse();
+                $location = new FHIRUri();
+                $location->setValue('Patient/'.$patient->getId().'/_history');
+                $response->setLocation($location);
+                $lastModified = new FHIRInstant();
+                $lastModified->setValue($currentDate);
+                $response->setLastModified($lastModified);
+                $bundleEntry->setResponse($response);
+                $bundle->addEntry($bundleEntry);
+
+                $count++;
             }
         }
 
-        return $output;
+        $meta = new FHIRMeta();
+        $lastUpdated = new FHIRInstant();
+        $lastUpdated->setValue($currentDate);
+        $meta->setLastUpdated($lastUpdated);
+        $bundle->setMeta($meta);
+
+        $id = new FHIRId();
+        $id->setValue($bundleId);
+        $bundle->setId($id);
+
+        $link = new FHIRBundle\FHIRBundleLink();
+        $relation = new FHIRString();
+        $relation->setValue('self');
+        $link->relation = $relation;
+        $fullUrl = $_SERVER['HTTP_HOST'];
+        $url = new FHIRUri;
+        $url->setValue($fullUrl);
+        $link->url = $url;
+        $bundle->addLink($link);
+
+        $total = new FHIRUnsignedInt();
+        $total->setValue($count);
+        $bundle->total = $total;
+
+        $type = new FHIRCode();
+        $type->setValue('searchset');
+        $bundle->type = $type;
+
+
+        return $bundle;
     }
 
     /**
@@ -386,22 +469,22 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
 
         $extension1->setUrl('#groupId');
         $value = new FHIRString();
-        $value->setValue("1001");
+        $value->setValue($patient->getGroupId());
         $extension1->setValueString($value);
 
         $extension2->setUrl('#status');
         $value = new FHIRString();
-        $value->setValue("pending");
+        $value->setValue($patient->getStatus());
         $extension2->setValueString($value);
 
         $extension3->setUrl('#providerId');
         $value = new FHIRString();
-        $value->setValue("34");
+        $value->setValue($patient->getProviderId());
         $extension3->setValueString($value);
 
         $extension4->setUrl('#pharmacyId');
         $value = new FHIRString();
-        $value->setValue("5");
+        $value->setValue($patient->getPharmacyId());
         $extension4->setValueString($value);
 
         $extension5->setUrl('#stripeToken');
