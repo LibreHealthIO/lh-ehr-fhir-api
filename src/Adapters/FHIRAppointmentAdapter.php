@@ -65,6 +65,15 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     }
 
     /**
+     * @param $id
+     * @return FHIRAppointment
+     */
+    public function remove($id)
+    {
+        return $this->repository->delete($id);
+    }
+
+    /**
      * @param string $data
      * @return AppointmentInterface
      *

@@ -26,5 +26,12 @@ class AppointmentController extends AbstractController
         return $this->adapter->update($request);
     }
 
+    public function destroy($id)
+    {
+        $this->init();
+        return $this->adapter->remove($id);
+    }
+
+
 }
 
