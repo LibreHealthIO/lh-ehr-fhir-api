@@ -10,7 +10,7 @@ class User extends Authenticatable
 {
 
     const STATUS_NEW = 'new';
-    const STATUS_REGISTERED = 'registered';
+    const STATUS_REGISTERED = 'pending';
     const STATUS_ACTIVE = 'active';
 
     use HasApiTokens, Notifiable;

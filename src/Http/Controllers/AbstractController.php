@@ -26,6 +26,8 @@ class AbstractController extends Controller
         } else {
             $this->adapter->setConnection('mysql');
         }
+
+        return $user;
     }
 
     /**
