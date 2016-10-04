@@ -49,7 +49,7 @@ class UserController extends Controller
                 'name' => 'api',
                 'host' => $host,
                 'protocol' => 'https',
-                'path' =>  '/client/v1'
+                'path' =>  '/fhir'
             ];
 
             return $data;
