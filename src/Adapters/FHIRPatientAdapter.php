@@ -108,6 +108,10 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             $patientInterface = $this->repository->create($patientInterface);
         }
 
+        // Now that we have an ID, set the group ID for ourselves
+        $patientInterface->setGroupId( $patientInterface->getId() );
+        $patientInterface->save();
+
         // Need to set the EHR ID and connection in the user's data
         $user->connection = $connection;
         $user->ehr_pid = $patientInterface->getId();

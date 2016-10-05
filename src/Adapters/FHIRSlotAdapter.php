@@ -175,17 +175,4 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
         return $fhirSlot;
 
     }
-
-    private function parseUrl($url)
-    {
-        $array = explode('&', $url);
-        foreach ($array as $ln) {
-            if (strpos($ln, 'provider') !== false) {
-                $data['provider'] = substr($ln, strpos($ln, "=") + 1);
-            } else {
-                $data[] = substr($ln, strpos($ln, "=") + 1);
-            }
-        }
-        return $data;
-    }
 }
