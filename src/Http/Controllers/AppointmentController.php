@@ -14,6 +14,12 @@ class AppointmentController extends AbstractController
         return $this->adapter->collectionToOutput($request);
     }
 
+    public function showGroup()
+    {
+        $user = $this->init();
+        return $this->adapter->showGroup( $user->ehr_pid );
+    }
+
     public function post(Request $request)
     {
         $this->init();

@@ -75,6 +75,18 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     }
 
     /**
+     * @param $groupId
+     * @return FHIRBundle
+     *
+     * Return a bundle of all patients in my group
+     */
+    public function showGroup( $groupId )
+    {
+        $collection = $this->repository->getAppointmentsByParam( ['groupId' => $groupId ] );
+        return $this->buildBundle( $collection );
+    }
+
+    /**
      * @param string $data
      * @return AppointmentInterface
      *
@@ -114,24 +126,8 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         return $appointmentInterface;
     }
 
-    /**
-     * @param Request $request
-     * @return FHIRBundle $bundle
-     */
-    public function collectionToOutput(Request $request = null)
+    public function buildBundle( $collection )
     {
-        $user = Auth::user();
-        $data = $this->parseUrl($request->server->get('QUERY_STRING'));
-        if ( !isset($data['patient']) ) {
-            $data['patient'] = $user->ehr_pid;
-        }
-        $collection = $this->repository->getAppointmentsByParam($data);
-
-//        else {
-//              Never get all appointments (should be configurable)
-//            $collection = $this->repository->fetchAll();
-//        }
-
         $bundle = new FHIRBundle;
         $bundleId = UUIDClass::v4();
         $currentDate = date('Y-m-d H:i:s');
@@ -143,7 +139,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                 $resourceContainer->setAppointment($fhirAppointment);
                 $bundleEntry = new FHIRBundleEntry();
                 $fullUrl = new FHIRUri();
-                $appointmentUrl = $request->url() . '/' . $bundleId;
+                $appointmentUrl = $_SERVER['HTTP_HOST'] . '/' . $bundleId;
                 $fullUrl->setValue($appointmentUrl);
                 $bundleEntry->setFullUrl($fullUrl);
                 $bundleEntry->setResource($resourceContainer);
@@ -175,7 +171,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $relation = new FHIRString;
         $relation->setValue('self');
         $link->relation = $relation;
-        $fullUrl = $request->fullUrl();
+        $fullUrl = $_SERVER['HTTP_HOST'];
         $url = new FHIRUri;
         $url->setValue($fullUrl);
         $link->url = $url;
@@ -189,6 +185,29 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $type->setValue('searchset');
         $bundle->type = $type;
 
+
+        return $bundle;
+    }
+
+    /**
+     * @param Request $request
+     * @return FHIRBundle $bundle
+     */
+    public function collectionToOutput(Request $request = null)
+    {
+        $user = Auth::user();
+        $data = $this->parseUrl($request->server->get('QUERY_STRING'));
+        if ( !isset($data['patient']) ) {
+            $data['patient'] = $user->ehr_pid;
+        }
+        $collection = $this->repository->getAppointmentsByParam($data);
+
+//        else {
+//              Never get all appointments (should be configurable)
+//            $collection = $this->repository->fetchAll();
+//        }
+
+        $bundle = $this->buildBundle( $collection );
 
         return $bundle;
     }
