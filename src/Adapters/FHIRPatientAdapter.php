@@ -69,11 +69,42 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         return $this->interfaceToModel($storedInterface);
     }
 
+    public function storeMaster(Request $request)
+    {
+        $data = $request->getContent();
+        $interface = $this->jsonToInterface($data);
+        $storedInterface = $this->storeMasterInterface($interface);
+        return $this->interfaceToModel($storedInterface);
+    }
+
     /**
      * @param PatientInterface $patientInterface
      * @return PatientInterface
      */
     public function storeInterface(PatientInterface $patientInterface)
+    {
+        // Store an interface of a dependent patient using the logged-in
+        // user's database conneciton
+        $user = Auth::user();
+        if ( $user->connection &&
+            $user->ehr_pid ) {
+            $this->repository->setConnection( $user->connection );
+            $patientInterface->setStatus(User::STATUS_ACTIVE);
+            if ( $patientInterface->getId() ) {
+                $this->repository->update( $patientInterface );
+            } else {
+                $this->repository->create( $patientInterface );
+            }
+        }
+
+        return $patientInterface;
+    }
+
+    /**
+     * @param PatientInterface $patientInterface
+     * @return PatientInterface
+     */
+    public function storeMasterInterface(PatientInterface $patientInterface)
     {
         // Before we store the patient:
         // 1. figure out which connection to use
@@ -104,11 +135,11 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             // We already have a patient link in the EHR database using this connection
             $patientInterface = $this->repository->update($patientInterface);
         } else {
+            // This is a registration because we don't have an EHR ID
             $patientInterface->setStatus(User::STATUS_PENDING);
             $patientInterface = $this->repository->create($patientInterface);
         }
 
-        // Now that we have an ID, set the group ID for ourselves
         $patientInterface->setGroupId( $patientInterface->getId() );
         $patientInterface->save();
 

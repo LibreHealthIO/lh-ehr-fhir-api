@@ -32,7 +32,8 @@ class RegisterController extends AbstractController
 
     public function post(Request $request)
     {
-        $patient = $this->patientAdapter->store($request);
+        // Store the record as "Master Record"
+        $patient = $this->patientAdapter->storeMaster($request);
         return $patient;
     }
 
