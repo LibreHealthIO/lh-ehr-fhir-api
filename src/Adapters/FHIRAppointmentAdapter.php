@@ -4,6 +4,7 @@ namespace LibreEHR\FHIR\Adapters;
 
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Auth;
 use LibreEHR\Core\Contracts\BaseAdapterInterface;
 use LibreEHR\Core\Contracts\AppointmentInterface;
 use LibreEHR\Core\Emr\Criteria\ByPid;
@@ -119,12 +120,17 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      */
     public function collectionToOutput(Request $request = null)
     {
-        if (!empty($request->server->get('QUERY_STRING'))) {
-            $data = $this->parseUrl($request->server->get('QUERY_STRING'));
-            $collection = $this->repository->getAppointmentsByParam($data);
-        } else {
-            $collection = $this->repository->fetchAll();
+        $user = Auth::user();
+        $data = $this->parseUrl($request->server->get('QUERY_STRING'));
+        if ( !isset($data['patient']) ) {
+            $data['patient'] = $user->ehr_pid;
         }
+        $collection = $this->repository->getAppointmentsByParam($data);
+
+//        else {
+//              Never get all appointments (should be configurable)
+//            $collection = $this->repository->fetchAll();
+//        }
 
         $bundle = new FHIRBundle;
         $bundleId = UUIDClass::v4();
