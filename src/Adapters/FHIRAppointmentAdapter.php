@@ -307,19 +307,23 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $extension3 = new FHIRExtension;
         $extension4 = new FHIRExtension;
         $extension5 = new FHIRExtension;
-        $extension->setUrl( \URL::to('/fhir') . "/extension/vidyo-portal-data" );
-        $extension1->setUrl('#portal-uri');
-        $value = new FHIRString();
-        $value->setValue(json_decode($appointment->getLocation())->portalUri);
-        $extension1->setValueString($value);
-        $extension2->setUrl('#room-key');
-        $value = new FHIRString();
-        $value->setValue(json_decode($appointment->getLocation())->roomKey);
-        $extension2->setValueString($value);
-        $extension3->setUrl('#pin');
-        $value = new FHIRString();
-        $value->setValue(json_decode($appointment->getLocation())->pin);
-        $extension3->setValueString($value);
+
+        $loc = json_decode( $appointment->getLocation() );
+        if ( $loc ) {
+            $extension->setUrl(\URL::to('/fhir') . "/extension/vidyo-portal-data");
+            $extension1->setUrl('#portal-uri');
+            $value = new FHIRString();
+            $value->setValue($loc->portalUri);
+            $extension1->setValueString($value);
+            $extension2->setUrl('#room-key');
+            $value = new FHIRString();
+            $value->setValue($loc->roomKey);
+            $extension2->setValueString($value);
+            $extension3->setUrl('#pin');
+            $value = new FHIRString();
+            $value->setValue($loc->pin);
+            $extension3->setValueString($value);
+        }
         $extension4->setUrl('#provider-id');
         $value = new FHIRString();
         $value->setValue($appointment->getProviderId());
