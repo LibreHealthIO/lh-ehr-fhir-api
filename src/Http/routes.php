@@ -19,6 +19,7 @@ Route::group( [ 'middleware' => 'auth:api', 'prefix' => 'fhir' ], function () {
     Route::delete('Patient/{id}', '\LibreEHR\FHIR\Http\Controllers\PatientController@destroy');
 
     // Appointment?patient=1&date=lt2016-09-30&dat=gt2016-08-30 Gets all appointments for September 2016 where patient ID == 1
+    // - if no patient is specified, we return the appointments of the current logged-in user
     Route::get('Appointment', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@index');
 
     // Create an Appointment by posting an Appointment Resource
