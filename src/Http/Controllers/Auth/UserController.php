@@ -24,9 +24,8 @@ class UserController extends Controller
             if ( $user->connection &&
                 $user->ehr_pid ) {
                 $finder = new Finder();
-                $finder->pushCriteria( new ByPid( $user->ehr_pid ) );
                 $patientRepo = new PatientRepository( $finder, $user->connection );
-                $patient = $patientRepo->find();
+                $patient = $patientRepo->findByPid( $user->ehr_pid );
             }
 
             $status = User::STATUS_NEW;
