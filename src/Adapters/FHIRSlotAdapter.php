@@ -15,6 +15,16 @@ use PHPFHIRGenerated\FHIRElement\FHIRInstant;
 use PHPFHIRGenerated\FHIRElement\FHIRCode;
 use PHPFHIRGenerated\FHIRElement\FHIRReference;
 use Illuminate\Http\Response;
+use PHPFHIRGenerated\FHIRElement\FHIRMeta;
+use PHPFHIRGenerated\FHIRElement\FHIRUri;
+use PHPFHIRGenerated\FHIRElement\FHIRId;
+use PHPFHIRGenerated\FHIRResource\FHIRBundle;
+use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleEntry;
+use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleLink;
+use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleResponse;
+use PHPFHIRGenerated\FHIRElement\FHIRUnsignedInt;
+use LibreEHR\FHIR\Utilities\UUIDClass;
+use PHPFHIRGenerated\FHIRResourceContainer;
 //	Reference
 use PHPFHIRGenerated\PHPFHIRResponseParser;
 use Illuminate\Support\Facades\App;
@@ -50,11 +60,77 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
             $providerRepo = new ProviderRepository();
             $provider = $providerRepo->get($data['provider']);
             $this->repository->setConnection($provider->getConnectionKey());
-            $slotBusy = $this->repository->getSlots($data);
+            $collection = $this->repository->getSlots($data);
         } else {
             $data['startDate'] = date('Y-m-d');
-                $slotBusy = $this->repository->getSlots($data);
+            $collection = $this->repository->getSlots($data);
         }
+
+
+        $bundle = new FHIRBundle;
+        $bundleId = UUIDClass::v4();
+        $currentDate = date('Y-m-d H:i:s');
+        $count = 0;
+        foreach ($collection as $slot) {
+//            if ($slot instanceof AppointmentInterface) {
+                $fhirAppointment = $this->interfaceToModel($slot);
+                $resourceContainer = new FHIRResourceContainer;
+                $resourceContainer->setAppointment($fhirAppointment);
+                $bundleEntry = new FHIRBundleEntry();
+                $fullUrl = new FHIRUri();
+                $slotUrl = $request->url() . '/' . $bundleId;
+                $fullUrl->setValue($slotUrl);
+                $bundleEntry->setFullUrl($fullUrl);
+                $bundleEntry->setResource($resourceContainer);
+                $response = new FHIRBundleResponse;
+                $location = new FHIRUri;
+                $location->setValue('Slot/15/_history/1');
+                $response->setLocation($location);
+                $lastModified = new FHIRInstant();
+                $lastModified->setValue($currentDate);
+                $response->setLastModified($lastModified);
+                $bundleEntry->setResponse($response);
+                $bundle->addEntry($bundleEntry);
+
+                $count++;
+//            }
+        }
+
+        $meta = new FHIRMeta;
+        $lastUpdated = new FHIRInstant();
+        $lastUpdated->setValue($currentDate);
+        $meta->setLastUpdated($lastUpdated);
+        $bundle->setMeta($meta);
+
+        $id = new FHIRId;
+        $id->setValue($bundleId);
+        $bundle->setId($id);
+
+        $link = new FHIRBundleLink;
+        $relation = new FHIRString;
+        $relation->setValue('self');
+        $link->relation = $relation;
+        $fullUrl = $request->fullUrl();
+        $url = new FHIRUri;
+        $url->setValue($fullUrl);
+        $link->url = $url;
+        $bundle->addLink($link);
+
+        $total = new FHIRUnsignedInt;
+        $total->setValue($count);
+        $bundle->total = $total;
+
+        $type = new FHIRCode;
+        $type->setValue('searchset');
+        $bundle->type = $type;
+
+
+        return $bundle;
+
+
+
+
+
 
         $output = array();
         if (!empty($slotBusy)) {
@@ -145,17 +221,17 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
         $fhirSlot = new FHIRSlot();
 
 
-        $start = new FHIRInstant();
+        $timestamp = new FHIRInstant();
         $value = new FHIRString();
-        $value->setValue( $slot['startTime'] );
-        $start->setValue( $value );
-        $fhirSlot->setStart($start);
+        $value->setValue( $slot['timestamp'] );
+        $timestamp->setValue( $value );
+        $fhirSlot->setStart($timestamp);
 
-        $end = new FHIRInstant();
+        $duration = new FHIRInstant();
         $value = new FHIRString();
-        $value->setValue( $slot['endTime'] );
-        $end->setValue( $value );
-        $fhirSlot->setEnd($end);
+        $value->setValue( $slot['duration'] );
+        $duration->setValue( $value );
+        $fhirSlot->setEnd($duration);
 
         $status = new FHIRCode();
         $value = new FHIRString();
