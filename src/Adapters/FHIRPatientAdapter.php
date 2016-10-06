@@ -129,8 +129,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
 
         $user = Auth::user();
         if ($user->connection == $connection &&
-            $user->ehr_pid &&
-            $patientInterface->getId()
+            $user->ehr_pid
         ) {
             // We already have a patient link in the EHR database using this connection
             $patientInterface = $this->repository->update($patientInterface);
@@ -140,12 +139,12 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             $patientInterface = $this->repository->create($patientInterface);
         }
 
-        $patientInterface->setGroupId( $patientInterface->getId() );
+        $patientInterface->setGroupId( $patientInterface->getPid() );
         $patientInterface->save();
 
         // Need to set the EHR ID and connection in the user's data
         $user->connection = $connection;
-        $user->ehr_pid = $patientInterface->getId();
+        $user->ehr_pid = $patientInterface->getPid();
         $user->status = $patientInterface->getStatus();
         $user->save();
         Auth::setUser($user);
