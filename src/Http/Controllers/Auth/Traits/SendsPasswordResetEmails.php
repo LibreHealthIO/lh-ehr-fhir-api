@@ -26,26 +26,44 @@ trait SendsPasswordResetEmails
      */
     public function sendResetLinkEmail(Request $request)
     {
-        $this->validate($request, ['email' => 'required|email']);
+        //$this->validate($request, ['email' => 'required|email']);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $response = $this->broker()->sendResetLink(
-            $request->only('email'), $this->resetNotifier()
-        );
+        $userId = Signup::where('mobile_number', $request->all('mobile_number'))->value('user_id');
+        $user = User::find($userId);
+        $response = Password::INVALID_USER;
+        if ( $user ) {
+            $email = [ 'email' => $user->email ];
+            // $email = $request->only('email');
 
-        if ($response === Password::RESET_LINK_SENT) {
+            // We will send the password reset link to this user. Once we have attempted
+            // to send the link, we will examine the response then see the message we
+            // need to show to the user. Finally, we'll send out a proper response.
+            $response = $this->broker()->sendResetLink(
+                $email, $this->resetNotifier()
+            );
 
-            return trans($response);
+            if ($response === Password::RESET_LINK_SENT) {
+
+                //return trans($response);
+            }
         }
 
         // If an error was returned by the password broker, we will get this message
         // translated so we can notify a user of the problem. We'll redirect back
         // to where the users came from so they can attempt this process again.
-        return back()->withErrors(
-            ['email' => trans($response)]
-        );
+        //return back()->withErrors(
+        //    ['email' => trans($response)]
+        //);
+
+        switch ($response)
+        {
+            case Password::RESET_LINK_SENT:
+                return response()->json(['success' => 'true','message'=> "Password recovery link has been send to your email address"]);
+                exit;
+            case Password::INVALID_USER:
+                return response()->json(['error' => 'invalid_credentials','data'=> "We can't find a user that matches these credentials"], 404);
+                exit;
+        }
     }
 
     /**
