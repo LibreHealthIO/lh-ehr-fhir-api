@@ -38,6 +38,7 @@ use PHPFHIRGenerated\FHIRResource\FHIRBundle;
 use PHPFHIRGenerated\FHIRResourceContainer;
 use PHPFHIRGenerated\PHPFHIRResponseParser;
 use PHPFHIRGenerated\FHIRElement\FHIRExtension;
+use \PHPFHIRGenerated\FHIRElement\FHIRAddress;
 use ArrayAccess;
 
 class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface, PatientAdapterInterface
@@ -481,6 +482,22 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $email->setValue( $emailAddress );
         $fhirPatient->addTelecom( $email );
 
+
+        $address = new FHIRAddress();
+        $line = new FHIRString();
+        $line->setValue($patient->getStreet());
+        $address->addLine($line);
+        $city = new FHIRString();
+        $city->setValue($patient->getCity());
+        $address->setCity($city);
+
+        $district = new FHIRString();
+        $district->setValue($patient->getCountry());
+        $address->setDistrict($district);
+
+
+        
+        $fhirPatient->addAddress($address);
 
         if ( $patient->getPhoto() ) {
             $photo = new FHIRAttachment();
