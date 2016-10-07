@@ -390,6 +390,18 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             }
         }
 
+
+
+        $address = $fhirPatient->address;
+        $line = $address[0]->getLine();
+        $city = $address[0]->getCity();
+        $county = $address[0]->getDistrict();
+        $patientInterface->setStreet($line);
+        $patientInterface->setCity($city);
+        $patientInterface->setCounty($county);
+
+
+
         return $patientInterface;
     }
 
@@ -462,7 +474,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $address->setCity($city);
 
         $district = new FHIRString();
-        $district->setValue($patient->getCountry());
+        $district->setValue($patient->getCounty());
         $address->setDistrict($district);
 
 
