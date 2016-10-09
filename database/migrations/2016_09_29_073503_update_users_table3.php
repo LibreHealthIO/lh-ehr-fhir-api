@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class UpdateUsersTable2 extends Migration
+class UpdateUsersTable3 extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class UpdateUsersTable2 extends Migration
     public function up()
     {
         Schema::table('users', function ($table) {
-            $table->integer('ehr_pid')->default(0);
+            $table->rememberToken();
         });
     }
 
@@ -26,7 +26,7 @@ class UpdateUsersTable2 extends Migration
     public function down()
     {
         Schema::table('users', function ($table) {
-            $table->dropColumn('ehr_pid');
+            $table->dropColumn('rememberToken');
         });
     }
 }
