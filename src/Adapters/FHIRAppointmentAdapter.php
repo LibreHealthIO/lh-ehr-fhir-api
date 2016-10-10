@@ -248,8 +248,11 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
 
             $appointmentInterface->setPcMultiple($this->pcMultiple);
 
-            $duration = $this->countDuration($start, $end);
+//            $duration = $this->countDuration($start, $end);
+            $duration = $this->repository->getGlobalCalendarInterval()*60;
             $appointmentInterface->setPcDuration($duration);
+
+
 
             $description = $fhirAppointment->getDescription()->getValue();
             $appointmentInterface->setDescription($description);
@@ -286,6 +289,28 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                                 $patientId = $x2->getValueString();
                                 $appointmentInterface->setPatientId($patientId->getValue());
                                 break;
+
+                            case "#type":
+                                $type = $x2->getValueString();
+                                $appointmentInterface->setPcTitle($type->getValue());
+                                break;
+                            case "#pcTime":
+                                $pcTime = $x2->getValueString();
+                                $appointmentInterface->setPcTime($pcTime->getValue());
+                                break;
+                            case "#informant":
+                                $informant = $x2->getValueString();
+                                $appointmentInterface->setPcInformant($informant->getValue());
+                                break;
+                            case "#pcCatid":
+                                $pcCatid = $x2->getValueString();
+                                $appointmentInterface->setPcCatid($pcCatid->getValue());
+                                break;
+                            case "#pcEventStatus":
+                                $pcEventStatus = $x2->getValueString();
+                                $appointmentInterface->setpcEventStatus($pcEventStatus->getValue());
+                                break;
+
                         }
                     }
                     $appointmentInterface->setLocation(json_encode($location, true));
@@ -319,6 +344,10 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $value->setValue($appointment->getEndTime());
         $end->setValue($value);
         $fhirAppointment->setEnd($end);
+
+        $duration = new FHIRString();
+        $duration->setValue($appointment->getPcDuration()/60);
+        $fhirAppointment->setMinutesDuration($duration);
 
         $status = new FHIRCode();
         $value = new FHIRString();
@@ -377,28 +406,4 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         return $duration = ($end - $start)/60;
     }
 
-    private function fieldNamesToFHIRExtention($data)
-    {
-        $data = json_decode($data, true);
-
-        $extension = $data['extension'];
-        $extension = array_map(function($extension) {
-            return array(
-                'valueUri' => $extension['portalUri'],
-                'valueString' => $extension['roomKey'],
-                'valueInteger' => $extension['pin']
-            );
-        }, $extension);
-        unset($data['extension']);
-        $data['extension'] = $extension;
-        return json_encode($data);
-    }
-
-    private function getLocation($extension)
-    {
-        $location['portalUri'] = $extension[0]->getValueUri();
-        $location['roomKey'] = $extension[0]->getValueString();
-        $location['pin'] = $extension[0]->getValueInteger();
-        return json_encode($location);
-    }
 }
