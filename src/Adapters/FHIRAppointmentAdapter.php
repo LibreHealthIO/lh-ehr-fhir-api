@@ -289,31 +289,16 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                                 $patientId = $x2->getValueString();
                                 $appointmentInterface->setPatientId($patientId->getValue());
                                 break;
-
-                            case "#type":
-                                $type = $x2->getValueString();
-                                $appointmentInterface->setPcTitle($type->getValue());
-                                break;
-                            case "#pcTime":
-                                $pcTime = $x2->getValueString();
-                                $appointmentInterface->setPcTime($pcTime->getValue());
-                                break;
-                            case "#informant":
-                                $informant = $x2->getValueString();
-                                $appointmentInterface->setPcInformant($informant->getValue());
-                                break;
-                            case "#pcCatid":
-                                $pcCatid = $x2->getValueString();
-                                $appointmentInterface->setPcCatid($pcCatid->getValue());
-                                break;
-                            case "#pcEventStatus":
-                                $pcEventStatus = $x2->getValueString();
-                                $appointmentInterface->setpcEventStatus($pcEventStatus->getValue());
-                                break;
-
                         }
                     }
                     $appointmentInterface->setLocation(json_encode($location, true));
+
+                    //Set required data for showing Appointments in LibreEhr calendar.
+                                $appointmentInterface->setPcTitle("Established Patient");
+                                $appointmentInterface->setPcTime(time());
+                                $appointmentInterface->setPcInformant(1);
+                                $appointmentInterface->setPcCatid(9);
+                                $appointmentInterface->setpcEventStatus(1);
                 }
             }
         }
