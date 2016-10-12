@@ -28,7 +28,7 @@ Route::group( [ 'middleware' => 'auth:api', 'prefix' => 'fhir' ], function () {
     Route::post('Appointment', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@post');
 
     // Update an Appointment by PUTing an Appointment Resource
-    Route::put('Appointment{id}', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@put');
+    Route::put('Appointment{id?}', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@put');
 
     // DELETE and appointment
     Route::delete('Appointment/{id}', '\LibreEHR\FHIR\Http\Controllers\AppointmentController@destroy');
