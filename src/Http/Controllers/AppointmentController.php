@@ -26,10 +26,10 @@ class AppointmentController extends AbstractController
         return $this->adapter->store($request);
     }
     
-    public function put(Request $request)
+    public function put(Request $request, $id)
     {
         $this->init();
-        return $this->adapter->update($request);
+        return $this->adapter->update($request, $id);
     }
 
     public function destroy($id)
