@@ -271,7 +271,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             }
         }
         // TODO add validation
-        $storedInterface = $this->requestToInterface( $id, $data );
+        $storedInterface = $this->requestToInterface( $id, $request->getContent() );
 
         return $this->interfaceToModel( $storedInterface );
 
