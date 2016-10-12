@@ -57,9 +57,6 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
 
         if (!empty($request->server->get('QUERY_STRING'))) {
             $data = $this->parseUrl($request->server->get('QUERY_STRING'));
-            $providerRepo = new ProviderRepository();
-            $provider = $providerRepo->get($data['provider']);
-            $this->repository->setConnection($provider->getConnectionKey());
             $collection = $this->repository->getSlots($data);
         } else {
             $data['startDate'] = date('Y-m-d');
