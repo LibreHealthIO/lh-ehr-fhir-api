@@ -349,11 +349,19 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             $gender = $fhirPatient->getGender();
             $patientInterface->setGender($gender->getValue());
 
-            $phoneNumbers = $fhirPatient->getTelecom();
-            $primaryPhone = $phoneNumbers[0]->getValue();
-            $patientInterface->setPrimaryPhone($primaryPhone);
-            $emailAdress = $phoneNumbers[1]->getValue();
-            $patientInterface->setEmailAddress($emailAdress);
+            $contactPoints = $fhirPatient->getTelecom();
+            foreach ($contactPoints as $contactPoint) {
+                $system = $contactPoint->getSystem();
+                if ($system->getValue() == 'phone') {
+                    $primaryPhone = $contactPoint->getValue();
+                    $patientInterface->setPrimaryPhone($primaryPhone);
+                }
+                if ($system->getValue() == 'email') {
+                    $emailAdress = $contactPoint->getValue();
+                    $patientInterface->setEmailAddress($emailAdress);
+                }
+
+            }
 
             $extensions = $fhirPatient->getExtension();
             foreach ($extensions as $extension) {
