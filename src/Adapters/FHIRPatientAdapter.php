@@ -13,6 +13,7 @@ use LibreEHR\Core\Contracts\BaseAdapterInterface;
 use LibreEHR\Core\Contracts\PatientRepositoryInterface;
 use LibreEHR\Core\Emr\Criteria\ByPid;
 use LibreEHR\Core\Emr\Criteria\PatientByPid;
+use LibreEHR\Core\Emr\Eloquent\PatientData;
 use LibreEHR\Core\Emr\Repositories\PharmacyRepository;
 use LibreEHR\Core\Emr\Repositories\ProviderRepository;
 use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User;
@@ -339,7 +340,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
 
     public function modelToInterface( FHIRPatient $fhirPatient )
     {
-        $patientInterface = App::make('LibreEHR\Core\Contracts\PatientInterface');
+        $patientInterface = new PatientData();
         if ($patientInterface instanceof PatientInterface) {
             $birthDate = $fhirPatient->getBirthDate()->getValue();
             $patientInterface->setDOB($birthDate);
