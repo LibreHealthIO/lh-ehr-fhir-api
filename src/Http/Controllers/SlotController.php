@@ -15,6 +15,7 @@ class SlotController extends AbstractController
 
     public function index(Request $request = null)
     {
+        $this->init();
         return $this->slotAdapter->getSlots($request);
     }
 }
