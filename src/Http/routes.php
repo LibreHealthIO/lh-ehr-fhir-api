@@ -13,7 +13,7 @@ Route::group( [ 'middleware' => 'auth:api', 'prefix' => 'fhir' ], function () {
     Route::post('Patient', '\LibreEHR\FHIR\Http\Controllers\PatientController@post');
 
     // Update a Patient
-    Route::put('Patient', '\LibreEHR\FHIR\Http\Controllers\PatientController@update');
+    Route::put('Patient/{id}', '\LibreEHR\FHIR\Http\Controllers\PatientController@update');
 
     // Delete a Patient
     Route::delete('Patient/{id}', '\LibreEHR\FHIR\Http\Controllers\PatientController@destroy');
