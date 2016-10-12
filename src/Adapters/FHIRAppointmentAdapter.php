@@ -57,8 +57,14 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     public function update(Request $request, $id)
     {
         $data = $request->json()->all();
-
-        $storedInterface = $this->requestToInterface($data, $id);
+        if( $id == null ) {
+            if (!isset($data['id'])) {
+                return json_encode(array('error' => 'no ID argument'));
+            } else {
+                $id = $data['id'];
+            }
+        }
+        $storedInterface = $this->requestToInterface($data,$id);
 
         return $this->interfaceToModel( $storedInterface );
     }
@@ -90,7 +96,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      *
      * Takes a FHIR post string and returns a AppointmentInterface
      */
-    public function requestToInterface($data, $id)
+    public function requestToInterface($data,$id)
     {
 
         $appointmentInterface = $this->repository->update($id, $data);
