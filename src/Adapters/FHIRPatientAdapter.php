@@ -260,15 +260,12 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         }
     }
 
-    public function update($request)
+    public function update($request,$id)
     {
         $data = $request->json()->all();
 
-        if(!isset($data['id'])) {
-            return json_encode(array('error' => 'no arguments'));
-        }
         // TODO add validation
-        $storedInterface = $this->requestToInterface( $data['id'], $data );
+        $storedInterface = $this->requestToInterface( $id, $data );
 
         return $this->interfaceToModel( $storedInterface );
 
