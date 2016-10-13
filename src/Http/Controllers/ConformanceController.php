@@ -49,7 +49,7 @@ class ConformanceController extends Controller
 //
 //        return $conformance->xmlSerialize();
 
-        return file_get_contents( __DIR__."/../../../files/conformance.xml" );
+        return file_get_contents(__DIR__ . "/../../../files/conformance.xml");
     }
 
     /**
@@ -67,7 +67,7 @@ class ConformanceController extends Controller
      *
      * @return Response
      */
-    public function store( Request $request )
+    public function store(Request $request)
     {
 
     }
@@ -75,43 +75,11 @@ class ConformanceController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return Response
      */
     public function show($id)
     {
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function update($id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

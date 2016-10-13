@@ -36,16 +36,5 @@ class RegisterController extends AbstractController
         $patient = $this->patientAdapter->storeMaster($request);
         return $patient;
     }
-
-
-    public function update( Request $request)
-    {
-        return $this->patientAdapter->update($request);
-    }
-
-    public function destroy($id)
-    {
-        return $this->patientAdapter->removePatient($id);
-    }
 }
 

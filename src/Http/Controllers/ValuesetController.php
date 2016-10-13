@@ -25,19 +25,4 @@ class ValuesetController extends AbstractController
     {
         return $this->valueSetAdapter->retrieve($id);
     }
-
-    public function post(Request $request)
-    {
-        return $this->valueSetAdapter->store($request);
-    }
-
-    public function update(Request $request)
-    {
-        return $this->valueSetAdapter->update($request);
-    }
-
-    public function destroy($id)
-    {
-        return $this->valueSetAdapter->remove($id);
-    }
 }
