@@ -463,7 +463,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $use->setValue( "usual" );
         $identifier->setUse( $use );
         $value = new FHIRString();
-        $value->setValue( $patient->getId() );
+        $value->setValue( $patient->getPid() );
         $identifier->setValue( $value );
         $fhirPatient->addIdentifier( $identifier );
 
