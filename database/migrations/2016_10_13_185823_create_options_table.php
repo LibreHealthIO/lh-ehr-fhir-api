@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateValueSetTable extends Migration
+class CreateOptionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,13 +14,23 @@ class CreateValueSetTable extends Migration
     public function up()
     {
         //
-        Schema::create('value_sets', function (Blueprint $table) {
+        Schema::create('options', function (Blueprint $table) {
             $table->increments('id');
             $table->string('key')->unique();
-            $table->string('resource');
-            $table->string('connection');
+            $table->string('value');
             $table->timestamps();
         });
+
+        DB::table('options')->insert([
+            'key' => 'relationships',
+            'value' => '[ "spouse", "sibling", "child" ]'
+        ]);
+
+        DB::table('value_sets')->insert([
+            'key' => 'relationships',
+            'resource' => 'Options',
+            'connection' => 'auth',
+        ]);
     }
 
     /**
@@ -31,6 +41,6 @@ class CreateValueSetTable extends Migration
     public function down()
     {
         //
-        Schema::dropIfExists('value_sets');
+        Schema::dropIfExists('options');
     }
 }
