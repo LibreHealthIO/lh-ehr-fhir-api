@@ -49,7 +49,12 @@ class FHIRValueSetAdapter extends AbstractFHIRAdapter implements BaseAdapterInte
         $repositoryClass = $this->repositoryPath . ucfirst($resource) . 'Repository';
         $repository = new $repositoryClass();
         $repository->setConnection($connection);
-        $models = $repository->fetchAll();
+        $models = array();
+        if ( $valueSet->resource == 'Options' ) {
+            $models = $repository->fetchOptionsByKey( $valueSet->key );
+        } else {
+            $models = $repository->fetchAll();
+        }
 
         // Create the value set and expansion to fill with the model data
         $FHIRValueSet = new FHIRValueSet();
