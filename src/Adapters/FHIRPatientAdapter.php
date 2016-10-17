@@ -143,15 +143,6 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
 
         $patientInterface->setGroupId( $patientInterface->getPid() );
 
-        \Stripe\Stripe::setApiKey("sk_test_fM47QQcw5yxxht5ExA0yRirm");
-
-        $stripeData = \Stripe\Customer::create(array(
-                            "description" => "Customer for avery.taylor@example.com",
-                            "source" => "ch_1948i4Lt0oHSwzpUS2mY0IFm" // obtained with Stripe.js
-                       ));
-
-
-
         $patientInterface->save();
 
         // Need to set the EHR ID and connection in the user's data
@@ -419,6 +410,10 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                                     $status = $x2->getValueString();
                                     $patientInterface->setStatus( $status->getValue() );
                                     break;
+                                case "#stripeToken" :
+                                    $stripeToken= $x2->getValueString();
+                                    $patientInterface->setCustomerID($this->getStripeCustomerID($stripeToken->getValue()));
+                                    break;
                             }
                         }
                 }
@@ -596,5 +591,20 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $fhirPatient->addExtension($extension);
 
         return $fhirPatient;
+    }
+
+    private function getStripeCustomerID($stripeToken)
+    {
+
+        \Stripe\Stripe::setApiKey("sk_test_fM47QQcw5yxxht5ExA0yRirm");
+
+        $stripeData = \Stripe\Customer::create(array(
+            "description" => "Customer for avery.taylor@example.com",
+            "source" => $stripeToken // obtained with Stripe.js
+        ));
+
+        $stripeResponce = $stripeData->getLastResponse()->json;
+
+     return $stripeResponce['id'];
     }
 }
