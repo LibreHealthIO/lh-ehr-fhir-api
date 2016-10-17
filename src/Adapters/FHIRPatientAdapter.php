@@ -41,6 +41,7 @@ use PHPFHIRGenerated\PHPFHIRResponseParser;
 use PHPFHIRGenerated\FHIRElement\FHIRExtension;
 use \PHPFHIRGenerated\FHIRElement\FHIRAddress;
 use ArrayAccess;
+\Stripe\Stripe::setApiKey("sk_test_fM47QQcw5yxxht5ExA0yRirm");
 
 class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface, PatientAdapterInterface
 {
@@ -554,6 +555,9 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $extension3 = new FHIRExtension;
         $extension4 = new FHIRExtension;
         $extension5 = new FHIRExtension;
+        $extension6 = new FHIRExtension;
+        $extension7 = new FHIRExtension;
+        $extension8 = new FHIRExtension;
 
         $extension->setUrl( \URL::to('/fhir') . "/extension/gponline-patient-data" );
 
@@ -580,13 +584,41 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $extension5->setUrl('#stripeToken');
         $value = new FHIRString();
         $value->setValue("Some value of stripeToken");
-        $extension5->setValueString($value);
+
+        $customerData = $this->retrieveStripeCustomer($patient->getCustomerID());
+
+        $extension6->setUrl('#Card-Holder');
+        $value = new FHIRString();
+        $value->setValue($customerData->getLastResponse()->json['description']);
+        $extension6->setValueString($value);
+
+        $extension7->setUrl('#last-four-card-digits');
+        $value = new FHIRString();
+        $value->setValue($customerData->getLastResponse()->json['sources']['data'][0]['last4']);
+        $extension7->setValueString($value);
+
+        $extension8->setUrl('#expiration-date');
+
+        $expirationMonth = $customerData->getLastResponse()->json['sources']['data'][0]['exp_month'];
+        $expirationYear = $customerData->getLastResponse()->json['sources']['data'][0]['exp_year'];
+
+
+        $value = new FHIRString();
+        $value->setValue($expirationMonth .' '. $expirationYear);
+        $extension8->setValueString($value);
+
+
+
+
 
         $extension->addExtension($extension1);
         $extension->addExtension($extension2);
         $extension->addExtension($extension3);
         $extension->addExtension($extension4);
         $extension->addExtension($extension5);
+        $extension->addExtension($extension6);
+        $extension->addExtension($extension7);
+        $extension->addExtension($extension8);
 
         $fhirPatient->addExtension($extension);
 
@@ -595,9 +627,6 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
 
     private function getStripeCustomerID($stripeToken)
     {
-
-        \Stripe\Stripe::setApiKey("sk_test_fM47QQcw5yxxht5ExA0yRirm");
-
         $stripeData = \Stripe\Customer::create(array(
             "description" => "Customer for avery.taylor@example.com",
             "source" => $stripeToken // obtained with Stripe.js
@@ -607,4 +636,9 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
 
      return $stripeResponce['id'];
     }
+
+    private function retrieveStripeCustomer($customerId){
+        return \Stripe\Customer::retrieve($customerId);
+    }
+
 }
