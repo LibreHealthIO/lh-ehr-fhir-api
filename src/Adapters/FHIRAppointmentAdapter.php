@@ -12,6 +12,10 @@ use LibreEHR\FHIR\Utilities\UUIDClass;
 use PHPFHIRGenerated\FHIRDomainResource\FHIRAppointment;
 use PHPFHIRGenerated\FHIRElement\FHIRIdentifier;
 use PHPFHIRGenerated\FHIRElement\FHIRIdentifierUse;
+use PHPFHIRGenerated\FHIRElement\FHIRParticipantRequired;
+use PHPFHIRGenerated\FHIRElement\FHIRReference;
+use LibreEHR\Core\Emr\Repositories\PatientRepository;
+use LibreEHR\Core\Emr\Repositories\ProviderRepository;
 use PHPFHIRGenerated\FHIRElement\FHIRString;
 use PHPFHIRGenerated\FHIRElement\FHIRInstant;
 use PHPFHIRGenerated\FHIRElement\FHIRCodeableConcept;
@@ -29,6 +33,7 @@ use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleEntry;
 use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleLink;
 use PHPFHIRGenerated\FHIRResource\FHIRBundle\FHIRBundleResponse;
 use Illuminate\Support\Facades\App;
+use PHPFHIRGenerated\FHIRResource\FHIRAppointment\FHIRAppointmentParticipant;
 use Validator;
 
 class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface
@@ -317,6 +322,42 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     public function interfaceToModel(AppointmentInterface $appointment)
     {
         $fhirAppointment = new FHIRAppointment();
+
+        $participant = new FHIRAppointmentParticipant;
+
+
+        $actor = new FHIRReference();
+        $reference = new FHIRString();
+        $reference->setValue('Patient/'.$appointment->getPatientId());
+        $patientmRepo = new PatientRepository();
+        $patient = $patientmRepo->get($appointment->getPatientId());
+        $display = new FHIRString();
+        $display->setValue($patient->getFirstName() .' '.$patient->getLastName());
+
+        $actor->setDisplay($display);
+        $actor->setReference($reference);
+        $actor = new FHIRReference();
+        $reference = new FHIRString();
+        $reference->setValue('Provider/'.$appointment->getProviderId());
+        $participant->addType($actor);
+
+        $providerRepo = new ProviderRepository();
+        $provider = $providerRepo->get($appointment->getProviderId());
+        $display = new FHIRString();
+        $display->setValue($provider->getFirstName() .' '.$provider->getLastName());
+        $actor->setDisplay($display);
+        $actor->setReference($reference);
+        $participant->addType($actor);
+
+        $required = new FHIRString();
+        $required->setValue('required');
+        $participant->setRequired($required);
+
+        $status = new FHIRString();
+        $status->setValue($appointment->getPcApptStatus());
+        $participant->setStatus($status);
+
+        $fhirAppointment->addParticipant($participant);
 
         $id = new FHIRId;
         $id->setValue($appointment->getId());
