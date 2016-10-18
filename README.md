@@ -65,6 +65,12 @@ Then from the root of libre-ehr-laravel, run the following to pull in the LibreE
 $ composer update
 ```
 
+Install Stripe for payment
+
+```
+composer require stripe/stripe-php
+```
+
 Install the Passport Auth package.
 
 ``` bash
