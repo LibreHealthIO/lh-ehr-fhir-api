@@ -350,7 +350,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $participant->addType($actor);
 
         $required = new FHIRString();
-        $required->setValue('$required');
+        $required->setValue('required');
         $participant->setRequired($required);
 
         $status = new FHIRString();
