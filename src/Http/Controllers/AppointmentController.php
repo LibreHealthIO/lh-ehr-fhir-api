@@ -29,7 +29,7 @@ class AppointmentController extends AbstractController
     public function put(Request $request, $id)
     {
         $this->init();
-        return $this->adapter->update($request);
+        return $this->adapter->update($request, $id);
     }
 
     public function destroy($id)
