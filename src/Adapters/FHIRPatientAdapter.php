@@ -365,7 +365,6 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
 
             $relationship = $fhirPatient->getContact()[0];
             $patientInterface->setContactRelationship($relationship->getRelationship()[0]->text->getValue());
-            $patientInterface->setContactRelationshipPhone($relationship->getTelecom()[0]->value->getValue());
 
 
             $contactPoints = $fhirPatient->getTelecom();
@@ -626,11 +625,8 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         
         $contactRelationship = new FHIRString();
         $contactRelationship->setValue($patient->getContactRelationship());
-        $contactRelationshipPhone = new FHIRString();
-        $contactRelationshipPhone->setValue($patient->getContactRelationshipPhone());
 
         $fhirPatient->addContact($contactRelationship);
-        $fhirPatient->addContact($contactRelationshipPhone);
 
         $extension->addExtension($extension1);
         $extension->addExtension($extension2);
