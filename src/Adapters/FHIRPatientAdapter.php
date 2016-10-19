@@ -346,8 +346,10 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         if ($patientInterface instanceof PatientInterface) {
             $birthDate = $fhirPatient->getBirthDate()->getValue();
             $patientInterface->setDOB($birthDate);
-            $id = $fhirPatient->getIdentifier()[0];
-            $patientInterface->setPid($id->getValue());
+            if(!empty($fhirPatient->getIdentifier())) {
+                $id = $fhirPatient->getIdentifier()[0];
+                $patientInterface->setPid($id->getValue());
+            }
             $humanName = $fhirPatient->getName();
             $familyName = $humanName[0]->getFamily();
             $lname = $familyName[0]->getValue();
