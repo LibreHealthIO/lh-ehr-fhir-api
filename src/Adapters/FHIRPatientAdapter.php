@@ -429,7 +429,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                                 }
                                 $patientInterface->setCustomerID(
                                     $this->getStripeCustomerID($tokenValue,
-                                    $patientInterface->getEmailAddress()->getValue())
+                                    $patientInterface->getEmailAddress())
                                 );
                                 break;
                         }
