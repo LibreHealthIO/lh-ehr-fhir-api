@@ -13,6 +13,11 @@ class FHIRServiceProvider extends ServiceProvider
         if ( $this->app->runningInConsole() ) {
             $this->loadMigrationsFrom(__DIR__ . '/../../../database/migrations');
         }
+
+        // Allow your user to publish the config
+        $this->publishes([
+            __DIR__.'/../../../config/FHIRConfig.php' => config_path('FHIRConfig.php'),
+        ], 'config');
     }
 
     /**
@@ -22,6 +27,10 @@ class FHIRServiceProvider extends ServiceProvider
      */
     public function register()
     {
+
+        // Load the config file and merge it with the user's (should it get published)
+        $this->mergeConfigFrom( __DIR__.'/../../../config/FHIRConfig.php', 'FHIRConfig');
+
         // Bind the LibreEHR implementations to the interface
 
         $this->app->bind('LibreEHR\Core\Contracts\FinderInterface', 'LibreEHR\Core\Emr\Finders\Finder');

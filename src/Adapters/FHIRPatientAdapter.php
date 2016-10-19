@@ -255,7 +255,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
      */
     public function showPatient($id)
     {
-        $patient = $this->repository->get($id);
+        $patient = $this->repository->findByPid($id);
         if (!empty($patient)) {
             return  $this->interfaceToModel( $patient );
         } else {
@@ -414,9 +414,21 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                                 $patientInterface->setStatus( $status->getValue() );
                                 break;
                             case "#stripeToken" :
-                                $stripeToken= $x2->getValueString();
+                                $stripeToken = $x2->getValueString();
+                                $tokenValue = $stripeToken->getValue();
+                                if ( $tokenValue === 'stripe-test-token' ) {
+                                    $tokenResponse = \Stripe\Token::create(array(
+                                        "card" => array(
+                                            "number" => "4242424242424242",
+                                            "exp_month" => 1,
+                                            "exp_year" => 2017,
+                                            "cvc" => "314"
+                                        )
+                                    ));
+                                    $tokenValue = $tokenResponse->getLastResponse()->json['id'];
+                                }
                                 $patientInterface->setCustomerID(
-                                    $this->getStripeCustomerID($stripeToken->getValue(),
+                                    $this->getStripeCustomerID($tokenValue,
                                     $patientInterface->getEmailAddress()->getValue())
                                 );
                                 break;
