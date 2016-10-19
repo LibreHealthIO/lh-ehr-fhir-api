@@ -610,9 +610,10 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $value = new FHIRString();
         $value->setValue($patient->getCustomerID());
 
-        $customerData = $this->retrieveStripeCustomer($patient->getCustomerID());
+        if ( $patient->getCustomerID() ) {
 
-        if (!empty($customerData->getLastResponse()->json)) {
+            $customerData = $this->retrieveStripeCustomer($patient->getCustomerID());
+
             $extension6->setUrl('#Card-Holder');
             $value = new FHIRString();
             $value->setValue($customerData->getLastResponse()->json['email']);
