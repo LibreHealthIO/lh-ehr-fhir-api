@@ -41,7 +41,7 @@ use PHPFHIRGenerated\PHPFHIRResponseParser;
 use PHPFHIRGenerated\FHIRElement\FHIRExtension;
 use \PHPFHIRGenerated\FHIRElement\FHIRAddress;
 use ArrayAccess;
-\Stripe\Stripe::setApiKey("sk_test_fM47QQcw5yxxht5ExA0yRirm");
+\Stripe\Stripe::setApiKey(config('FHIRConfig.StripeApiKey'));
 
 class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface, PatientAdapterInterface
 {
@@ -346,8 +346,10 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         if ($patientInterface instanceof PatientInterface) {
             $birthDate = $fhirPatient->getBirthDate()->getValue();
             $patientInterface->setDOB($birthDate);
-            $id = $fhirPatient->getIdentifier()[0];
-            $patientInterface->setPid($id->getValue());
+            if(!empty($fhirPatient->getIdentifier())) {
+                $id = $fhirPatient->getIdentifier()[0];
+                $patientInterface->setPid($id->getValue());
+            }
             $humanName = $fhirPatient->getName();
             $familyName = $humanName[0]->getFamily();
             $lname = $familyName[0]->getValue();
@@ -391,32 +393,35 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                     }
                 } else if ( strpos( $url, "/extension/gponline-patient-data" ) !== false ) {
 
-                        $x2s = $extension->getExtension();
-                        foreach ($x2s as $x2) {
-                            $url2 = $x2->getUrl();
-                            switch ($url2) {
-                                case "#providerId":
-                                    $providerId = $x2->getValueString();
-                                    $patientInterface->setProviderId( $providerId->getValue() );
-                                    break;
-                                case "#pharmacyId" :
-                                    $pharmacyId = $x2->getValueString();
-                                    $patientInterface->setPharmacyId( $pharmacyId->getValue() );
-                                    break;
-                                case "#groupId" :
-                                    $groupId = $x2->getValueString();
-                                    $patientInterface->setGroupId( $groupId->getValue() );
-                                    break;
-                                case "#status" :
-                                    $status = $x2->getValueString();
-                                    $patientInterface->setStatus( $status->getValue() );
-                                    break;
-                                case "#stripeToken" :
-                                    $stripeToken= $x2->getValueString();
-                                    $patientInterface->setCustomerID($this->getStripeCustomerID($stripeToken->getValue()));
-                                    break;
-                            }
+                    $x2s = $extension->getExtension();
+                    foreach ($x2s as $x2) {
+                        $url2 = $x2->getUrl();
+                        switch ($url2) {
+                            case "#providerId":
+                                $providerId = $x2->getValueString();
+                                $patientInterface->setProviderId( $providerId->getValue() );
+                                break;
+                            case "#pharmacyId" :
+                                $pharmacyId = $x2->getValueString();
+                                $patientInterface->setPharmacyId( $pharmacyId->getValue() );
+                                break;
+                            case "#groupId" :
+                                $groupId = $x2->getValueString();
+                                $patientInterface->setGroupId( $groupId->getValue() );
+                                break;
+                            case "#status" :
+                                $status = $x2->getValueString();
+                                $patientInterface->setStatus( $status->getValue() );
+                                break;
+                            case "#stripeToken" :
+                                $stripeToken= $x2->getValueString();
+                                $patientInterface->setCustomerID(
+                                    $this->getStripeCustomerID($stripeToken->getValue(),
+                                    $patientInterface->getEmailAddress()->getValue())
+                                );
+                                break;
                         }
+                    }
                 }
             }
 
@@ -535,7 +540,6 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $address->setDistrict($district);
 
 
-        
         $fhirPatient->addAddress($address);
 
         if ( $patient->getPhoto() ) {
@@ -581,35 +585,36 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $value->setValue($patient->getPharmacyId());
         $extension4->setValueString($value);
 
-        $extension5->setUrl('#stripeToken');
+        $extension5->setUrl('#stripeCustomerID');
         $value = new FHIRString();
-        $value->setValue("Some value of stripeToken");
+        $value->setValue($patient->getCustomerID());
 
         $customerData = $this->retrieveStripeCustomer($patient->getCustomerID());
 
-        $extension6->setUrl('#Card-Holder');
-        $value = new FHIRString();
-        $value->setValue($customerData->getLastResponse()->json['description']);
-        $extension6->setValueString($value);
+        if (!empty($customerData->getLastResponse()->json)) {
+            $extension6->setUrl('#Card-Holder');
+            $value = new FHIRString();
+            $value->setValue($customerData->getLastResponse()->json['email']);
+            $extension6->setValueString($value);
 
-        $extension7->setUrl('#last-four-card-digits');
-        $value = new FHIRString();
-        $value->setValue($customerData->getLastResponse()->json['sources']['data'][0]['last4']);
-        $extension7->setValueString($value);
+            $extension7->setUrl('#last-four-card-digits');
+            $value = new FHIRString();
+            $value->setValue($customerData->getLastResponse()->json['sources']['data'][0]['last4']);
+            $extension7->setValueString($value);
 
-        $extension8->setUrl('#expiration-date');
+            $extension8->setUrl('#expiration-date');
 
-        $expirationMonth = $customerData->getLastResponse()->json['sources']['data'][0]['exp_month'];
-        $expirationYear = $customerData->getLastResponse()->json['sources']['data'][0]['exp_year'];
+            $expirationMonth = $customerData->getLastResponse()->json['sources']['data'][0]['exp_month'];
+            $expirationYear = $customerData->getLastResponse()->json['sources']['data'][0]['exp_year'];
+            $value = new FHIRString();
 
+            if (strlen($expirationMonth) == 1){
+                $expirationMonth = '0'.$expirationMonth;
+            }
 
-        $value = new FHIRString();
-        $value->setValue($expirationMonth .' '. $expirationYear);
-        $extension8->setValueString($value);
-
-
-
-
+            $value->setValue($expirationMonth . ' ' . $expirationYear);
+            $extension8->setValueString($value);
+        }
 
         $extension->addExtension($extension1);
         $extension->addExtension($extension2);
@@ -625,16 +630,17 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         return $fhirPatient;
     }
 
-    private function getStripeCustomerID($stripeToken)
+    private function getStripeCustomerID($stripeToken, $email)
     {
         $stripeData = \Stripe\Customer::create(array(
-            "description" => "Customer for avery.taylor@example.com",
+            "description" => "Customer for " . $email,
+            "email" =>  $email,
             "source" => $stripeToken // obtained with Stripe.js
         ));
 
         $stripeResponce = $stripeData->getLastResponse()->json;
 
-     return $stripeResponce['id'];
+        return $stripeResponce['id'];
     }
 
     private function retrieveStripeCustomer($customerId){
