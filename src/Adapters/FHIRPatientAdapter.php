@@ -415,7 +415,10 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                                 break;
                             case "#stripeToken" :
                                 $stripeToken= $x2->getValueString();
-                                $patientInterface->setCustomerID($this->getStripeCustomerID($stripeToken->getValue(), $patientInterface->getEmailAddress()->getValue()));
+                                $patientInterface->setCustomerID(
+                                    $this->getStripeCustomerID($stripeToken->getValue(),
+                                    $patientInterface->getEmailAddress()->getValue())
+                                );
                                 break;
                         }
                     }
@@ -591,7 +594,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         if (!empty($customerData->getLastResponse()->json)) {
             $extension6->setUrl('#Card-Holder');
             $value = new FHIRString();
-            $value->setValue($customerData->getLastResponse()->json['description']);
+            $value->setValue($customerData->getLastResponse()->json['email']);
             $extension6->setValueString($value);
 
             $extension7->setUrl('#last-four-card-digits');
