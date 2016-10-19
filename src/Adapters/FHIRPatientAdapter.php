@@ -41,7 +41,7 @@ use PHPFHIRGenerated\PHPFHIRResponseParser;
 use PHPFHIRGenerated\FHIRElement\FHIRExtension;
 use \PHPFHIRGenerated\FHIRElement\FHIRAddress;
 use ArrayAccess;
-\Stripe\Stripe::setApiKey("sk_test_fM47QQcw5yxxht5ExA0yRirm");
+\Stripe\Stripe::setApiKey(config('FHIRConfig.StripeApiKey'));
 
 class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface, PatientAdapterInterface
 {
