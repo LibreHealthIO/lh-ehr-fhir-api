@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User;
 use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\Signup;
 use Validator;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Response;
 
 trait RegistersUsers
@@ -55,6 +56,13 @@ trait RegistersUsers
                 $collection = $user->all();
                 $userId = $collection->last()->id;
                 $this->createSignup($data, $userId);
+
+                Mail::raw( 'Your signup was successful', function ($message) use ($data)  {
+                    $message->subject( 'Welcome to GPOnline' );
+                    $message->from('no-reply@gponline-test.com', 'GPOnline');
+                    $message->to( $data['email'] );
+                });
+
                 return new Response([
                     'accountRegistered' => 1,
                     'status' => 'OK',
