@@ -40,6 +40,8 @@ use PHPFHIRGenerated\FHIRResourceContainer;
 use PHPFHIRGenerated\PHPFHIRResponseParser;
 use PHPFHIRGenerated\FHIRElement\FHIRExtension;
 use \PHPFHIRGenerated\FHIRElement\FHIRAddress;
+use Illuminate\Support\Facades\Mail;
+
 use ArrayAccess;
 \Stripe\Stripe::setApiKey(config('FHIRConfig.StripeApiKey'));
 
@@ -134,6 +136,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         if ($user->connection == $connection &&
             $user->ehr_pid
         ) {
+            $patientInterface->setPid( $user->ehr_pid );
             // We already have a patient link in the EHR database using this connection
             $patientInterface = $this->repository->update($patientInterface);
         } else {
@@ -152,6 +155,12 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $user->status = $patientInterface->getStatus();
         $user->save();
         Auth::setUser($user);
+
+        Mail::raw( 'Your registration was successful. Your account is pending GP Approval', function ($message) use ($user)  {
+            $message->subject( 'Welcome to GPOnline' );
+            $message->from('no-reply@gponline-test.com', 'GPOnline');
+            $message->to( $user->email );
+        });
 
         return $patientInterface;
     }
