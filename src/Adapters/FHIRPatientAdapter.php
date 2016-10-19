@@ -19,6 +19,7 @@ use LibreEHR\Core\Emr\Repositories\ProviderRepository;
 use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User;
 use LibreEHR\FHIR\Utilities\UUIDClass;
 use PHPFHIRGenerated\FHIRDomainResource\FHIRPatient;
+use PHPFHIRGenerated\FHIRDomainResource\FHIRRelatedPerson;
 use PHPFHIRGenerated\FHIRElement\FHIRCode;
 use \PHPFHIRGenerated\FHIRElement\FHIRAttachment;
 use PHPFHIRGenerated\FHIRElement\FHIRContactPoint;
@@ -36,10 +37,12 @@ use PHPFHIRGenerated\FHIRElement\FHIRString;
 use PHPFHIRGenerated\FHIRElement\FHIRUnsignedInt;
 use PHPFHIRGenerated\FHIRElement\FHIRUri;
 use PHPFHIRGenerated\FHIRResource\FHIRBundle;
+use PHPFHIRGenerated\FHIRResource\FHIRPatient\FHIRPatientContact;
 use PHPFHIRGenerated\FHIRResourceContainer;
 use PHPFHIRGenerated\PHPFHIRResponseParser;
 use PHPFHIRGenerated\FHIRElement\FHIRExtension;
 use \PHPFHIRGenerated\FHIRElement\FHIRAddress;
+use PHPFHIRGenerated\FHIRElement\FHIRCarePlanRelationship;
 use ArrayAccess;
 \Stripe\Stripe::setApiKey(config('FHIRConfig.StripeApiKey'));
 
@@ -360,6 +363,11 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             $gender = $fhirPatient->getGender();
             $patientInterface->setGender($gender->getValue());
 
+            $relationship = $fhirPatient->getContact()[0];
+            $patientInterface->setContactRelationship($relationship->getRelationship()[0]->text->getValue());
+            $patientInterface->setContactRelationshipPhone($relationship->getTelecom()[0]->value->getValue());
+
+
             $contactPoints = $fhirPatient->getTelecom();
             foreach ($contactPoints as $contactPoint) {
                 $system = $contactPoint->getSystem();
@@ -615,6 +623,14 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             $value->setValue($expirationMonth . ' ' . $expirationYear);
             $extension8->setValueString($value);
         }
+        
+        $contactRelationship = new FHIRString();
+        $contactRelationship->setValue($patient->getContactRelationship());
+        $contactRelationshipPhone = new FHIRString();
+        $contactRelationshipPhone->setValue($patient->getContactRelationshipPhone());
+
+        $fhirPatient->addContact($contactRelationship);
+        $fhirPatient->addContact($contactRelationshipPhone);
 
         $extension->addExtension($extension1);
         $extension->addExtension($extension2);
