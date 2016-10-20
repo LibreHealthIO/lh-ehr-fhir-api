@@ -323,7 +323,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     {
         $fhirAppointment = new FHIRAppointment();
 
-        $participant = new FHIRAppointmentParticipant;
+        /*$participant = new FHIRAppointmentParticipant;
 
 
         $actor = new FHIRReference();
@@ -357,7 +357,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $status->setValue($appointment->getPcApptStatus());
         $participant->setStatus($status);
 
-        $fhirAppointment->addParticipant($participant);
+        $fhirAppointment->addParticipant($participant);*/
 
         $id = new FHIRId;
         $id->setValue($appointment->getId());
