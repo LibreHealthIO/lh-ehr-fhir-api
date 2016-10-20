@@ -59,7 +59,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
      * @param Request $request
      * @return FHIRAppointment
      */
-    public function update(Request $request, $id)
+    public function update( Request $request, $id = null )
     {
         $data = $request->json()->all();
         if( $id == null ) {

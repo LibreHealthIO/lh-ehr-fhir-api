@@ -57,7 +57,7 @@ class PatientController extends AbstractController
         return $this->adapter->store($request);
     }
 
-    public function update( Request $request, $id )
+    public function update( Request $request, $id = null )
     {
         $this->init();
         return $this->adapter->update($request, $id);

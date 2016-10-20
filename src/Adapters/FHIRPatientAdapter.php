@@ -272,7 +272,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         }
     }
 
-    public function update($request,$id)
+    public function update($request,$id = null)
     {
         $data = $request->json()->all();
         if( $id == null ) {
