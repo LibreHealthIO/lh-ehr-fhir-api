@@ -390,7 +390,6 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $extension2 = new FHIRExtension;
         $extension3 = new FHIRExtension;
         $extension4 = new FHIRExtension;
-        $extension5 = new FHIRExtension;
 
         $loc = json_decode( $appointment->getLocation() );
         if ( $loc ) {
@@ -408,19 +407,25 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
             $value->setValue($loc->pin);
             $extension3->setValueString($value);
         }
-        $extension4->setUrl('#provider-id');
-        $value = new FHIRString();
-        $value->setValue($appointment->getProviderId());
-        $extension4->setValueString($value);
-        $extension5->setUrl('#patient-id');
+
+        $extension4->setUrl(\URL::to('/fhir') . "/extension/extra-appointment-data");
+        $valuePatientId = new FHIRExtension();
+        $valuePatientId->setUrl('#patient-id');
         $value = new FHIRString();
         $value->setValue($appointment->getPatientId());
-        $extension5->setValueString($value);
+        $valuePatientId->setValueString($value);
+        $valueProviderId = new FHIRExtension();
+        $valueProviderId->setUrl('#provider-id');
+        $value = new FHIRString();
+        $value->setValue($appointment->getProviderId());
+        $valueProviderId->setValueString($value);
+        $extension4->addExtension($valuePatientId);
+        $extension4->addExtension($valueProviderId);
+
         $extension->addExtension($extension1);
         $extension->addExtension($extension2);
         $extension->addExtension($extension3);
         $extension->addExtension($extension4);
-        $extension->addExtension($extension5);
         $fhirAppointment->addExtension($extension);
 
         //$description
