@@ -425,7 +425,10 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $extension->addExtension($extension1);
         $extension->addExtension($extension2);
         $extension->addExtension($extension3);
-        $extension->addExtension($extension4);
+        
+        // Add the extra appointment data
+        $fhirAppointment->addExtension($extension4);
+        // Add vidyo portal data
         $fhirAppointment->addExtension($extension);
 
         //$description

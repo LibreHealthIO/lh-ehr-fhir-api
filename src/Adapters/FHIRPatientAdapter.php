@@ -406,6 +406,10 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                     foreach ($x2s as $x2) {
                         $url2 = $x2->getUrl();
                         switch ($url2) {
+                            case "#relationship":
+                                $relationship = $x2->getValueString();
+                                $patientInterface->setRelationship( $relationship->getValue() );
+                                break;
                             case "#providerId":
                                 $providerId = $x2->getValueString();
                                 $patientInterface->setProviderId( $providerId->getValue() );
@@ -583,8 +587,14 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $extension6 = new FHIRExtension;
         $extension7 = new FHIRExtension;
         $extension8 = new FHIRExtension;
+        $extension9 = new FHIRExtension;
 
         $extension->setUrl( \URL::to('/fhir') . "/extension/gponline-patient-data" );
+
+        $extension9->setUrl('#relationship');
+        $value = new FHIRString();
+        $value->setValue($patient->getRelationship());
+        $extension9->setValueString($value);
 
         $extension1->setUrl('#groupId');
         $value = new FHIRString();
@@ -646,6 +656,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $extension->addExtension($extension6);
         $extension->addExtension($extension7);
         $extension->addExtension($extension8);
+        $extension->addExtension($extension9);
 
         $fhirPatient->addExtension($extension);
 
