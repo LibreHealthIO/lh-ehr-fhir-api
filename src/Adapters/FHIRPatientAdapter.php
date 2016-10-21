@@ -624,9 +624,12 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $extension7->setUrl('#last-four-card-digits');
         $extension8->setUrl('#expiration-date');
 
+        $customerData = null;
         if ( $patient->getCustomerID() ) {
-
             $customerData = $this->retrieveStripeCustomer($patient->getCustomerID());
+        }
+
+        if ( $customerData ) {
 
             $value = new FHIRString();
             $value->setValue($customerData->getLastResponse()->json['email']);
