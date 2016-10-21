@@ -620,21 +620,21 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $value = new FHIRString();
         $value->setValue($patient->getCustomerID());
 
+        $extension6->setUrl('#Card-Holder');
+        $extension7->setUrl('#last-four-card-digits');
+        $extension8->setUrl('#expiration-date');
+
         if ( $patient->getCustomerID() ) {
 
             $customerData = $this->retrieveStripeCustomer($patient->getCustomerID());
 
-            $extension6->setUrl('#Card-Holder');
             $value = new FHIRString();
             $value->setValue($customerData->getLastResponse()->json['email']);
             $extension6->setValueString($value);
 
-            $extension7->setUrl('#last-four-card-digits');
             $value = new FHIRString();
             $value->setValue($customerData->getLastResponse()->json['sources']['data'][0]['last4']);
             $extension7->setValueString($value);
-
-            $extension8->setUrl('#expiration-date');
 
             $expirationMonth = $customerData->getLastResponse()->json['sources']['data'][0]['exp_month'];
             $expirationYear = $customerData->getLastResponse()->json['sources']['data'][0]['exp_year'];
@@ -645,6 +645,18 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             }
 
             $value->setValue($expirationMonth . ' ' . $expirationYear);
+            $extension8->setValueString($value);
+        } else {
+            $value = new FHIRString();
+            $value->setValue('');
+            $extension6->setValueString($value);
+
+            $value = new FHIRString();
+            $value->setValue('');
+            $extension7->setValueString($value);
+
+            $value = new FHIRString();
+            $value->setValue('');
             $extension8->setValueString($value);
         }
 
