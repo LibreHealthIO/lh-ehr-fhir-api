@@ -36,6 +36,8 @@ use Illuminate\Support\Facades\App;
 use PHPFHIRGenerated\FHIRResource\FHIRAppointment\FHIRAppointmentParticipant;
 use Validator;
 
+use PHPFHIRGenerated\FHIRDomainResource\FHIROperationOutcome;
+
 class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterInterface
 {
 
@@ -209,7 +211,16 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         if ( !isset($data['patient']) ) {
             $data['patient'] = $user->ehr_pid;
         }
-        $collection = $this->repository->getAppointmentsByParam($data);
+
+        if ($this->checkPatientGroup($data, $user->ehr_pid)) {
+            $collection = $this->repository->getAppointmentsByParam($data);
+        } else {
+            $operationOutcome = new FHIROperationOutcome();
+            $errorText = new FHIRString();
+            $errorText->setValue('Unauthorized');
+            $operationOutcome->addIssue($errorText);
+            return $operationOutcome;
+        }
 
 //        else {
 //              Never get all appointments (should be configurable)
@@ -303,11 +314,11 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                     $appointmentInterface->setLocation(json_encode($location, true));
 
                     //Set required data for showing Appointments in LibreEhr calendar.
-                                $appointmentInterface->setPcTitle("Established Patient");
-                                $appointmentInterface->setPcTime(time());
-                                $appointmentInterface->setPcInformant(1);
-                                $appointmentInterface->setPcCatid(9);
-                                $appointmentInterface->setpcEventStatus(1);
+                    $appointmentInterface->setPcTitle("Established Patient");
+                    $appointmentInterface->setPcTime(time());
+                    $appointmentInterface->setPcInformant(1);
+                    $appointmentInterface->setPcCatid(9);
+                    $appointmentInterface->setpcEventStatus(1);
                 }
             }
         }
@@ -442,6 +453,17 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
     private function countDuration($start, $end)
     {
         return $duration = ($end - $start)/60;
+    }
+
+    private function checkPatientGroup($data, $ehr_pid)
+    {
+        $patientRepository = new PatientRepository();
+        $patient = $patientRepository->get($data['patient']);
+        $checkResult = false;
+        if ($patient->getGroupId() == $ehr_pid) {
+            $checkResult = true;
+        }
+        return $checkResult;
     }
 
 }
