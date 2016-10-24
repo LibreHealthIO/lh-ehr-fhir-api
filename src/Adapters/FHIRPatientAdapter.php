@@ -374,11 +374,11 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                 $system = $contactPoint->getSystem();
                 if ($system->getValue() == 'phone') {
                     $primaryPhone = $contactPoint->getValue();
-                    $patientInterface->setPrimaryPhone($primaryPhone);
+                    $patientInterface->setPrimaryPhone($primaryPhone->getValue());
                 }
                 if ($system->getValue() == 'email') {
                     $emailAdress = $contactPoint->getValue();
-                    $patientInterface->setEmailAddress($emailAdress);
+                    $patientInterface->setEmailAddress($emailAdress->getValue());
                 }
 
             }
