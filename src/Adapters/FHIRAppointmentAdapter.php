@@ -292,7 +292,9 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                                 break;
                             case "#provider-id":
                                 $providerId = $x2->getValueString();
-                                $appointmentInterface->setProviderId( $providerId->getValue() );
+                                $providerRepository = new ProviderRepository();
+                                $provider = $providerRepository->get($providerId->getValue());
+                                $appointmentInterface->setProviderId($provider->getEmrId());
                                 break;
                             case "#patient-id":
                                 $patientId = $x2->getValueString();
