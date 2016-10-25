@@ -420,9 +420,9 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
         $valueProviderId->setUrl('#provider-id');
         $value = new FHIRString();
         $providerRepo = new ProviderRepository();
-        $provider = $providerRepo->get( $appointment->getProviderId() );
-        $emrId = $provider->getEmrId();
-        $value->setValue( $emrId );
+        $provider = $providerRepo->findByEmrId( $appointment->getProviderId() );
+        $authId = $provider->getId();
+        $value->setValue( $authId );
         $valueProviderId->setValueString($value);
         $extension4->addExtension($valuePatientId);
         $extension4->addExtension($valueProviderId);

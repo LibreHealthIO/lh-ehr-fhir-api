@@ -613,8 +613,9 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $extension3->setUrl('#providerId');
         $value = new FHIRString();
         $providerRepo = new ProviderRepository();
-        $provider = $providerRepo->findByEmrId( $patient->getProviderId() );
-        $value->setValue( $provider->getEmrId() );
+        // Map the EHR ID into the AUTH DB ID
+        $provider = $providerRepo->get( $patient->getProviderId() );
+        $value->setValue( $provider->getId() );
         $extension3->setValueString($value);
 
         $extension4->setUrl('#pharmacyId');
