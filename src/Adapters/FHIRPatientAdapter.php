@@ -412,6 +412,10 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                                 break;
                             case "#providerId":
                                 $providerId = $x2->getValueString();
+                                $providerRepo = new ProviderRepository();
+                                $provider = $providerRepo->get($providerId);
+                                $emrId = $provider->getEmrId();
+                                $patientInterface->setProviderId($emrId);
                                 $patientInterface->setProviderId( $providerId->getValue() );
                                 break;
                             case "#pharmacyId" :
@@ -608,7 +612,9 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
 
         $extension3->setUrl('#providerId');
         $value = new FHIRString();
-        $value->setValue($patient->getProviderId());
+        $providerRepo = new ProviderRepository();
+        $provider = $providerRepo->findByEmrId( $patient->getProviderId() );
+        $value->setValue( $provider->getEmrId() );
         $extension3->setValueString($value);
 
         $extension4->setUrl('#pharmacyId');
