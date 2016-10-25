@@ -125,8 +125,8 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
 
         // The provider ID is already mapped
 //        $providerId = $patientInterface->getProviderId();
-//        $providerRepo = new ProviderRepository();
-//        $provider = $providerRepo->get($providerId);
+        $providerRepo = new ProviderRepository();
+        $provider = $providerRepo->get($providerId);
 //        $emrId = $provider->getEmrId();
 //        $patientInterface->setProviderId($emrId);
 
