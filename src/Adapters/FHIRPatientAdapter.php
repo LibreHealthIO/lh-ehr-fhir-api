@@ -439,7 +439,8 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                                             "number" => "4242424242424242",
                                             "exp_month" => 1,
                                             "exp_year" => 2017,
-                                            "cvc" => "314"
+                                            "cvc" => "314",
+                                            "name" => "Cardholder Name"
                                         )
                                     ));
                                     $tokenValue = $tokenResponse->getLastResponse()->json['id'];
@@ -638,16 +639,26 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
 
         if ( $customerData ) {
 
+            $defaultSourceId = $customerData->getLastResponse()->json['default_source'];
+            $sources = $customerData->getLastResponse()->json['sources']['data'];
+            $defaultSource = $customerData->getLastResponse()->json['sources']['data'][0];
+            foreach ( $sources as $source ) {
+                if ( $source['id'] == $defaultSourceId ) {
+                    $defaultSource = $source;
+                    break;
+                }
+            }
+
             $value = new FHIRString();
-            $value->setValue($customerData->getLastResponse()->json['email']);
+            $value->setValue($defaultSource['name']);
             $extension6->setValueString($value);
 
             $value = new FHIRString();
-            $value->setValue($customerData->getLastResponse()->json['sources']['data'][0]['last4']);
+            $value->setValue($defaultSource['last4']);
             $extension7->setValueString($value);
 
-            $expirationMonth = $customerData->getLastResponse()->json['sources']['data'][0]['exp_month'];
-            $expirationYear = $customerData->getLastResponse()->json['sources']['data'][0]['exp_year'];
+            $expirationMonth = $defaultSource['exp_month'];
+            $expirationYear = $defaultSource['exp_year'];
             $value = new FHIRString();
 
             if (strlen($expirationMonth) == 1){
