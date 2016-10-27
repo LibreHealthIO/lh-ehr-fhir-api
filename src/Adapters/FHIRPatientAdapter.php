@@ -536,7 +536,8 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $system->setValue( 'phone' );
         $phone->setSystem( $system );
         $phoneNumber = new FHIRString();
-        $phoneNumber->setValue( $patient->getPrimaryPhone() );
+        $phoneStrVal = str_replace( "-", "", $patient->getPrimaryPhone() );
+        $phoneNumber->setValue( $phoneStrVal );
         $phone->setValue( $phoneNumber );
         $fhirPatient->addTelecom( $phone );
 
