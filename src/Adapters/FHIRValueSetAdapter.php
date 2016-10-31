@@ -52,6 +52,8 @@ class FHIRValueSetAdapter extends AbstractFHIRAdapter implements BaseAdapterInte
         $models = array();
         if ( $valueSet->resource == 'Options' ) {
             $models = $repository->fetchOptionsByKey( $valueSet->key );
+        } else if ( $valueSet->resource == 'ListOptions' ) {
+            $models = $repository->fetchOptionsByListId( $valueSet->key );
         } else {
             $models = $repository->fetchAll();
         }
