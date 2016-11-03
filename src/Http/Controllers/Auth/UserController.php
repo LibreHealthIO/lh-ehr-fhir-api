@@ -20,6 +20,13 @@ class UserController extends Controller
         if ( $user ) {
             $data['user'] = $user;
 
+            $data['user']['firstTimeLogin'] = 0;
+            if ( $user->loginCount <= 1 ) {
+                $data['user']['firstTimeLogin'] = 1;
+            }
+
+            unset( $data['user']['loginCount'] );
+
             $patient = null;
             if ( $user->connection &&
                 $user->ehr_pid ) {
