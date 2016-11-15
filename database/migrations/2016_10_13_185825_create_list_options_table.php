@@ -49,7 +49,8 @@ class CreateListOptionsTable extends Migration
             $table->string('subtype');
         });
 
-        DB::raw("INSERT INTO list_options (list_id,option_id,title,seq,is_default)
+        DB::statement(
+            DB::raw( "INSERT INTO list_options (list_id,option_id,title,seq,is_default)
             VALUES  
             (\"county\",\"Cork\",\"Cork\",0,0),
             (\"county\",\"Galway\",\"Galway\",0,0),
@@ -83,7 +84,7 @@ class CreateListOptionsTable extends Migration
             (\"county\",\"Dublin\",\"Dublin\",0,0),
             (\"county\",\"Carlow\",\"Carlow\",0,0),
             (\"county\",\"Louth\",\"Louth\",0,0);"
-        );
+        ));
 
 
         DB::table('value_sets')->insert([
