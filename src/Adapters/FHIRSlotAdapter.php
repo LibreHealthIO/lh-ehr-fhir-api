@@ -220,13 +220,13 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
 
         $startTime = new FHIRInstant();
         $value = new FHIRString();
-        $value->setValue( $slot['timestamp'] );
+        $value->setValue( $slot['startTimestamp'] );
         $startTime->setValue( $value );
         $fhirSlot->setStart($startTime);
 
         $endTime = new FHIRInstant();
         $value = new FHIRString();
-        $value->setValue( $this->getSlotEndTime($slot['timestamp'], $slot['duration']));
+        $value->setValue( $slot['endTimestamp'] );
         $endTime->setValue( $value );
         $fhirSlot->setEnd($endTime);
 
