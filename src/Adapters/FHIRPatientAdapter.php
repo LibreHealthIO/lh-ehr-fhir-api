@@ -412,6 +412,10 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                                 $patientInterface->setRelationship( $relationship->getValue() );
                                 break;
                             case "#providerId":
+                                // If we change provider ID, we need to
+                                // First check if the provider id is changing.
+                                // If it has changed, update all providers in group, and
+                                //
                                 $providerId = $x2->getValueString();
                                 $providerRepo = new ProviderRepository();
                                 $provider = $providerRepo->get($providerId);
