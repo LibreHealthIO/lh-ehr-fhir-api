@@ -137,7 +137,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         if ($user->connection == $connection &&
             $user->ehr_pid
         ) {
-            $patientInterface->setPid( $user->ehr_pid );
+//            $patientInterface->setPid( $user->ehr_pid );
             // We already have a patient link in the EHR database using this connection
             $patientInterface = $this->repository->update($patientInterface);
         } else {
@@ -451,7 +451,9 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                                 }
                                 $patientInterface->setCustomerID(
                                     $this->getStripeCustomerID($tokenValue,
-                                    $patientInterface->getEmailAddress())
+                                    $patientInterface->getEmailAddress(),
+                                    $patientInterface->getPid()->getValue()
+                                    )
                                 );
                                 break;
                         }
@@ -701,16 +703,21 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         return $fhirPatient;
     }
 
-    private function getStripeCustomerID($stripeToken, $email)
+    private function getStripeCustomerID($stripeToken, $email, $patientId = null)
     {
-        $stripeData = \Stripe\Customer::create(array(
-            "description" => "Customer for " . $email,
-            "email" =>  $email,
-            "source" => $stripeToken // obtained with Stripe.js
-        ));
-
-        $stripeResponce = $stripeData->getLastResponse()->json;
-
+        $patientInterface = $this->repository->get($patientId);
+        if (strlen($patientInterface->getCustomerID()) == 0) {
+            $customer = \Stripe\Customer::create(array(
+                "description" => "Customer for " . $email,
+                "email" => $email,
+                "source" => $stripeToken // obtained with Stripe.js
+            ));
+        } else {
+            $customer = \Stripe\Customer::retrieve($patientInterface->getCustomerID());
+            $customer->source = $stripeToken;
+            $customer->save();
+        }
+        $stripeResponce = $customer->getLastResponse()->json;
         return $stripeResponce['id'];
     }
 
