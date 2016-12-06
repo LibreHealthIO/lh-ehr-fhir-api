@@ -356,9 +356,11 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         if ($patientInterface instanceof PatientInterface) {
             $birthDate = $fhirPatient->getBirthDate()->getValue();
             $patientInterface->setDOB($birthDate);
+            $pid = null;
             if(!empty($fhirPatient->getIdentifier())) {
                 $id = $fhirPatient->getIdentifier()[0];
-                $patientInterface->setPid($id->getValue());
+                $pid = $id->getValue();
+                $patientInterface->setPid($pid);
             }
             $humanName = $fhirPatient->getName();
             $familyName = $humanName[0]->getFamily();
@@ -449,10 +451,26 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                                     ));
                                     $tokenValue = $tokenResponse->getLastResponse()->json['id'];
                                 }
-                                $patientInterface->setCustomerID(
-                                    $this->getStripeCustomerID($tokenValue,
-                                    $patientInterface->getEmailAddress())
-                                );
+                                $createStripeCustomer = false;
+                                if ( $pid ) {
+                                    $existingCustomer = $this->repository->findByPid( $pid );
+                                    $existingCustomerId = $existingCustomer->getCustomerID();
+                                    if ( $existingCustomerId ) {
+                                        $this->updateStripeSource( $existingCustomerId, $tokenValue );
+                                        $patientInterface->setCustomerID( $existingCustomerId );
+                                    } else {
+                                        $createStripeCustomer = true;
+                                    }
+
+                                } else {
+                                    $createStripeCustomer = true;
+                                }
+
+                                if ( $createStripeCustomer ) {
+                                    $patientInterface->setCustomerID(
+                                        $this->getStripeCustomerID( $tokenValue, $patientInterface->getEmailAddress() )
+                                    );
+                                }
                                 break;
                         }
                     }
@@ -699,6 +717,13 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $fhirPatient->addExtension($extension);
 
         return $fhirPatient;
+    }
+
+    private function updateStripeSource( $customerId, $stripeToken )
+    {
+        $cu = \Stripe\Customer::retrieve( $customerId );
+        $cu->source = $stripeToken; // obtained with Stripe.js
+        $cu->save();
     }
 
     private function getStripeCustomerID($stripeToken, $email)
