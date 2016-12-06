@@ -298,8 +298,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
      */
     public function requestToInterface( $id, $data )
     {
-        $patientInterface = $this->jsonToInterface( $data );
-        $patientInterface->setPid( $id );
+        $patientInterface = $this->jsonToInterface( $data, $id );
         $patientInterface = $this->repository->update($patientInterface);
 
         return $patientInterface;
@@ -336,12 +335,24 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
      *
      * Takes a FHIR post string and returns a PatientInterface
      */
-    public function jsonToInterface( $data )
+    public function jsonToInterface( $data, $pid = null )
     {
         $parser = new \PHPFHIRGenerated\PHPFHIRResponseParser();
         $fhirPatient = $parser->parse( $data );
         if ( $fhirPatient instanceof FHIRPatient ) {
-            return $this->modelToInterface( $fhirPatient );
+            if ( $pid ) {
+                $identifier = new FHIRIdentifier();
+                $use = new FHIRIdentifierUse();
+                $use->setValue("usual");
+                $identifier->setUse($use);
+                $value = new FHIRString();
+                $value->setValue( $pid );
+                $identifier->setValue($value);
+                $fhirPatient->addIdentifier($identifier);
+            }
+            $interface = $this->modelToInterface( $fhirPatient );
+
+            return $interface;
         } else {
             // Error, the Resource does not match, expecting a Patient,
             // // but got something else.
@@ -359,7 +370,8 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
             $pid = null;
             if(!empty($fhirPatient->getIdentifier())) {
                 $id = $fhirPatient->getIdentifier()[0];
-                $pid = $id->getValue();
+                $pidString = $id->getValue();
+                $pid = $pidString->getValue();
                 $patientInterface->setPid($pid);
             }
             $humanName = $fhirPatient->getName();
