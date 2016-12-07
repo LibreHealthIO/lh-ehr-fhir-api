@@ -13,10 +13,12 @@ Route::post('/recover-password', 'Auth\ForgotPasswordController@sendResetLinkEma
 Route::post('/recover-username', 'Auth\ForgotPasswordController@recoverUsernameByPhone');
 
 // Password Reset Routes...
-Route::get('password/reset', 'LibreEHR\FHIR\Http\Controllers\Auth\ForgotPasswordController@showLinkRequestForm');
-Route::post('password/email', 'LibreEHR\FHIR\Http\Controllers\Auth\ForgotPasswordController@sendResetLinkEmail');
-Route::get('password/reset/{token}', 'LibreEHR\FHIR\Http\Controllers\Auth\ResetPasswordController@showResetForm');
-Route::post('password/reset', 'LibreEHR\FHIR\Http\Controllers\Auth\ResetPasswordController@reset');
+Route::get('password/reset', '\LibreEHR\FHIR\Http\Controllers\Auth\ForgotPasswordController@showLinkRequestForm');
+Route::post('password/email', '\LibreEHR\FHIR\Http\Controllers\Auth\ForgotPasswordController@sendResetLinkEmail');
+Route::group(['middleware' => ['web']], function () {
+    Route::get('password/reset/{token}', '\LibreEHR\FHIR\Http\Controllers\Auth\ResetPasswordController@showResetForm');
+});
+Route::post('password/reset', '\LibreEHR\FHIR\Http\Controllers\Auth\ResetPasswordController@reset');
 
 Route::get('/login', function () {
     return json_encode([ 'error' => 'Unauthorised.', 'code' => 401], true);
