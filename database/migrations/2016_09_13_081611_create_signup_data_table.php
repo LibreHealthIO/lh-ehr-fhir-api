@@ -23,21 +23,6 @@ class CreateSignupDataTable extends Migration
             $table->string('email')->unique();
             $table->string('mobile_number')->unique();
         });
-
-
-
-        DB::connection($this->connection)->table('signup_data')
-            ->insert(
-                [
-                    'user_id'       => 15,
-                    'firstname'     => 'John',
-                    'surname'       => 'Dow',
-                    'gender'        => 'male',
-                    'email'         => 'example@example.com',
-                    'mobile_number' => '1234567890'
-                ]
-            );
-
     }
 
     /**
