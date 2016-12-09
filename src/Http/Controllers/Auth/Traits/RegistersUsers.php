@@ -4,8 +4,10 @@ namespace LibreEHR\FHIR\Http\Controllers\Auth\Traits;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use League\Flysystem\Exception;
 use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User;
 use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\Signup;
+use LibreEHR\FHIR\Utilities\OxygenSms;
 use Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Response;
@@ -57,11 +59,18 @@ trait RegistersUsers
                 $userId = $collection->last()->id;
                 $this->createSignup($data, $userId);
 
-                Mail::raw( 'Your signup was successful', function ($message) use ($data)  {
-                    $message->subject( 'Welcome to GPOnline' );
-                    $message->from('no-reply@gponline-test.com', 'GPOnline');
-                    $message->to( $data['email'] );
-                });
+                try {
+                    Mail::raw('Your signup was successful', function ($message) use ($data) {
+                        $message->subject('Notification from GPOnline');
+                        $message->from( 'donotreply@virconhealth.com' );
+                        $message->to($data['email']);
+                    });
+                } catch ( Exception $e ) {
+                    error_log( $e->getMessage() );
+                }
+
+                $sms = new OxygenSms();
+                $sms->send( 'Your signup was successful', $data['mobile_number'] );
 
                 return new Response([
                     'accountRegistered' => 1,
