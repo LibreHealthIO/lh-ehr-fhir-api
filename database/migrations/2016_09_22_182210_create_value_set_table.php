@@ -26,7 +26,7 @@ class CreateValueSetTable extends Migration
             array('id' => '1','key' => 'provider','resource' => 'Provider','connection' => 'auth','created_at' => NULL,'updated_at' => NULL),
             array('id' => '2','key' => 'pharmacy','resource' => 'Pharmacy','connection' => 'auth','created_at' => NULL,'updated_at' => NULL),
             array('id' => '3','key' => 'personal_relationship','resource' => 'ListOptions','connection' => 'auth','created_at' => NULL,'updated_at' => NULL),
-            array('id' => '4','key' => 'sex','resource' => 'ListOptions','description' => '','auth','created_at' => NULL,'updated_at' => NULL),
+            array('id' => '4','key' => 'sex','resource' => 'ListOptions','connection' => 'auth','created_at' => NULL,'updated_at' => NULL),
             array('id' => '5','key' => 'county','resource' => 'ListOptions','connection' => 'auth','created_at' => NULL,'updated_at' => NULL)
         );
 
