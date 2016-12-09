@@ -23,11 +23,11 @@ class CreateValueSetTable extends Migration
         });
 
         $value_sets = array(
-            array('id' => '1','key' => 'KfaDm3UgmO','resource' => 'Provider','description' => '','connection' => 'auth','created_at' => NULL,'updated_at' => NULL),
-            array('id' => '2','key' => 'wxw6yC2muL','resource' => 'Pharmacy','description' => '','connection' => 'auth','created_at' => NULL,'updated_at' => NULL),
-            array('id' => '3','key' => 'personal_relationship','resource' => 'ListOptions','description' => '','connection' => 'auth','created_at' => NULL,'updated_at' => NULL),
-            array('id' => '4','key' => 'sex','resource' => 'ListOptions','description' => '','connection' => 'auth','created_at' => NULL,'updated_at' => NULL),
-            array('id' => '5','key' => 'county','resource' => 'ListOptions','description' => '','connection' => 'auth','created_at' => NULL,'updated_at' => NULL)
+            array('id' => '1','key' => 'provider','resource' => 'Provider','connection' => 'auth','created_at' => NULL,'updated_at' => NULL),
+            array('id' => '2','key' => 'pharmacy','resource' => 'Pharmacy','connection' => 'auth','created_at' => NULL,'updated_at' => NULL),
+            array('id' => '3','key' => 'personal_relationship','resource' => 'ListOptions','connection' => 'auth','created_at' => NULL,'updated_at' => NULL),
+            array('id' => '4','key' => 'sex','resource' => 'ListOptions','description' => '','auth','created_at' => NULL,'updated_at' => NULL),
+            array('id' => '5','key' => 'county','resource' => 'ListOptions','connection' => 'auth','created_at' => NULL,'updated_at' => NULL)
         );
 
         foreach ( $value_sets as $value_set ) {
