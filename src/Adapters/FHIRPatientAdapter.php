@@ -17,6 +17,7 @@ use LibreEHR\Core\Emr\Eloquent\PatientData;
 use LibreEHR\Core\Emr\Repositories\PharmacyRepository;
 use LibreEHR\Core\Emr\Repositories\ProviderRepository;
 use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User;
+use LibreEHR\FHIR\Utilities\OxygenSms;
 use LibreEHR\FHIR\Utilities\UUIDClass;
 use PHPFHIRGenerated\FHIRDomainResource\FHIRPatient;
 use PHPFHIRGenerated\FHIRElement\FHIRCode;
@@ -114,21 +115,20 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         // Before we store the patient:
         // 1. figure out which connection to use
         // 2. get the emr_provider ID from provider table
-        // 3. get the emr_pharmacy ID from the pharmacy table
+        // 3. get the pharmacy string from the pharmacy table
 
         // TODO Throw exception when not a valid pharmacy or provider
         $pharmacyId = $patientInterface->getPharmacyId();
         $pharmRepo = new PharmacyRepository();
         $pharmacy = $pharmRepo->get($pharmacyId);
-        $emrId = $pharmacy->getEmrId();
-        $patientInterface->setPharmacyId($emrId);
+        $patientInterface->setPharmacyId($pharmacyId);
+        $patientInterface->setPharmacyName( $pharmacy->getName() );
+        $patientInterface->setPharmacyAddress( $pharmacy->getAddress().', '.$pharmacy->getTown() );
 
         // The provider ID is already mapped
         $providerId = $patientInterface->getProviderId();
         $providerRepo = new ProviderRepository();
         $provider = $providerRepo->findByEmrId( $providerId );
-//        $emrId = $provider->getEmrId();
-//        $patientInterface->setProviderId($emrId);
 
         $connection = $provider->getConnectionKey();
         $this->repository->setConnection($connection);
@@ -157,11 +157,18 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $user->save();
         Auth::setUser($user);
 
-        Mail::raw( 'Your registration was successful. Your account is pending GP Approval', function ($message) use ($user)  {
-            $message->subject( 'Welcome to GPOnline' );
-            $message->from('no-reply@gponline-test.com', 'GPOnline');
-            $message->to( $user->email );
-        });
+        try {
+            Mail::raw( 'Your registration was successful. Your account is pending GP Approval', function ($message) use ($user)  {
+                $message->subject( 'Notification from GPOnline' );
+                $message->from( 'donotreply@virconhealth.com' );
+                $message->to( $user->email );
+            });
+        } catch ( Exception $e ) {
+            error_log( $e->getMessage() );
+        }
+
+        $sms = new OxygenSms();
+        $sms->send( 'Your registration was successful. Your account is pending GP Approval', $patientInterface->getPrimaryPhone() );
 
         return $patientInterface;
     }
@@ -439,6 +446,10 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                             case "#pharmacyId" :
                                 $pharmacyId = $x2->getValueString();
                                 $patientInterface->setPharmacyId( $pharmacyId->getValue() );
+                                $pharmRepo = new PharmacyRepository();
+                                $pharmacy = $pharmRepo->get( $pharmacyId->getValue() );
+                                $patientInterface->setPharmacyName( $pharmacy->getName() );
+                                $patientInterface->setPharmacyAddress( $pharmacy->getAddress().', '.$pharmacy->getTown() );
                                 break;
                             case "#groupId" :
                                 $groupId = $x2->getValueString();
