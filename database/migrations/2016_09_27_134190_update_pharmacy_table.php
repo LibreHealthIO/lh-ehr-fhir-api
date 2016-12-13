@@ -15,7 +15,6 @@ class UpdatePharmacyTable extends Migration
     {
         //
         Schema::table('pharmacy', function ($table) {
-            $table->string('emr_id')->default('new');
             $table->string('connection')->default('mysql');
         });
     }
@@ -29,7 +28,6 @@ class UpdatePharmacyTable extends Migration
     {
         //
         Schema::table('pharmacy', function ($table) {
-            $table->dropColumn('emr_id');
             $table->dropColumn('connection');
         });
     }
