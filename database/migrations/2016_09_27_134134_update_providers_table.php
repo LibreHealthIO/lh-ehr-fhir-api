@@ -15,7 +15,7 @@ class UpdateProvidersTable extends Migration
     {
         //
         Schema::table('provider', function ($table) {
-            $table->string('emr_id')->default('new');
+            $table->string('emr_id')->default('1');
             $table->string('connection')->default('mysql');
         });
     }
