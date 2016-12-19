@@ -23,7 +23,7 @@ class CreateProvidersTable extends Migration
             $table->string('town');
             $table->string('state');
             $table->string('country');
-            $table->string('email')->unique();
+            $table->string('email');
         });
 
 
