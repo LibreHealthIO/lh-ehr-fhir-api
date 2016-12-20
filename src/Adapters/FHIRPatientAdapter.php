@@ -78,9 +78,9 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
     public function storeMaster(Request $request)
     {
         $data = $request->getContent();
-        $interface = $this->jsonToInterface($data);
-        $storedInterface = $this->storeMasterInterface($interface);
-        return $this->interfaceToModel($storedInterface);
+        $interface = $this->jsonToInterface($data, null, false);
+        $storedInterface = $this->storeMasterInterface($interface );
+        return $this->interfaceToModel( $storedInterface );
     }
 
     /**
@@ -125,15 +125,17 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $patientInterface->setPharmacyName( $pharmacy->getName() );
         $patientInterface->setPharmacyAddress( $pharmacy->getAddress().', '.$pharmacy->getTown() );
 
-        // The provider ID not mapped. This is the id from the auth DB
+        // The provider is not mapped in the patient because we tell caller no to map. This is the id from the auth DB
         $providerId = $patientInterface->getProviderId();
         $providerRepo = new ProviderRepository();
         $providerRepo->setConnection('auth');
         $provider = $providerRepo->get( $providerId );
 
         $connection = $provider->getConnectionKey();
+        $emr_id = $provider->getEmrId();
         $this->repository->setConnection( $connection );
         $patientInterface->setConnectionName( $connection );
+        $patientInterface->setProviderId( $emr_id );
 
         $user = Auth::user();
         if ($user->connection == $connection &&
@@ -149,6 +151,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         }
 
         $patientInterface->setGroupId( $patientInterface->getPid() );
+
 
         $patientInterface->save();
 
@@ -344,7 +347,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
      *
      * Takes a FHIR post string and returns a PatientInterface
      */
-    public function jsonToInterface( $data, $pid = null )
+    public function jsonToInterface( $data, $pid = null, $mapProvider = true )
     {
         $parser = new \PHPFHIRGenerated\PHPFHIRResponseParser();
         $fhirPatient = $parser->parse( $data );
@@ -359,7 +362,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                 $identifier->setValue($value);
                 $fhirPatient->addIdentifier($identifier);
             }
-            $interface = $this->modelToInterface( $fhirPatient );
+            $interface = $this->modelToInterface( $fhirPatient, $mapProvider );
 
             return $interface;
         } else {
@@ -370,7 +373,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
 
     }
 
-    public function modelToInterface( FHIRPatient $fhirPatient )
+    public function modelToInterface( FHIRPatient $fhirPatient, $mapProvider = true )
     {
         $patientInterface = new PatientData();
         if ($patientInterface instanceof PatientInterface) {
@@ -432,18 +435,24 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                         switch ($url2) {
                             case "#relationship":
                                 $relationship = $x2->getValueString();
-                                $patientInterface->setRelationship( $relationship->getValue() );
+                                $patientInterface->setRelationship($relationship->getValue());
                                 break;
                             case "#providerId":
                                 // If we change provider ID, we need to
                                 // First check if the provider id is changing.
                                 // If it has changed, update all providers in group, and
                                 //
-                                $providerId = $x2->getValueString();
-                                $providerRepo = new ProviderRepository();
-                                $provider = $providerRepo->get($providerId);
-                                $emrId = $provider->getEmrId();
-                                $patientInterface->setProviderId($emrId);
+                                if ($mapProvider) {
+
+                                    $providerId = $x2->getValueString();
+                                    $providerRepo = new ProviderRepository();
+                                    $provider = $providerRepo->get($providerId);
+                                    $emrId = $provider->getEmrId();
+                                    $patientInterface->setProviderId($emrId);
+                                } else {
+                                    $providerId = $x2->getValueString();
+                                    $patientInterface->setProviderId($providerId->getValue());
+                                }
                                 break;
                             case "#pharmacyId" :
                                 $pharmacyId = $x2->getValueString();
@@ -544,7 +553,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
      * @param PatientInterface $patient
      * @return FHIRPatient
      */
-    public function interfaceToModel( PatientInterface $patient )
+    public function interfaceToModel( PatientInterface $patient, $mapProvider = true )
     {
         $fhirPatient = new FHIRPatient();
 
@@ -661,12 +670,18 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
 
         $extension3->setUrl('#providerId');
         $value = new FHIRString();
-        $providerRepo = new ProviderRepository();
-        // Map the EHR ID into the AUTH DB ID
-        $user = Auth::user();
-        $provider = $providerRepo->findByEmrIdAndConnection( $patient->getProviderId(), $user->connection );
-        $value->setValue( $provider->getId() );
-        $extension3->setValueString($value);
+        if ( $mapProvider ) {
+
+            $providerRepo = new ProviderRepository();
+            // Map the EHR ID into the AUTH DB ID
+            $user = Auth::user();
+            $provider = $providerRepo->findByEmrIdAndConnection( $patient->getProviderId(), $user->connection );
+            $value->setValue( $provider->getId() );
+            $extension3->setValueString($value);
+        } else {
+            $value->setValue( $patient->getProviderId() );
+            $extension3->setValueString($value);
+        }
 
         $extension4->setUrl('#pharmacyId');
         $value = new FHIRString();
