@@ -125,13 +125,14 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $patientInterface->setPharmacyName( $pharmacy->getName() );
         $patientInterface->setPharmacyAddress( $pharmacy->getAddress().', '.$pharmacy->getTown() );
 
-        // The provider ID is already mapped
+        // The provider ID not mapped. This is the id from the auth DB
         $providerId = $patientInterface->getProviderId();
         $providerRepo = new ProviderRepository();
-        $provider = $providerRepo->findByEmrId( $providerId );
+        $provider = $providerRepo->get( $providerId );
 
         $connection = $provider->getConnectionKey();
-        $this->repository->setConnection($connection);
+        $this->repository->setConnection( $connection );
+        $patientInterface->setConnectionName( $connection );
 
         $user = Auth::user();
         if ($user->connection == $connection &&
@@ -661,7 +662,8 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $value = new FHIRString();
         $providerRepo = new ProviderRepository();
         // Map the EHR ID into the AUTH DB ID
-        $provider = $providerRepo->findByEmrId( $patient->getProviderId() );
+        $user = Auth::user();
+        $provider = $providerRepo->findByEmrIdAndConnection( $patient->getProviderId(), $user->connection );
         $value->setValue( $provider->getId() );
         $extension3->setValueString($value);
 
