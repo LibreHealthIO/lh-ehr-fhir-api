@@ -81,7 +81,7 @@ trait RegistersUsers
                 return new Response([
                     'accountRegistered' => 0,
                     'status'  => 'Fail',
-                    'message' => 'Fail saving singup data',
+                    'message' => 'Fail saving signup data',
                     'Errors ' =>  $ex->getMessage()
                 ]);
 
