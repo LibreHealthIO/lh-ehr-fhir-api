@@ -21,7 +21,7 @@ class AbstractController extends Controller
     {
         // TODO this should be a ConnectionManager passed into me
         $user = Auth::user();
-        if ( $user->connection ) {
+        if ( !empty($user->connection )) {
             $this->adapter->setConnection($user->connection);
         } else {
             $this->adapter->setConnection('mysql');
