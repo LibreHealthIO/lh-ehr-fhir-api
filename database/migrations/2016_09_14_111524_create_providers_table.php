@@ -21,9 +21,9 @@ class CreateProvidersTable extends Migration
             $table->string('practice_name');
             $table->string('address');
             $table->string('town');
-            $table->string('state');
-            $table->string('country');
-            $table->string('email');
+            $table->string('state')->nullable();
+            $table->string('country')->nullable();
+            $table->string('email')->nullable();
         });
 
 

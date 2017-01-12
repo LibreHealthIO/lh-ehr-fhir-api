@@ -8,6 +8,10 @@ use Illuminate\Support\ServiceProvider;
 class FHIRServiceProvider extends ServiceProvider
 {
 
+    protected $commands = [
+        'LibreEHR\FHIR\Commands\Fhir'
+    ];
+
     public function boot()
     {
         if ( $this->app->runningInConsole() ) {
@@ -30,6 +34,9 @@ class FHIRServiceProvider extends ServiceProvider
 
         // Load the config file and merge it with the user's (should it get published)
         $this->mergeConfigFrom( __DIR__.'/../../../config/FHIRConfig.php', 'FHIRConfig');
+
+        // Register command
+        $this->commands($this->commands);
 
         // Bind the LibreEHR implementations to the interface
 
