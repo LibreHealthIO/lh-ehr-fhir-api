@@ -44,7 +44,11 @@ class Fhir extends Command
     {
         $option = $this->argument('option');
 
-        if ( $option == 'sync' ) {
+        if ( $option == 'clear-system' ) {
+
+        } else if ( $option == 'sync-patients' ) {
+
+        } else if ( $option == 'sync-providers' ) {
 
             $this->info("Fetching Providers");
             // First get all current providers

@@ -24,9 +24,10 @@ class OxygenSms
         $this->X_USERNAME = config('FHIRConfig.oxygen8_username');
         $this->X_PASSWORD = config('FHIRConfig.oxygen8_password');
         $this->s_POST_DATA['Channel'] = "BULK";
+
         // $s_POST_DATA .= "&Shortcode=12345";
         // $s_POST_DATA .= "&SourceReference=3456";
-
+        $this->s_POST_DATA['Mask'] = "GPOnline";
 
         // $s_POST_DATA .= "&DataType=0";
         $this->s_POST_DATA['Premium'] = 0;
