@@ -4,10 +4,13 @@ namespace LibreEHR\FHIR\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use LibreEHR\Core\Contracts\ProviderInterface;
 use LibreEHR\Core\Emr\Eloquent\ProviderData;
+use LibreEHR\Core\Emr\Repositories\PatientRepository;
 use LibreEHR\Core\Emr\Repositories\ProviderRepository;
 use LibreEHR\Core\Emr\Repositories\UserRepository;
+use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User;
 
 class Fhir extends Command
 {
@@ -48,6 +51,35 @@ class Fhir extends Command
 
         } else if ( $option == 'sync-patients' ) {
 
+            $this->info("Fetching Patients");
+
+            $connections = Config::get('database.connections');
+            $patientRepository = new PatientRepository();
+            foreach ( $connections as $connection => $params ) {
+                if ( $connection != 'auth' &&
+                    $params[ 'driver' ] == 'mysql'
+                ) {
+                    $patientRepository->setConnection( $connection );
+                    $patients = $patientRepository->fetchByStatus( 'inactive' );
+                    foreach ( $patients as $patient ) {
+                        $ehr_pid = $patient->getPid();
+                        $users = DB::select('SELECT * FROM users WHERE ehr_pid = ? AND connection = ?', [ $ehr_pid, $connection ] );
+                        $foundUser = null;
+                        foreach ( $users as $user ) {
+                            $foundUser = $user;
+                            break;
+                        }
+
+                        if ( $foundUser ) {
+                            $this->info( "Found User: {$foundUser->id}" );
+                            $deleted = DB::delete( 'DELETE FROM users WHERE id = ?', [ $foundUser->id ] );
+                            $deleted = DB::delete( 'DELETE FROM signup_data WHERE user_id = ?', [ $foundUser->id ] );
+                            $deleted = DB::delete( 'DELETE FROM oauth_access_tokens WHERE user_id = ?', [ $foundUser->id ] );
+                        }
+                    }
+                }
+            }
+
         } else if ( $option == 'sync-providers' ) {
 
             $this->info("Fetching Providers");
@@ -63,7 +95,7 @@ class Fhir extends Command
                 if ( $connection != 'auth' &&
                     $params['driver'] == 'mysql' ) {
                     $this->info("Fetching Providers on {$connection}");
-                    $userRepository->setConnection($connection);
+                    $userRepository->setConnection( $connection );
                     $users = $userRepository->fetchProviders();
                     $this->info( "Result = {$users}" );
                     foreach ( $users as $user ) {
