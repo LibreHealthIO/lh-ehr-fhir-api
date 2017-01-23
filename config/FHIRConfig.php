@@ -8,5 +8,6 @@ return array(
     'oxygen8_url' => '',
     'oxygen8_port' => '',
     'oxygen8_username' => '',
-    'oxygen8_password' => ''
+    'oxygen8_password' => '',
+    'oxygen8_sender' => '',
 );

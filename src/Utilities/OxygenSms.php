@@ -27,7 +27,7 @@ class OxygenSms
 
         // $s_POST_DATA .= "&Shortcode=12345";
         // $s_POST_DATA .= "&SourceReference=3456";
-        $this->s_POST_DATA['Mask'] = "GPOnline";
+        $this->s_POST_DATA['Mask'] = config('FHIRConfig.oxygen8_sender');
 
         // $s_POST_DATA .= "&DataType=0";
         $this->s_POST_DATA['Premium'] = 0;
