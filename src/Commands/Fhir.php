@@ -47,7 +47,37 @@ class Fhir extends Command
     {
         $option = $this->argument('option');
 
-        if ( $option == 'clear-system' ) {
+        if ( $option == 'clean-all' ) {
+
+            $this->info("Cleaning ALL Patients and Users");
+
+            $connections = Config::get('database.connections');
+
+            foreach ( $connections as $connection => $params ) {
+                if ( $connection != 'auth' &&
+                    $params[ 'driver' ] == 'mysql' ) {
+
+                    DB::connection( $connection )->delete( 'DELETE FROM libreehr_postcalendar_events WHERE pc_catid = ?', [ 9 ] );
+                    DB::connection( $connection )->table('patient_data')->truncate();
+                    DB::connection( $connection )->table('mi2_notifications')->truncate();
+                    DB::connection( $connection )->table('mi2_notification_queue')->truncate();
+                    DB::connection( $connection )->table('patient_tracker')->truncate();
+                    DB::connection( $connection )->table('patient_tracker_element')->truncate();
+                    DB::connection( $connection )->table('pnotes')->truncate();
+                    DB::connection( $connection )->table('lists')->truncate();
+                    DB::connection( $connection )->table('history_data')->truncate();
+                    DB::connection( $connection )->table('insurance_data')->truncate();
+
+                } else if ( $connection == 'auth' &&
+                    $params[ 'driver' ] == 'mysql' ) {
+
+                    DB::connection( $connection )->table('users')->truncate();
+                    DB::connection( $connection )->table('signup_data')->truncate();
+                    DB::connection( $connection )->table('oauth_access_tokens')->truncate();
+                    DB::connection( $connection )->table('oauth_refresh_tokens')->truncate();
+                    DB::connection( $connection )->table('password_resets')->truncate();
+                }
+            }
 
         } else if ( $option == 'sync-patients' ) {
 
