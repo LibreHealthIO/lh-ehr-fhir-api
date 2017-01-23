@@ -45,4 +45,6 @@ Route::group( [ 'middleware' => 'auth:api', 'prefix' => 'fhir' ], function () {
 
 Route::resource('document', '\LibreEHR\FHIR\Http\Controllers\DocumentController');
 
-
+Route::get('/home', function () {
+    return view('welcome');
+});
