@@ -478,7 +478,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                                         "card" => array(
                                             "number" => "4242424242424242",
                                             "exp_month" => 1,
-                                            "exp_year" => 2017,
+                                            "exp_year" => 2018,
                                             "cvc" => "314",
                                             "name" => "Cardholder Name"
                                         )
