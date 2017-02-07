@@ -28,7 +28,7 @@ class UserController extends Controller
                 $patient = $patientRepo->findByPid( $user->ehr_pid );
             }
 
-            $status = User::STATUS_NEW;
+            $status = User::STATUS_PENDING;
             if ( $patient ) {
                 // If we have a ehr_id and a DB connection,
                 // // get the reg_status from the EHR
@@ -47,7 +47,13 @@ class UserController extends Controller
                 $data['user']['firstTimeLogin'] = 1;
             }
 
+            $data['user']['firstTimeLoginActive'] = 0;
+            if ( $user->activeLoginCount <= 1 ) {
+                $data['user']['firstTimeLoginActive'] = 1;
+            }
+
             unset( $data['user']['loginCount'] );
+            unset( $data['user']['activeLoginCount'] );
 
             $data['user']['signup'] = $user->signup;
 

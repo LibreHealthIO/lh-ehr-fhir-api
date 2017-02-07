@@ -5,6 +5,7 @@ namespace LibreEHR\FHIR\Auth;
 use Illuminate\Support\Facades\Auth;
 use League\OAuth2\Server\ResponseTypes\BearerTokenResponse;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
+use LibreEHR\Core\Emr\Repositories\PatientRepository;
 use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User;
 
 class CustomBearerTokenResponse extends BearerTokenResponse
@@ -22,6 +23,16 @@ class CustomBearerTokenResponse extends BearerTokenResponse
 
         $user = User::where( 'id', $accessToken->getUserIdentifier() )->first();
 
+        if ( $user->ehr_pid &&
+            $user->connection ) {
+            $patientRepo = new PatientRepository();
+            $patientRepo->setConnection( $user->connection );
+            $patient = $patientRepo->findByPid( $user->ehr_pid );
+            if ( $patient->getStatus() == 'active' ) {
+                $user->activeLoginCount = $user->activeLoginCount + 1;
+            }
+        }
+
         $user->loginCount = $user->loginCount + 1;
         $user->save();
 
@@ -29,6 +40,11 @@ class CustomBearerTokenResponse extends BearerTokenResponse
         $response = ['firstTimeLogin' => 0 ];
         if ( $user->loginCount == 1 ) {
             $response = ['firstTimeLogin' => 1 ];
+        }
+
+        $response = ['firstTimeLoginActive' => 0 ];
+        if ( $user->activeLoginCount == 1 ) {
+            $response = ['firstTimeLoginActive' => 1 ];
         }
 
         return $response;
