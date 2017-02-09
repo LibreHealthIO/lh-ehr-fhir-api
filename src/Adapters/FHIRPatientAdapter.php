@@ -16,6 +16,7 @@ use LibreEHR\Core\Emr\Criteria\PatientByPid;
 use LibreEHR\Core\Emr\Eloquent\PatientData;
 use LibreEHR\Core\Emr\Repositories\PharmacyRepository;
 use LibreEHR\Core\Emr\Repositories\ProviderRepository;
+use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\Signup;
 use LibreEHR\FHIR\Http\Controllers\Auth\AuthModel\User;
 use LibreEHR\FHIR\Utilities\OxygenSms;
 use LibreEHR\FHIR\Utilities\UUIDClass;
@@ -402,6 +403,11 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
                 if ($system->getValue() == 'phone') {
                     $primaryPhone = $contactPoint->getValue();
                     $patientInterface->setPrimaryPhone($primaryPhone->getValue());
+                    // Also set phone on signup_data
+                    $user = Auth::user();
+                    $signup = Signup::where( 'user_id', $user->id )->first();
+                    $signup->mobile_number = $primaryPhone->getValue();
+                    $signup->save();
                 }
                 if ($system->getValue() == 'email') {
                     $emailAdress = $contactPoint->getValue();
