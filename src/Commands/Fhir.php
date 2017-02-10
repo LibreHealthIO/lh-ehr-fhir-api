@@ -113,12 +113,12 @@ class Fhir extends Command
         } else if ( $option == 'sync-providers' ) {
 
             $this->info("Fetching Providers");
-            // First get all current providers
+            // First get all current providershistory | grep artisan
+
             $providerRepository = new ProviderRepository();
             $providers = $providerRepository->fetchAll();
 
             $userRepository = new UserRepository();
-            $ehrUsers = array();
             // for each DB key, find the providers
             $connections = Config::get('database.connections');
             foreach ( $connections as $connection => $params ) {
@@ -128,12 +128,9 @@ class Fhir extends Command
                     $userRepository->setConnection( $connection );
                     $users = $userRepository->fetchProviders();
                     $this->info( "Result = {$users}" );
-                    $ehrUsers[$connection] = array();
                     foreach ( $users as $user ) {
 
                         if ( $user instanceof ProviderInterface ) {
-
-                            $ehrUsers[$connection] []= $user->getEmrId();
 
                             $this->info( "User {$user}" );
                             // See if this user is already in the provider list
@@ -196,24 +193,40 @@ class Fhir extends Command
             }
 
 
+            $this->info( "Cleaning up inactive users" );
             // Clean up deleted users
             $providerRepository = new ProviderRepository();
             $providers = $providerRepository->fetchAll();
-            foreach ( $ehrUsers as $connection => $ehrUser ) {
-                foreach ( $ehrUser as $id ) {
-                    $found = false;
-                    foreach ( $providers as $provider ) {
-                        if ( $provider instanceof ProviderInterface ) {
-                            if ( $provider->getConnectionKey() == $connection &&
-                                $provider->getEmrId() == $id ) {
-                                $found = true;
-                                break;
+            $userRepository = new UserRepository();
+            foreach ( $connections as $connection => $params ) {
+                if ( $connection != 'auth' &&
+                    $params['driver'] == 'mysql' ) {
+
+                    $this->info( "Checking {$connection}" );
+                    $userRepository->setConnection( $connection );
+                    $users = $userRepository->fetchProviders( true );
+                    foreach ( $users as $user ) {
+
+                        $this->info( "Checking {$user->getId()} which is active({$user->active})" );
+                        $found = false;
+                        foreach ( $providers as $provider ) {
+
+                            if ( $provider instanceof ProviderInterface ) {
+
+                                $this->info( "...against {$provider->getEmrId()}" );
+                                if ( $provider->getConnectionKey() == $connection &&
+                                    $provider->getEmrId() == $user->getId() &&
+                                    $user->active == '1'
+                                ) {
+                                    $found = true;
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    if ( !$found ) {
-                        $provider->delete();
+                        if ( !$found ) {
+                            $provider->delete();
+                        }
                     }
                 }
             }
