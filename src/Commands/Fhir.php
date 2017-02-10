@@ -128,9 +128,12 @@ class Fhir extends Command
                     $userRepository->setConnection( $connection );
                     $users = $userRepository->fetchProviders();
                     $this->info( "Result = {$users}" );
+                    $ehrUsers[$connection] = array();
                     foreach ( $users as $user ) {
 
                         if ( $user instanceof ProviderInterface ) {
+
+                            $ehrUsers[$connection] []= $user->getEmrId();
 
                             $this->info( "User {$user}" );
                             // See if this user is already in the provider list
@@ -188,6 +191,29 @@ class Fhir extends Command
                                 $newProvider->save();
                             }
                         }
+                    }
+                }
+            }
+
+
+            // Clean up deleted users
+            $providerRepository = new ProviderRepository();
+            $providers = $providerRepository->fetchAll();
+            foreach ( $ehrUsers as $connection => $ehrUser ) {
+                foreach ( $ehrUser as $id ) {
+                    $found = false;
+                    foreach ( $providers as $provider ) {
+                        if ( $provider instanceof ProviderInterface ) {
+                            if ( $provider->getConnectionKey() == $connection &&
+                                $provider->getEmrId() == $id ) {
+                                $found = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if ( !$found ) {
+                        $provider->delete();
                     }
                 }
             }
