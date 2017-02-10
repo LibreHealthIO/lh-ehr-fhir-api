@@ -28,7 +28,7 @@ class UserController extends Controller
                 $patient = $patientRepo->findByPid( $user->ehr_pid );
             }
 
-            $status = User::STATUS_PENDING;
+            $status = User::STATUS_NEW;
             if ( $patient ) {
                 // If we have a ehr_id and a DB connection,
                 // // get the reg_status from the EHR
