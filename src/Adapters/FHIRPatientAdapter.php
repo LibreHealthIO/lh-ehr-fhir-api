@@ -166,7 +166,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         try {
             Mail::raw( 'Your registration was successful. Your account is pending GP Approval', function ($message) use ($user)  {
                 $message->subject( 'Notification from GPOnline' );
-                $message->from( 'donotreply@virconhealth.com' );
+                $message->from( config('FHIRConfig.email_from_address') );
                 $message->to( $user->email );
             });
         } catch ( Exception $e ) {

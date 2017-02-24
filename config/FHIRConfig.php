@@ -10,4 +10,5 @@ return array(
     'oxygen8_username' => '',
     'oxygen8_password' => '',
     'oxygen8_sender' => '',
+    'email_from_address' => '',
 );

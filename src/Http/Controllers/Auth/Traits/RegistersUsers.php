@@ -62,7 +62,7 @@ trait RegistersUsers
                 try {
                     Mail::raw('Your signup was successful', function ($message) use ($data) {
                         $message->subject('Notification from GPOnline');
-                        $message->from( 'donotreply@virconhealth.com' );
+                        $message->from( config('FHIRConfig.email_from_address') );
                         $message->to($data['email']);
                     });
                 } catch ( Exception $e ) {
