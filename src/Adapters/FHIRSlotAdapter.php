@@ -244,7 +244,7 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
         $reference 	 = new FHIRString();
         $reference->setValue( '/fhir/Schedule' );
         $display 	 = new FHIRString();
-        $display->setValue( 'Schedule' );
+        $display->setValue( date( "Y-m-d H:i", $slot['startTimestamp'] )." - ".date( "Y-m-d H:i", $slot['endTimestamp'] ) );
         $schedule->setReference( $reference );
         $schedule->setDisplay( $display );
         $fhirSlot->setSchedule($schedule);
