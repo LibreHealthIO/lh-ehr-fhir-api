@@ -54,13 +54,13 @@ class FHIRSlotAdapter extends AbstractFHIRAdapter implements BaseAdapterInterfac
      */
     public function getSlots(Request $request)
     {
-
         if (!empty($request->server->get('QUERY_STRING'))) {
             $data = $this->parseUrl($request->server->get('QUERY_STRING'));
             $authProviderId = $data['provider'];
             $providerRepo = new ProviderRepository();
             $provider = $providerRepo->get( $authProviderId );
             $data['provider'] = $provider->getEmrId();
+            $this->repository->setConnection( $provider->getConnectionKey() );
             $collection = $this->repository->getSlots($data);
         } else {
             $data['startDate'] = date('Y-m-d');
