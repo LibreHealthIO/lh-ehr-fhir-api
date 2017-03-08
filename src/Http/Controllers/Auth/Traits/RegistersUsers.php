@@ -60,7 +60,7 @@ trait RegistersUsers
                 $this->createSignup($data, $userId);
 
                 try {
-                    Mail::raw('Your signup was successful', function ($message) use ($data) {
+                    Mail::raw('Thank you for your registration to the GP Online service. Your GP is reviewing your registration and will confirm shortly.', function ($message) use ($data) {
                         $message->subject('Notification from GPOnline');
                         $message->from( config('FHIRConfig.email_from_address') );
                         $message->to($data['email']);

@@ -267,7 +267,8 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
             $appointmentInterface->setDescription($description);
 
             $status = $fhirAppointment->getStatus()->getValue();
-            $appointmentInterface->setPcApptStatus($status);
+            $encodedStatus = $this->repository->encodeStatus( $status );
+            $appointmentInterface->setPcApptStatus( $encodedStatus );
 
             $extensions = $fhirAppointment->getExtension();
             foreach ($extensions as $extension) {
@@ -383,7 +384,8 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
 
         $status = new FHIRCode();
         $value = new FHIRString();
-        $value->setValue($appointment->getPcApptStatus());
+        $decodedStatus = $this->repository->decodeStatus( $appointment->getPcApptStatus() );
+        $value->setValue( $decodedStatus );
         $status->setValue($value);
         $fhirAppointment->setStatus($status);
 

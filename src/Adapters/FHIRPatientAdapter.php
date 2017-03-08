@@ -164,7 +164,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         Auth::setUser($user);
 
         try {
-            Mail::raw( 'Your registration was successful. Your account is pending GP Approval', function ($message) use ($user)  {
+            Mail::raw( 'Thank you for your registration. Your GP will confirm shortly. Check on your device at Apple: gponline://app or Android: http://gponline.ie/app', function ($message) use ($user)  {
                 $message->subject( 'Notification from GPOnline' );
                 $message->from( config('FHIRConfig.email_from_address') );
                 $message->to( $user->email );
