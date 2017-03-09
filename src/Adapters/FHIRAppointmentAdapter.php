@@ -306,7 +306,7 @@ class FHIRAppointmentAdapter extends AbstractFHIRAdapter implements BaseAdapterI
                     $appointmentInterface->setLocation(json_encode($location, true));
 
                     //Set required data for showing Appointments in LibreEhr calendar.
-                                $appointmentInterface->setPcTitle("Established Patient");
+                                $appointmentInterface->setPcTitle("Video Consulation");
                                 $appointmentInterface->setPcTime(time());
                                 $appointmentInterface->setPcInformant(1);
                                 $appointmentInterface->setPcCatid(9);
