@@ -163,8 +163,11 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         $user->save();
         Auth::setUser($user);
 
+        $signup = Signup::where( 'user_id', $user->id )->first();
+        $firstName = $signup->firstname;
+
         try {
-            Mail::raw( 'Thank you for your registration. Your GP will confirm shortly. Check on your device at Apple: gponline://app or Android: http://gponline.ie/app', function ($message) use ($user)  {
+            Mail::raw( $firstName.' thank you for your registration. Your GP will confirm shortly. Check on your device at Apple: gponline://app or Android: http://gponline.ie/app', function ($message) use ($user)  {
                 $message->subject( 'Notification from GPOnline' );
                 $message->from( config('FHIRConfig.email_from_address') );
                 $message->to( $user->email );
