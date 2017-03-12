@@ -11,4 +11,7 @@ return array(
     'oxygen8_password' => '',
     'oxygen8_sender' => '',
     'email_from_address' => '',
+    'send_signup_notification' => '',
+    'signup_message_body' => '',
+    'signup_message_subject' => ''
 );

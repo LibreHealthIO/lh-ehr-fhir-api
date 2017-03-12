@@ -177,7 +177,7 @@ class FHIRPatientAdapter extends AbstractFHIRAdapter implements BaseAdapterInter
         }
 
         $sms = new OxygenSms();
-        $sms->send( 'Your registration was successful. Your account is pending GP Approval', $patientInterface->getPrimaryPhone() );
+        $sms->send( $firstName.' thank you for your registration. Your GP will confirm shortly. Check on your device at Apple: gponline://app or Android: http://gponline.ie/app', $patientInterface->getPrimaryPhone() );
 
         return $patientInterface;
     }

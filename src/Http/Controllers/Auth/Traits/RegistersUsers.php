@@ -59,18 +59,20 @@ trait RegistersUsers
                 $userId = $collection->last()->id;
                 $this->createSignup($data, $userId);
 
-                try {
-                    Mail::raw('Thank you for your registration to the GP Online service. Your GP is reviewing your registration and will confirm shortly.', function ($message) use ($data) {
-                        $message->subject('Notification from GPOnline');
-                        $message->from( config('FHIRConfig.email_from_address') );
-                        $message->to($data['email']);
-                    });
-                } catch ( Exception $e ) {
-                    error_log( $e->getMessage() );
-                }
+                if ( config('FHIRConfig.send_signup_notification') == 1 ) {
+                    try {
+                        Mail::raw( config( 'FHIRConfig.signup_message_body' ), function ( $message ) use ( $data ) {
+                            $message->subject( config( 'FHIRConfig.signup_message_subject' ) );
+                            $message->from( config( 'FHIRConfig.email_from_address' ) );
+                            $message->to( $data[ 'email' ] );
+                        } );
+                    } catch ( Exception $e ) {
+                        error_log( $e->getMessage() );
+                    }
 
-                $sms = new OxygenSms();
-                $sms->send( 'Your signup was successful', $data['mobile_number'] );
+                    $sms = new OxygenSms();
+                    $sms->send( config( 'FHIRConfig.signup_message_body' ), $data[ 'mobile_number' ] );
+                }
 
                 return new Response([
                     'accountRegistered' => 1,
