@@ -10,6 +10,7 @@ return array(
     'oxygen8_username' => '',
     'oxygen8_password' => '',
     'oxygen8_sender' => '',
+    'oxygen8_country_code' => '',
     'email_from_address' => '',
     'send_signup_notification' => '',
     'signup_message_body' => '',

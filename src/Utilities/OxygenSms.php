@@ -44,7 +44,7 @@ class OxygenSms
             error_log('ERROR: SMS not configured in FHIRConfig.php');
             $success = 'SMS not configured in FHIRConfig.php';
         } else {
-            $this->s_POST_DATA['MSISDN'] = str_replace("-", "", $phone);
+            $this->s_POST_DATA['MSISDN'] = trim(config('FHIRConfig.oxygen8_country_code')).str_replace("-", "", $phone);
             $this->s_POST_DATA['Content'] = $message;
             $post = http_build_query($this->s_POST_DATA);
 
@@ -54,7 +54,7 @@ class OxygenSms
 
                     $ch = curl_init();
 
-                    curl_setopt($ch, CURLOPT_URL, "https://relay.evolve.oxygen8.com:9126/GPOnline");
+                    curl_setopt($ch, CURLOPT_URL, "https://{$this->X_HOST}:{$this->X_PORT}{$this->X_URL}");
                     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                     curl_setopt($ch, CURLOPT_POST, 1);
