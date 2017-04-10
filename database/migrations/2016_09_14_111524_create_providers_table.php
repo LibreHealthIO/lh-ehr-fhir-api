@@ -25,38 +25,6 @@ class CreateProvidersTable extends Migration
             $table->string('country')->nullable();
             $table->string('email')->nullable();
         });
-
-
-
-        DB::connection($this->connection)->table('provider')
-            ->insert(
-                [
-                    'id'            => 1,
-                    'firstname'     => 'John',
-                    'lastname'      => 'Dow',
-                    'email'         => 'example@example.com',
-                    'practice_name' => 'ophthalmologist',
-                    'address'       => '1757 E. Baseline Rd',
-                    'town'          => 'Gilbert',
-                    'state'         => 'AZ',
-                    'country'       => 'US',
-                ]
-            );
-
-        DB::connection($this->connection)->table('provider')
-            ->insert(
-                [
-                    'id'            => 2,
-                    'firstname'     => 'Wolly',
-                    'lastname'      => 'Morris',
-                    'email'         => 'mirris@example.com',
-                    'practice_name' => 'otolaryngologist',
-                    'address'       => '944 S. Mill Ave',
-                    'town'          => 'Tempe',
-                    'state'         => 'AZ',
-                    'country'       => 'US',
-                ]
-            );
     }
 
     /**

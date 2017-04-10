@@ -44,7 +44,7 @@ class OxygenSms
             error_log('ERROR: SMS not configured in FHIRConfig.php');
             $success = 'SMS not configured in FHIRConfig.php';
         } else {
-            $num = str_replace("-", "", $phone)
+            $num = str_replace("-", "", $phone);
             if ( substr( $num, 0, 1 ) === 0 ) {
                 $num = trim(config('FHIRConfig.oxygen8_country_code')).ltrim($num, '0');
             }
