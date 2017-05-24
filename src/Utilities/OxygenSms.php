@@ -45,7 +45,7 @@ class OxygenSms
             $success = 'SMS not configured in FHIRConfig.php';
         } else {
             $num = str_replace("-", "", $phone);
-            if ( substr( $num, 0, 1 ) === 0 ) {
+            if ( substr( $num, 0, 1 ) === '0' ) {
                 $num = trim(config('FHIRConfig.oxygen8_country_code')).ltrim($num, '0');
             }
             $this->s_POST_DATA['MSISDN'] = $num;
